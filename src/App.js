@@ -1,25 +1,56 @@
-import logo from './logo.svg';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import NavbarNavigation from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import './App.css';
 
+// auth
+import { useAuth0 } from '@auth0/auth0-react';
+
+// pages
+import TableDelivery from './pages/PrincipalUser/Table';
+import Inter from './pages/PrincipalUser/Inter';
+import Delivery from './pages/PrincipalUser/Delivery';
+import LastOrders from './pages/PrincipalUser/LastOrders';
+import ReviewOrders from './pages/ReviewOrders';
+
+
+
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const { isAuthenticated, user } = useAuth0();
+
+  switch (true) {
+    case isAuthenticated && user.email === "pedidos.ducor@gmail.com":
+      return (<Router>
+        {/* {JSON.stringify(user)} */}
+        <div className='flex'>
+          <Sidebar couriers={["Brayan", "Omar", "Edgar", "Jairo", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Juano"]} />
+          <div className='content'>
+            <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
+            <Routes>
+              <Route exact={true} path="/" Component={Delivery} />
+              <Route exact={true} path="/Inter" Component={Inter} />
+              <Route exact={true} path="/Mensajeros/:id" Component={TableDelivery} />
+              <Route exact={true} path="/LastOrders" Component={LastOrders} />
+            </Routes>
+          </div>
+        </div>
+      </Router>
+      )
+    default:
+      return (
+        <ReviewOrders>
+          <div className='content'>
+            <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
+            <LastOrders />
+          </div>
+        </ReviewOrders>
+      )
+  }
 }
 
 export default App;
+
+
+
+
+
