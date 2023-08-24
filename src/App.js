@@ -11,7 +11,11 @@ import TableDelivery from './pages/PrincipalUser/Table';
 import Inter from './pages/PrincipalUser/Inter';
 import Delivery from './pages/PrincipalUser/Delivery';
 import LastOrders from './pages/PrincipalUser/LastOrders';
-import ReviewOrders from './pages/ReviewOrders';
+import ReviewOrders from './pages/SecondUser/ReviewOrders';
+import DefaultInfo from './pages/DefaultInfo';
+
+const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
+const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com"]
 
 
 
@@ -19,7 +23,7 @@ function App() {
   const { isAuthenticated, user } = useAuth0();
 
   switch (true) {
-    case isAuthenticated && user.email === "pedidos.ducor@gmail.com":
+    case isAuthenticated && emailPrincipal.includes(user.email):
       return (<Router>
         {/* {JSON.stringify(user)} */}
         <div className='flex'>
@@ -36,14 +40,25 @@ function App() {
         </div>
       </Router>
       )
+    case isAuthenticated && emailSecondly.includes(user.email):
+      return (
+        <Router>
+          <ReviewOrders>
+            <div className='content'>
+              <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
+              <Routes>
+                <Route exact={true} path="/Last" Component={LastOrders} />
+              </Routes>
+            </div>
+          </ReviewOrders>
+        </Router>
+      )
     default:
       return (
-        <ReviewOrders>
-          <div className='content'>
-            <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
-            <LastOrders />
-          </div>
-        </ReviewOrders>
+        <div>
+          <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
+          <DefaultInfo />
+        </div>
       )
   }
 }

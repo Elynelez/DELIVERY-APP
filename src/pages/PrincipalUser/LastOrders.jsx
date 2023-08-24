@@ -4,6 +4,8 @@ import TableData from "../Controllers/TableData";
 import { ModalData, ReviewModal, EditModal } from "../Controllers/Modal";
 import { useAuth0 } from '@auth0/auth0-react';
 
+const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
+
 const LastOrders = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true)
@@ -79,13 +81,13 @@ const LastOrders = () => {
             <Menu.Item key="1">
               <ModalData arrayData={[{ title: "fecha de entrega", value: row.date_delivery }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
             </Menu.Item>
-            {user && user.email === "pedidos.ducor@gmail.com" ? (
+            {user && emailPrincipal.includes(user.email) ? (
               <Menu.Item key="2">
                 <EditModal initialValues={{ order_id: row.order_id, date_delivery: (row.status === "REPROGRAMADO" || row.status === "COMPLETADO" || row.status === "COMPLETO (FR)") ? true : false, zone: row.zone, code: row.code, method: row.method, money_delivered: row.money_delivered }} />
               </Menu.Item>
             ) : (
               <Menu.Item key="3">
-                <ReviewModal onChange={() => (console.log("actualizado"))} initialValues={{ order_id: row.order_id, total: row.total, money_delivered: row.money_delivered, status: row.status, disabled: (row.status === "COMPLETO (FR)" || row.status === "INCOMPLETO") ? false : true }} />
+                <ReviewModal initialValues={{ order_id: row.order_id, total: row.total, money_delivered: row.money_delivered, status: row.status, disabled: (row.status === "COMPLETO (FR)" || row.status === "INCOMPLETO") ? false : true }} />
               </Menu.Item>
             )}
           </Menu.SubMenu>

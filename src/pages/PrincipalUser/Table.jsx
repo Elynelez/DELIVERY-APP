@@ -7,6 +7,8 @@ import { ModalData, EditModal } from "../Controllers/Modal";
 import { useAuth0 } from '@auth0/auth0-react';
 import { Modal, message } from 'antd';
 
+const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
+
 const TableDelivery = () => {
   const { user } = useAuth0();
   const { id } = useParams();
@@ -127,7 +129,7 @@ const TableDelivery = () => {
       name: 'Acciones', button: true, cell: row => (
         <Menu defaultSelectedKeys={['1']} style={{ background: "none" }}>
           <Menu.SubMenu title="Acciones">
-            {user && user.email === "pedidos.ducor@gmail.com" && (
+            {user && emailPrincipal.includes(user.email) && (
               <Menu.Item key="1">
                 <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(row.order_id)}>Borrar</Button>
               </Menu.Item>
