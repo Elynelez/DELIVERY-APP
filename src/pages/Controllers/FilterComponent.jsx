@@ -1,17 +1,19 @@
 import React from "react";
-import { Input, Button } from "antd";
+import { Input, Button, DatePicker } from "antd";
 
-const FilterComponent = ({ filterText, onFilter, onClear }) => (
+const { RangePicker } = DatePicker;
+
+const FilterComponent = ({ onFilter, onClear, onDateFilterChange }) => (
   <>
     <Input
-      style={{width: "95%"}}
+      style={{ width: "50%" }}
       id="search"
       type="text"
-      placeholder="Filrar datos"
-      value={filterText}
+      placeholder="Filtrar datos"
       onChange={onFilter}
     />
     <Button onClick={onClear}>X</Button>
+    <RangePicker style={{ marginLeft: "20px" }} onChange={onDateFilterChange} />
   </>
 );
 
