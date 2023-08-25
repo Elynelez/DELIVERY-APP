@@ -12,7 +12,7 @@ const Sidebar = (props) => {
                     </NavLink>
                 </Menu.Item>
                 <Menu.Item key="2">
-                    <NavLink to="/Inter" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaDeezer className='me-2'/>
+                    <NavLink to="/ExternalService" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaDeezer className='me-2'/>
                         Subir Inter
                     </NavLink>
                 </Menu.Item>

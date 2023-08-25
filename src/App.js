@@ -8,7 +8,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 // pages
 import TableDelivery from './pages/PrincipalUser/Table';
-import Inter from './pages/PrincipalUser/Inter';
+import ExternalService from './pages/PrincipalUser/ExternalService';
 import Delivery from './pages/PrincipalUser/Delivery';
 import LastOrders from './pages/PrincipalUser/LastOrders';
 import ReviewOrders from './pages/SecondUser/ReviewOrders';
@@ -32,7 +32,7 @@ function App() {
             <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
             <Routes>
               <Route exact={true} path="/" Component={Delivery} />
-              <Route exact={true} path="/Inter" Component={Inter} />
+              <Route exact={true} path="/ExternalService" Component={ExternalService} />
               <Route exact={true} path="/Mensajeros/:id" Component={TableDelivery} />
               <Route exact={true} path="/LastOrders" Component={LastOrders} />
             </Routes>
