@@ -117,7 +117,16 @@ const TableDelivery = () => {
     { name: 'Cliente', selector: "client", sortable: true },
     { name: 'Vendedor', selector: "seller", sortable: true },
     { name: 'Condición', selector: "condition", sortable: true },
-    { name: 'Valor', selector: "total", sortable: true },
+    {
+      name: 'Valor', selector: "total", sortable: true, cell: row => (
+        row.method !== "EFECTIVO" ?
+          <div style={{ color: 'lightblue' }}>
+            {row.total}
+          </div> : <div>
+            {row.total}
+          </div>
+      )
+    },
     {
       name: 'Estado', selector: 'status', sortable: true, cell: row => (
         <div style={{ color: statusColorMap[row.status] || 'black' }}>
@@ -152,7 +161,7 @@ const TableDelivery = () => {
     <div className="container py-5">
       <div className="row align-items-center mb-4">
         <div className="col">
-          <h1 className="display-4">Detalles de Entrega de   <div style={{display: 'inline-block'}}>{id}</div></h1>
+          <h1 className="display-4">Detalles de Entrega de   <div style={{ display: 'inline-block' }}>{id}</div></h1>
         </div>
         <div className="col-auto">
           <Button type="primary" onClick={() => downloadTable(tableData, id)}>
