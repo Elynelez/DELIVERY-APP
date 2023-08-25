@@ -18,7 +18,7 @@ const TableDelivery = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbxZ_ACDvOXh86i-apDSnroqsai6vK7hoAwJlIBTjp_2MWKs_IrKLANFqMwthoqOsvV9/exec?key=" + id)
+    fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?key=" + id)
       .then(response => response.json())
       .then(parsedData => {
         setData(parsedData);
@@ -37,7 +37,7 @@ const TableDelivery = () => {
       onOk: () => {
         message.info('unos momentos')
         setLoading(true);
-        fetch("https://script.google.com/macros/s/AKfycbxZ_ACDvOXh86i-apDSnroqsai6vK7hoAwJlIBTjp_2MWKs_IrKLANFqMwthoqOsvV9/exec?delete", {
+        fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?delete", {
           redirect: "follow",
           method: 'POST',
           headers: {
@@ -63,7 +63,7 @@ const TableDelivery = () => {
 
   useEffect(() => {
     if (deleteRow !== null) {
-      fetch("https://script.google.com/macros/s/AKfycbxZ_ACDvOXh86i-apDSnroqsai6vK7hoAwJlIBTjp_2MWKs_IrKLANFqMwthoqOsvV9/exec?key=" + id)
+      fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?key=" + id)
         .then(response => response.json())
         .then(parsedData => {
           setData(parsedData);
