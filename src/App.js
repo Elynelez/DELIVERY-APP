@@ -47,7 +47,7 @@ function App() {
             <div className='content'>
               <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
               <Routes>
-                <Route exact={true} path="/Last" Component={LastOrders} />
+                <Route exact={true} path="/" Component={LastOrders} />
               </Routes>
             </div>
           </ReviewOrders>
