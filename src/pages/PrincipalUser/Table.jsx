@@ -159,22 +159,25 @@ const TableDelivery = () => {
   tableData.unshift(["FECHA DESPACHO", "FECHA ENTREGA", "ZONA", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO"])
   return (
     <div className="container py-5">
-      <div className="row align-items-center mb-4">
-        <div className="col">
-          <h1 className="display-4">Detalles de Entrega de   <div style={{ display: 'inline-block' }}>{id}</div></h1>
-        </div>
-        <div className="col-auto">
-          <Button type="primary" onClick={() => downloadTable(tableData, id)}>
-            Descargar
-          </Button>
-        </div>
-      </div>
+
       {loading ? (
         <div className="text-center">
           <Spin tip="Cargando datos..." />
         </div>
       ) : (
-        <TableData columns={columns} data={data} />
+        <>
+          <div className="row align-items-center mb-4">
+            <div className="col">
+              <h1 className="display-4">Detalles de Entrega de   <div style={{ display: 'inline-block' }}>{id}</div></h1>
+            </div>
+            <div className="col-auto">
+              <Button type="primary" onClick={() => downloadTable(tableData, id)}>
+                Descargar
+              </Button>
+            </div>
+          </div>
+          <TableData columns={columns} data={data} />
+        </>
       )}
     </div>
   );
