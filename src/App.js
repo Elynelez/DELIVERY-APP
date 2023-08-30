@@ -15,7 +15,7 @@ import ReviewOrders from './pages/SecondUser/ReviewOrders';
 import DefaultInfo from './pages/DefaultInfo';
 
 const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
-const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com"]
+const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
 
 
 

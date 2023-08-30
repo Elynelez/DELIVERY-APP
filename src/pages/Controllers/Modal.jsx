@@ -152,6 +152,13 @@ const EditModal = (props) => {
               <Input />
             </Form.Item>
             <Form.Item
+              name="coursier"
+              label="Mensajero"
+              rules={[{ required: true, message: 'Por favor reingresa el mensajero' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
               label="Medio de pago"
               name="method"
               labelAlign="left"
