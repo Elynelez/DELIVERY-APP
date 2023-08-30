@@ -97,7 +97,7 @@ const LastOrders = () => {
   ]
 
   const tableData = data.map(row => [row.date_generate, row.date_delivery, row.coursier, row.zone, row.code, row.client, row.address, row.seller, row.condition, row.method, row.total, JSON.parse(row.notation).map(obj => obj.notation).join(', '), row.money_delivered]);
-  tableData.unshift(["FECHA DESPACHO", "FECHA ENTREGA", "MENSAJERO", "ZONA", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO"])
+  tableData.reverse().unshift(["FECHA DESPACHO", "FECHA ENTREGA", "MENSAJERO", "ZONA", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO"])
   return (
     <div className="container py-5">
       <div className="row align-items-center mb-4">

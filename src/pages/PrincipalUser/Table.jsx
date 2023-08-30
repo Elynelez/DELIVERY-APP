@@ -156,7 +156,7 @@ const TableDelivery = () => {
   ]
 
   const tableData = data.map(row => [row.date_generate, row.date_delivery, row.zone, row.code, row.client, row.address, row.seller, row.condition, row.method, row.total, JSON.parse(row.notation).map(obj => obj.notation).join(', '), row.money_delivered]);
-  tableData.unshift(["FECHA DESPACHO", "FECHA ENTREGA", "ZONA", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO"])
+  tableData.reverse().unshift(["FECHA DESPACHO", "FECHA ENTREGA", "ZONA", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO"])
   return (
     <div className="container py-5">
 
