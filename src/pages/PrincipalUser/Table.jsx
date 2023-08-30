@@ -116,6 +116,7 @@ const TableDelivery = () => {
     { name: 'Código', selector: "code", sortable: true },
     { name: 'Cliente', selector: "client", sortable: true },
     { name: 'Vendedor', selector: "seller", sortable: true },
+    { name: 'Dirección', selector: "address", sortable: true },
     { name: 'Condición', selector: "condition", sortable: true },
     {
       name: 'Valor', selector: "total", sortable: true, cell: row => (
