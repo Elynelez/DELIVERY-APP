@@ -100,22 +100,25 @@ const LastOrders = () => {
   tableData.reverse().unshift(["FECHA DESPACHO", "FECHA ENTREGA", "MENSAJERO", "ZONA", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO"])
   return (
     <div className="container py-5">
-      <div className="row align-items-center mb-4">
-        <div className="col">
-          <h1 className="display-4">Últimos detalles</h1>
-        </div>
-        <div className="col-auto">
-          <Button type="primary" onClick={() => downloadTable(tableData, "complete delivery")}>
-            Descargar
-          </Button>
-        </div>
-      </div>
+
       {loading ? (
         <div className="text-center">
           <Spin tip="Cargando datos..." />
         </div>
       ) : (
-        <TableData columns={columns} data={data} />
+        <>
+          <div className="row align-items-center mb-4">
+            <div className="col">
+              <h1 className="display-4">Últimos detalles</h1>
+            </div>
+            <div className="col-auto">
+              <Button type="primary" onClick={() => downloadTable(tableData, "complete delivery")}>
+                Descargar
+              </Button>
+            </div>
+          </div>
+          <TableData columns={columns} data={data} />
+        </>
       )}
     </div>
   );
