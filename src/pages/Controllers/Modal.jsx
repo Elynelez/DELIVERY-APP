@@ -214,7 +214,7 @@ const ReviewModal = (props) => {
       onOk: () => {
         message.info('unos momentos')
         setLoading(true);
-        fetch("https://script.google.com/macros/s/AKfycbxZ_ACDvOXh86i-apDSnroqsai6vK7hoAwJlIBTjp_2MWKs_IrKLANFqMwthoqOsvV9/exec?update", {
+        fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?update", {
           redirect: "follow",
           method: 'POST',
           headers: {
