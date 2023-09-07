@@ -7,9 +7,31 @@ import { useAuth0 } from '@auth0/auth0-react';
 const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 
 const LastOrders = () => {
+  const { user } = useAuth0();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true)
-  const { user } = useAuth0();
+  const [reloadData, setReloadData] = useState(false);
+
+  const loadData = () => {
+    setLoading(true);
+    fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec")
+      .then(response => response.json())
+      .then(parsedData => {
+        setData(parsedData);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (reloadData) {
+      loadData();
+      setReloadData(false);
+    }
+  }, [reloadData]);
 
   useEffect(() => {
     setLoading(true);
@@ -83,11 +105,11 @@ const LastOrders = () => {
             </Menu.Item>
             {user && emailPrincipal.includes(user.email) ? (
               <Menu.Item key="2">
-                <EditModal initialValues={{ order_id: row.order_id, date_delivery: (row.status === "REPROGRAMADO" || row.status === "COMPLETADO" || row.status === "COMPLETO (FR)") ? true : false, zone: row.zone, code: row.code, method: row.method, money_delivered: row.money_delivered }} />
+                <EditModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, date_delivery: (row.status === "REPROGRAMADO" || row.status === "COMPLETADO" || row.status === "COMPLETO (FR)") ? true : false, zone: row.zone, code: row.code, coursier: row.coursier, method: row.method, money_delivered: row.money_delivered }} />
               </Menu.Item>
             ) : (
               <Menu.Item key="3">
-                <ReviewModal initialValues={{ order_id: row.order_id, total: row.total, money_delivered: row.money_delivered, status: row.status, disabled: (row.status === "COMPLETO (FR)" || row.status === "INCOMPLETO") ? false : true }} />
+                <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, total: row.total, money_delivered: row.money_delivered, status: row.status, disabled: (row.status === "COMPLETO (FR)" || row.status === "INCOMPLETO") ? false : true }} />
               </Menu.Item>
             )}
           </Menu.SubMenu>
@@ -117,7 +139,7 @@ const LastOrders = () => {
               </Button>
             </div>
           </div>
-          <TableData columns={columns} data={data} />
+          <TableData columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading}/>
         </>
       )}
     </div>

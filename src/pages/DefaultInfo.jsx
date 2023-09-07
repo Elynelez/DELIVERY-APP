@@ -6,7 +6,7 @@ const DefaultInfo = () => {
 
     setTimeout(() => {
         setLoading(false)
-    }, 6000)
+    }, 8000)
 
     const handleConsultar = () => {
         console.log("ok")

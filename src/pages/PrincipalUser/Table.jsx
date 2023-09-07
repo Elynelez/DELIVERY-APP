@@ -15,6 +15,29 @@ const TableDelivery = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true)
   const [deleteRow, setDeleteRow] = useState(null)
+  const [reloadData, setReloadData] = useState(false);
+
+  const loadData = () => {
+    setLoading(true);
+    fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?key=" + id)
+      .then(response => response.json())
+      .then(parsedData => {
+        setData(parsedData);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (reloadData) {
+      loadData();
+      setReloadData(false);
+    }
+  }, [reloadData]);
+
 
   useEffect(() => {
     setLoading(true);
@@ -145,7 +168,7 @@ const TableDelivery = () => {
               </Menu.Item>
             )}
             <Menu.Item key="2">
-              <EditModal initialValues={{ order_id: row.order_id, date_delivery: (row.status === "REPROGRAMADO" || row.status === "COMPLETADO" || row.status === "COMPLETO (FR)") ? true : false, zone: row.zone, code: row.code, coursier: row.coursier, method: row.method, money_delivered: row.money_delivered }} />
+              <EditModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, date_delivery: (row.status === "REPROGRAMADO" || row.status === "COMPLETADO" || row.status === "COMPLETO (FR)") ? true : false, zone: row.zone, code: row.code, coursier: row.coursier, method: row.method, money_delivered: row.money_delivered }} />
             </Menu.Item>
             <Menu.Item key="3">
               <ModalData arrayData={[{ title: "fecha de entrega", value: Date(row.date_delivery) }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
@@ -177,7 +200,7 @@ const TableDelivery = () => {
               </Button>
             </div>
           </div>
-          <TableData columns={columns} data={data} />
+          <TableData columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading}/>
         </>
       )}
     </div>

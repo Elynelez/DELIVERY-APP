@@ -88,6 +88,7 @@ const EditModal = (props) => {
             message.success('Contenido editado exitosamente');
             setLoading(false);
             setVisible(false)
+            props.setReloadData(true);
           })
           .catch(error => {
             console.error('Error changing row:', error);
@@ -228,6 +229,7 @@ const ReviewModal = (props) => {
             message.success('Estado actualizado exitosamente');
             setLoading(false);
             setVisible(false)
+            props.setReloadData(true);
           })
           .catch(error => {
             console.error('Error changing row:', error);
