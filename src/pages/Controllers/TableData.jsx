@@ -118,7 +118,7 @@ const TableData = (props) => {
         Total sumado: $
         <p style={{ display: "inline-block" }}>{totalSum}</p>
         <br />
-        {user && emailSecondly.includes(user.email) && (
+        {user && emailSecondly.includes(user.email)(
           <Button
             type="primary"
             style={{ backgroundColor: "green", margin: "10px" }}
