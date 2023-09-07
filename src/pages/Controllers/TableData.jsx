@@ -5,7 +5,7 @@ import { Button, Modal, message } from "antd";
 // auth
 import { useAuth0 } from '@auth0/auth0-react';
 
-const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
+const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com", "logistica.inducor@gmail.com"]
 
 const TableData = (props) => {
   const { user } = useAuth0();
@@ -65,7 +65,7 @@ const TableData = (props) => {
 
   const handleSelectedRowsStatus = (state) => {
     let data = state.selectedRows.filter(object => object.condition === "COBRAR")
-      .map(object => [object.order_id, object.total]);
+      .map(object => [object.order_id, object.total, user.email]);
 
     if (data.length < 2) {
       setDisabledButton(true)
