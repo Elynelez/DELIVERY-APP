@@ -14,7 +14,7 @@ const TableData = (props) => {
   const [dateRange, setDateRange] = useState(null);
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
   const [dataStatus, setDataStatus] = useState([])
-  const [disabledButton, setDisabledButton] = useState(false)
+  const [disabledButton, setDisabledButton] = useState(true)
 
   const filteredItems = props.data.filter((item) => {
     const containsFilterText =
