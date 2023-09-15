@@ -15,7 +15,7 @@ import ReviewOrders from './pages/SecondUser/ReviewOrders';
 import DefaultInfo from './pages/DefaultInfo';
 // import { PhaserGame } from './pages/PhaserGame';
 
-const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com", "mysql.ducor@gmail.com"]
+const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
 
 
@@ -26,16 +26,16 @@ function App() {
   switch (true) {
     case isAuthenticated && emailPrincipal.includes(user.email):
       return (<Router>
-        {/* {JSON.stringify(user)} "Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", */ }
+        {/* {JSON.stringify(user)} */ }
         <div className='flex'>
-          <Sidebar couriers={["Juano"]} />
+          <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Juano"]} />
           <div className='content'>
             <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
             <Routes>
               <Route exact={true} path="/" Component={Delivery} />
               <Route exact={true} path="/ExternalService" Component={ExternalService} />
               <Route exact={true} path="/Mensajeros/:id" Component={TableDelivery} />
-              {/* <Route exact={true} path="/LastOrders" Component={LastOrders} /> */}
+              <Route exact={true} path="/LastOrders" Component={LastOrders} />
             </Routes>
           </div>
         </div>

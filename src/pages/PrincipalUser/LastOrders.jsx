@@ -4,7 +4,7 @@ import TableData from "../Controllers/TableData";
 import { ModalData, ReviewModal, EditModal } from "../Controllers/Modal";
 import { useAuth0 } from '@auth0/auth0-react';
 
-const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com", "mysql.ducor@gmail.com"]
+const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 
 const LastOrders = () => {
   const { user } = useAuth0();
