@@ -13,6 +13,7 @@ import Delivery from './pages/PrincipalUser/Delivery';
 import LastOrders from './pages/PrincipalUser/LastOrders';
 import ReviewOrders from './pages/SecondUser/ReviewOrders';
 import DefaultInfo from './pages/DefaultInfo';
+// import { PhaserGame } from './pages/PhaserGame';
 
 const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
@@ -25,9 +26,9 @@ function App() {
   switch (true) {
     case isAuthenticated && emailPrincipal.includes(user.email):
       return (<Router>
-        {/* {JSON.stringify(user)} */}
+        {/* {JSON.stringify(user)} "Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", */ }
         <div className='flex'>
-          <Sidebar couriers={["Brayan", "Omar", "Edgar", "Jairo", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Juano"]} />
+          <Sidebar couriers={["Juano"]} />
           <div className='content'>
             <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
             <Routes>

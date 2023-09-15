@@ -7,7 +7,7 @@ import { ModalData, EditModal } from "../Controllers/Modal";
 import { useAuth0 } from '@auth0/auth0-react';
 import { Modal, message } from 'antd';
 
-const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
+const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com", "mysql.ducor@gmail.com"]
 
 const TableDelivery = () => {
   const { user } = useAuth0();
