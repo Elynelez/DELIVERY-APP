@@ -12,7 +12,8 @@ import ExternalService from './pages/PrincipalUser/ExternalService';
 import Delivery from './pages/PrincipalUser/Delivery';
 import LastOrders from './pages/PrincipalUser/LastOrders';
 import ReviewOrders from './pages/SecondUser/ReviewOrders';
-import DefaultInfo from './pages/DefaultInfo';
+import DefaultInfo from './pages/DefaultUsers/DefaultInfo';
+import Dashboard from './pages/DefaultUsers/Dashboard';
 // import { PhaserGame } from './pages/PhaserGame';
 
 const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
@@ -58,7 +59,7 @@ function App() {
       return (
         <div>
           <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
-          <DefaultInfo />
+          <Dashboard />
         </div>
       )
   }
