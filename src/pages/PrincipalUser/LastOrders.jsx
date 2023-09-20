@@ -3,7 +3,6 @@ import { Button, Menu, Spin } from "antd"
 import TableData from "../Controllers/TableData";
 import { ModalData, ReviewModal, EditModal } from "../Controllers/Modal";
 import { useAuth0 } from '@auth0/auth0-react';
-import { ColumnFilter } from "../Controllers/ColumnFilter";
 
 const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 
@@ -83,15 +82,15 @@ const LastOrders = () => {
   };
 
   const columns = [
-    { name: <div>Fecha desp.<ColumnFilter /></div>, selector: "date_generate", sortable: true },
-    { name: <div>Código<ColumnFilter /></div>, selector: "code", sortable: true },
-    { name: <div>Mensajero<ColumnFilter /></div>, selector: "coursier", sortable: true },
-    { name: <div>Cliente<ColumnFilter /></div>, selector: "client", sortable: true },
-    { name: <div>Vendedor<ColumnFilter /></div>, selector: "seller", sortable: true },
-    { name: <div>Condición<ColumnFilter /></div>, selector: "condition", sortable: true },
-    { name: <div>Valor<ColumnFilter /></div>, selector: "total", sortable: true },
+    { name: 'Fecha desp.', selector: "date_generate", sortable: true },
+    { name: 'Código', selector: "code", sortable: true},
+    { name: 'Mensajero', selector: "coursier", sortable: true },
+    { name: 'Cliente', selector: "client", sortable: true },
+    { name: 'Vendedor', selector: "seller", sortable: true },
+    { name: 'Condición', selector: "condition", sortable: true },
+    { name: 'Valor', selector: "total", sortable: true },
     {
-      name: <div>Estado<ColumnFilter /></div>, selector: 'status', sortable: true, cell: row => (
+      name: 'Estado', selector: 'status', sortable: true, cell: row => (
         <div style={{ color: statusColorMap[row.status] || 'black' }}>
           {row.status}
         </div>

@@ -1,14 +1,20 @@
 import React from "react";
 import { Input } from "antd";
 
-export const ColumnFilter = ({ onFilter }) => (
-    <>
-        <Input
-            style={{ width: "100%" }}
-            // id="search"
-            // type="text"
-            // placeholder="Filtrar datos"
-            // onChange={onFilter}
-        />
-    </>
-);
+const ColumnFilter = ({ column, onFilter }) => {
+  const handleFilterChange = (e) => {
+    const value = e.target.value;
+    onFilter(value, column.selector);
+  };
+
+  return (
+    <Input
+      style={{ width: "100%" }}
+      placeholder={`Filter ${column.name}`}
+      onChange={handleFilterChange}
+    />
+  );
+};
+
+export default ColumnFilter;
+

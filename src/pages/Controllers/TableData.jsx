@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from "react";
 import DataTable from "react-data-table-component";
 import FilterComponent from "./FilterComponent";
+import ColumnFilter from './ColumnFilter';
 import { Button, Modal, message } from "antd";
-// auth
 import { useAuth0 } from '@auth0/auth0-react';
 
-const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com", "logistica.inducor@gmail.com"]
+const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com", "logistica.inducor@gmail"];
 
 const TableData = (props) => {
   const { user } = useAuth0();
@@ -13,22 +13,41 @@ const TableData = (props) => {
   const [filterText, setFilterText] = useState("");
   const [dateRange, setDateRange] = useState(null);
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
-  const [dataStatus, setDataStatus] = useState([])
-  const [disabledButton, setDisabledButton] = useState(true)
+  const [dataStatus, setDataStatus] = useState([]);
+  const [disabledButton, setDisabledButton] = useState(true);
+  const [columns, setColumns] = useState({});
 
-  const filteredItems = props.data.filter((item) => {
-    const containsFilterText =
-      JSON.stringify(item)
-        .toLowerCase()
-        .indexOf(filterText.toLowerCase()) !== -1;
+  const handleFilterChange = (value, selector) => {
+    const newFilters = { ...columns, [selector]: value };
+    setColumns(newFilters);
+  };
 
-    const dateInRange = (date) =>
-      !dateRange || (date >= dateRange[0] && date <= dateRange[1]);
+  const newColumns = props.columns.map((column) => ({
+    ...column,
+    name: <div>{column.name}<ColumnFilter column={column} onFilter={handleFilterChange} /></div>,
+  }));
 
-    const itemDate = new Date(item.date_generate);
+  const applyFilters = (item, filterText, dateRange, columns) => {
+    const containsFilterText = JSON.stringify(item).toLowerCase().includes(filterText.toLowerCase());
+    const dateInRange = !dateRange || (new Date(item.date_generate) >= dateRange[0] && new Date(item.date_generate) <= dateRange[1]);
+    
+    const columnFiltersPassed = Object.keys(columns).every(selector => {
+      const filterValue = columns[selector];
+      if (!filterValue) return true;
+  
+      const itemValue = item[selector];
+  
+      if (isNaN(filterValue)) {
+        return itemValue.toLocaleString().toLowerCase().includes(filterValue.toLocaleString().toLowerCase());
+      } else {
+        return parseFloat(itemValue) >= parseFloat(filterValue);
+      }
+    });
+  
+    return containsFilterText && dateInRange && columnFiltersPassed;
+  };
 
-    return containsFilterText && dateInRange(itemDate);
-  });
+  const filteredItems = props.data.filter(item => applyFilters(item, filterText, dateRange, columns));
 
   const subHeaderComponent = useMemo(() => {
     const handleClear = () => {
@@ -52,38 +71,14 @@ const TableData = (props) => {
     );
   }, [filterText, resetPaginationToggle, dateRange]);
 
-  const handleSelectedRowsChange = (state) => {
-    let sum = state.selectedRows.reduce(
-      (acc, object) =>
-        acc + (object.total === "" ? 0 : parseFloat(object.total)),
-      0
-    );
-    setTotalSum(
-      sum.toLocaleString("es-ES", { style: "currency", currency: "COP" })
-    );
-  };
-
-  const handleSelectedRowsStatus = (state) => {
-    let data = state.selectedRows.filter(object => object.condition === "COBRAR")
-      .map(object => [object.order_id, object.total, user.email]);
-
-    if (data.length < 2) {
-      setDisabledButton(true)
-    } else {
-      setDisabledButton(false)
-    }
-
-    setDataStatus(data)
-  }
-
   const updateMultipleStatus = () => {
     Modal.confirm({
       title: '¿Seguro que marcar como completos estos pedidos?',
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
-        console.log(dataStatus)
-        message.info('unos momentos')
-        props.setLoading(true)
+        console.log(dataStatus);
+        message.info('unos momentos');
+        props.setLoading(true);
         fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?massiveStatus", {
           redirect: "follow",
           method: 'POST',
@@ -95,22 +90,32 @@ const TableData = (props) => {
           .then(response => response.json())
           .then(data => {
             message.success('Contenido actualizado exitosamente');
-            console.log(data)
-            props.setReloadData(true)
+            console.log(data);
+            props.setReloadData(true);
           })
           .catch(error => {
             console.error('Error fetching data:', error);
-            message.info('no se pudo completar la operación')
+            message.info('no se pudo completar la operación');
           });
       },
     });
+  };
 
-  }
+  const handleSelectedRowsChange = (state) => {
+    let sum = state.selectedRows.reduce((acc, object) => acc + (object.total === "" ? 0 : parseFloat(object.total)), 0);
+    setTotalSum(sum.toLocaleString("es-ES", { style: "currency", currency: "COP" }));
+  };
+
+  const handleSelectedRowsStatus = (state) => {
+    let data = state.selectedRows.filter(object => object.condition === "COBRAR").map(object => [object.order_id, object.total, user.email]);
+    setDisabledButton(data.length < 2);
+    setDataStatus(data);
+  };
 
   const selectedRows = (state) => {
-    handleSelectedRowsChange(state)
-    handleSelectedRowsStatus(state)
-  }
+    handleSelectedRowsChange(state);
+    handleSelectedRowsStatus(state);
+  };
 
   return (
     <>
@@ -127,11 +132,11 @@ const TableData = (props) => {
             Corroborar masivo
           </Button>
         )}
-
       </h4>
+      
       <DataTable
-        title="últimas vueltas"
-        columns={props.columns}
+        title="Últimas vueltas"
+        columns={newColumns}
         data={filteredItems}
         pagination
         selectableRows

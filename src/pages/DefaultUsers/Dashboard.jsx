@@ -6,12 +6,15 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [tableData, setTableData] = useState([]);
 
+    setTimeout(() => {
+        setLoading(false)
+    }, 8000)
+
     useEffect(() => {
         fetch("links.json")
             .then((response) => response.json())
             .then((data) => {
                 setTableData(data);
-                setLoading(false);
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, []);

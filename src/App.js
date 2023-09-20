@@ -12,7 +12,7 @@ import ExternalService from './pages/PrincipalUser/ExternalService';
 import Delivery from './pages/PrincipalUser/Delivery';
 import LastOrders from './pages/PrincipalUser/LastOrders';
 import ReviewOrders from './pages/SecondUser/ReviewOrders';
-import DefaultInfo from './pages/DefaultUsers/DefaultInfo';
+// import DefaultInfo from './pages/DefaultUsers/DefaultInfo';
 import Dashboard from './pages/DefaultUsers/Dashboard';
 // import { PhaserGame } from './pages/PhaserGame';
 
@@ -29,7 +29,7 @@ function App() {
       return (<Router>
         {/* {JSON.stringify(user)} */ }
         <div className='flex'>
-          <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Juano"]} />
+          <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Juano"]} />
           <div className='content'>
             <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
             <Routes>
