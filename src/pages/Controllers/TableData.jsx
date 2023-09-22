@@ -5,8 +5,6 @@ import ColumnFilter from './ColumnFilter';
 import { Button, Modal, message } from "antd";
 import { useAuth0 } from '@auth0/auth0-react';
 
-const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com", "logistica.inducor@gmail"];
-
 const TableData = (props) => {
   const { user } = useAuth0();
   const [totalSum, setTotalSum] = useState(0);
@@ -30,20 +28,20 @@ const TableData = (props) => {
   const applyFilters = (item, filterText, dateRange, columns) => {
     const containsFilterText = JSON.stringify(item).toLowerCase().includes(filterText.toLowerCase());
     const dateInRange = !dateRange || (new Date(item.date_generate) >= dateRange[0] && new Date(item.date_generate) <= dateRange[1]);
-    
+
     const columnFiltersPassed = Object.keys(columns).every(selector => {
       const filterValue = columns[selector];
       if (!filterValue) return true;
-  
+
       const itemValue = item[selector];
-  
+
       if (isNaN(filterValue)) {
         return itemValue.toLocaleString().toLowerCase().includes(filterValue.toLocaleString().toLowerCase());
       } else {
         return parseFloat(itemValue) >= parseFloat(filterValue);
       }
     });
-  
+
     return containsFilterText && dateInRange && columnFiltersPassed;
   };
 
@@ -76,7 +74,6 @@ const TableData = (props) => {
       title: '¿Seguro que marcar como completos estos pedidos?',
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
-        console.log(dataStatus);
         message.info('unos momentos');
         props.setLoading(true);
         fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?massiveStatus", {
@@ -123,17 +120,15 @@ const TableData = (props) => {
         Total sumado: $
         <p style={{ display: "inline-block" }}>{totalSum}</p>
         <br />
-        {user && emailSecondly.includes(user.email) && (
-          <Button
-            type="primary"
-            style={{ backgroundColor: "green", margin: "10px" }}
-            onClick={() => { updateMultipleStatus() }}
-            disabled={disabledButton}>
-            Corroborar masivo
-          </Button>
-        )}
+        <Button
+          type="primary"
+          style={{ backgroundColor: "green", margin: "10px" }}
+          onClick={() => { updateMultipleStatus() }}
+          disabled={disabledButton}>
+          Corroborar masivo
+        </Button>
       </h4>
-      
+
       <DataTable
         title="Últimas vueltas"
         columns={newColumns}

@@ -14,7 +14,6 @@ import LastOrders from './pages/PrincipalUser/LastOrders';
 import ReviewOrders from './pages/SecondUser/ReviewOrders';
 // import DefaultInfo from './pages/DefaultUsers/DefaultInfo';
 import Dashboard from './pages/DefaultUsers/Dashboard';
-// import { PhaserGame } from './pages/PhaserGame';
 
 const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
