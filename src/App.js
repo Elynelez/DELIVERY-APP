@@ -28,7 +28,7 @@ function App() {
       return (<Router>
         {/* {JSON.stringify(user)} */ }
         <div className='flex'>
-          <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Juano"]} />
+          <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
           <div className='content'>
             <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
             <Routes>
