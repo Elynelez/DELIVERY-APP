@@ -141,6 +141,7 @@ const TableData = (props) => {
         subHeaderComponent={subHeaderComponent}
         responsive
         fixedHeaderScrollHeight="300px"
+        paginationRowsPerPageOptions={[10, 20, 50, 100]}   
       />
     </>
   );
