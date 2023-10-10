@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Button, Spin, Menu } from "antd"
 import { useParams } from 'react-router-dom';
 import TableData from "../Controllers/TableData";
-import { ModalData, EditModal } from "../Controllers/Modal";
+import { ModalData, EditModal, ReviewModal } from "../Controllers/Modal";
 // auth
 import { useAuth0 } from '@auth0/auth0-react';
 import { Modal, message } from 'antd';
 
 const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
+const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
 
 const TableDelivery = () => {
   const { user } = useAuth0();
@@ -174,6 +175,11 @@ const TableDelivery = () => {
               <ModalData arrayData={[{ title: "fecha de entrega", value: Date(row.date_delivery) }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
             </Menu.Item>
           </Menu.SubMenu>
+          {user && emailSecondly.includes(user.email) && (
+            <Menu.Item key="4">
+              <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, total: row.total, money_delivered: row.money_delivered, status: row.status, disabled: (row.status === "COMPLETO (FR)" || row.status === "INCOMPLETO") ? false : true }} />
+            </Menu.Item>
+          )}
         </Menu>
       )
     }
@@ -200,7 +206,7 @@ const TableDelivery = () => {
               </Button>
             </div>
           </div>
-          <TableData columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading}/>
+          <TableData columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading} />
         </>
       )}
     </div>

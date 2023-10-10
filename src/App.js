@@ -11,7 +11,7 @@ import TableDelivery from './pages/PrincipalUser/Table';
 import ExternalService from './pages/PrincipalUser/ExternalService';
 import Delivery from './pages/PrincipalUser/Delivery';
 import LastOrders from './pages/PrincipalUser/LastOrders';
-import ReviewOrders from './pages/SecondUser/ReviewOrders';
+// import ReviewOrders from './pages/SecondUser/ReviewOrders';
 // import DefaultInfo from './pages/DefaultUsers/DefaultInfo';
 import Dashboard from './pages/DefaultUsers/Dashboard';
 
@@ -26,7 +26,6 @@ function App() {
   switch (true) {
     case isAuthenticated && emailPrincipal.includes(user.email):
       return (<Router>
-        {/* {JSON.stringify(user)} */ }
         <div className='flex'>
           <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
           <div className='content'>
@@ -44,14 +43,16 @@ function App() {
     case isAuthenticated && emailSecondly.includes(user.email):
       return (
         <Router>
-          <ReviewOrders>
+          <div className='flex'>
+            <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
             <div className='content'>
               <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
               <Routes>
                 <Route exact={true} path="/" Component={LastOrders} />
+                <Route exact={true} path="/Mensajeros/:id" Component={TableDelivery} />
               </Routes>
             </div>
-          </ReviewOrders>
+          </div>
         </Router>
       )
     default:
