@@ -174,12 +174,12 @@ const TableDelivery = () => {
             <Menu.Item key="3">
               <ModalData arrayData={[{ title: "fecha de entrega", value: Date(row.date_delivery) }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
             </Menu.Item>
+            {user && emailSecondly.includes(user.email) && (
+              <Menu.Item key="4">
+                <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, total: row.total, money_delivered: row.money_delivered, status: row.status, disabled: (row.status === "COMPLETO (FR)" || row.status === "INCOMPLETO") ? false : true }} />
+              </Menu.Item>
+            )}
           </Menu.SubMenu>
-          {user && emailSecondly.includes(user.email) && (
-            <Menu.Item key="4">
-              <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, total: row.total, money_delivered: row.money_delivered, status: row.status, disabled: (row.status === "COMPLETO (FR)" || row.status === "INCOMPLETO") ? false : true }} />
-            </Menu.Item>
-          )}
         </Menu>
       )
     }
