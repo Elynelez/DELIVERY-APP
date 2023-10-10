@@ -64,9 +64,9 @@ body{
   color: white;
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1400px) {
   .flex {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
   .sidebar{
     width: 100%;
