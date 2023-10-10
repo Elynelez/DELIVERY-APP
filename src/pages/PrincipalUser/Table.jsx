@@ -164,13 +164,15 @@ const TableDelivery = () => {
         <Menu defaultSelectedKeys={['1']} style={{ background: "none" }}>
           <Menu.SubMenu title="Acciones">
             {user && emailPrincipal.includes(user.email) && (
-              <Menu.Item key="1">
-                <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(row.order_id)}>Borrar</Button>
-              </Menu.Item>
+              <>
+                <Menu.Item key="1">
+                  <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(row.order_id)}>Borrar</Button>
+                </Menu.Item>
+                <Menu.Item key="2">
+                  <EditModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, date_delivery: (row.status === "REPROGRAMADO" || row.status === "COMPLETADO" || row.status === "COMPLETO (FR)") ? true : false, zone: row.zone, code: row.code, coursier: row.coursier, method: row.method, money_delivered: row.money_delivered }} />
+                </Menu.Item>
+              </>
             )}
-            <Menu.Item key="2">
-              <EditModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, date_delivery: (row.status === "REPROGRAMADO" || row.status === "COMPLETADO" || row.status === "COMPLETO (FR)") ? true : false, zone: row.zone, code: row.code, coursier: row.coursier, method: row.method, money_delivered: row.money_delivered }} />
-            </Menu.Item>
             <Menu.Item key="3">
               <ModalData arrayData={[{ title: "fecha de entrega", value: Date(row.date_delivery) }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
             </Menu.Item>
