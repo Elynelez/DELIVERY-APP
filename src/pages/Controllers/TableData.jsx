@@ -27,7 +27,7 @@ const TableData = (props) => {
 
   const applyFilters = (item, filterText, dateRange, columns) => {
     const containsFilterText = JSON.stringify(item).toLowerCase().includes(filterText.toLowerCase());
-    const dateInRange = !dateRange || (new Date(item.date_generate) >= dateRange[0] && new Date(item.date_generate) <= dateRange[1]);
+    const dateInRange = !dateRange || (new Date(item.date_generate_ISO) >= dateRange[0] && new Date(item.date_generate_ISO) <= dateRange[1]);
 
     const columnFiltersPassed = Object.keys(columns).every(selector => {
       const filterValue = columns[selector];
