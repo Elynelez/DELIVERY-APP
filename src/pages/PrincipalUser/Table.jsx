@@ -174,7 +174,7 @@ const TableDelivery = () => {
               </>
             )}
             <Menu.Item key="3">
-              <ModalData arrayData={[{ title: "fecha de entrega", value: Date(row.date_delivery) }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
+              <ModalData arrayData={[{ title: "fecha de entrega", value: row.date_delivery }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
             </Menu.Item>
             {user && emailSecondly.includes(user.email) && (
               <Menu.Item key="4">
