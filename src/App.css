@@ -27,9 +27,17 @@ body{
 }
 
 .sidebar{
+  padding-top: 15px;
+  text-align: center;
   width: 15rem;
-  height: calc(100vh - 52px);
+  height: calc(160vh - 52px);
   border-right: 1px solid var(--gray);
+}
+
+.sidebar.close{
+  width: 15rem;
+  position: absolute;
+  z-index: 1;
 }
 
 .sidebar ul{
@@ -64,8 +72,22 @@ body{
   color: white;
 }
 
+.button-burger{
+  background: gray; 
+  margin: 4px;
+  display: none
+}
+
 @media screen and (max-width: 1500px) {
-  .flex {
+  .button-burger{
+    display: block;
+  }
+  .sidebar{
+    width: 0rem;
+    transition: all 0.5s ease;
+    z-index: -1;
+  }
+  /* .flex {
     flex-direction: column;
   }
   .sidebar{
@@ -75,5 +97,5 @@ body{
   }
   .sidebar ul{
     display: flex;
-  }
+  } */
 }

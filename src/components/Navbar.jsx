@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from "antd";
 import {
   Collapse,
   Navbar,
@@ -18,11 +19,24 @@ const NavbarNavigation = (props) =>{
   const { logout, loginWithRedirect } = useAuth0()
   const toggle = () => setIsOpen(!isOpen);
 
+  const showSidebar = (e) => {
+    let tag = e.target.parentNode?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
+    if (tag) {
+      let sidebar = tag.querySelector(".sidebar");
+      if (sidebar) {
+        sidebar.classList.toggle("close");
+      }
+    }
+  };
+  
 
   return (
     <div>
       <Navbar color='light' light expand="md">
-        <NavbarBrand href="/" className="text-primary"><img alt="logo" src="https://static.wixstatic.com/media/06687e_4ce80914c2064ba3b0f8b3d0962d6577~mv2.png/v1/fill/w_406,h_109,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/06687e_4ce80914c2064ba3b0f8b3d0962d6577~mv2.png" width='200px'/></NavbarBrand>
+        <Button type="primary"className='button-burger' onClick={(event)=>{showSidebar(event.nativeEvent)}}>&#9776;</Button>
+        <NavbarBrand href="/" className="text-primary">
+          <img alt="logo" src="https://static.wixstatic.com/media/06687e_4ce80914c2064ba3b0f8b3d0962d6577~mv2.png/v1/fill/w_406,h_109,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/06687e_4ce80914c2064ba3b0f8b3d0962d6577~mv2.png" width='200px'/>
+        </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ms-auto" navbar>
@@ -53,7 +67,9 @@ const NavbarNavigation = (props) =>{
             </UncontrolledDropdown>
           </Nav>
         </Collapse>
-        <NavbarBrand><img alt="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARMAAAC3CAMAAAAGjUrGAAAAA1BMVEX///+nxBvIAAAAR0lEQVR4nO3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPBgxUwAAU+n3sIAAAAASUVORK5CYII=" style={{opacity: 0, width:'60px'}}/></NavbarBrand>
+        <NavbarBrand>
+          <img alt="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARMAAAC3CAMAAAAGjUrGAAAAA1BMVEX///+nxBvIAAAAR0lEQVR4nO3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPBgxUwAAU+n3sIAAAAASUVORK5CYII=" style={{opacity: 0, width:'60px'}}/>
+        </NavbarBrand>
       </Navbar>
     </div>
   );

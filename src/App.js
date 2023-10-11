@@ -25,20 +25,21 @@ function App() {
 
   switch (true) {
     case isAuthenticated && emailPrincipal.includes(user.email):
-      return (<Router>
-        <div className='flex'>
-          <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
-          <div className='content'>
-            <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
-            <Routes>
-              <Route exact={true} path="/" Component={Delivery} />
-              <Route exact={true} path="/ExternalService" Component={ExternalService} />
-              <Route exact={true} path="/Mensajeros/:id" Component={TableDelivery} />
-              <Route exact={true} path="/LastOrders" Component={LastOrders} />
-            </Routes>
+      return (
+        <Router>
+          <div className='flex'>
+            <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
+            <div className='content'>
+              <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
+              <Routes>
+                <Route exact={true} path="/" Component={Delivery} />
+                <Route exact={true} path="/ExternalService" Component={ExternalService} />
+                <Route exact={true} path="/Mensajeros/:id" Component={TableDelivery} />
+                <Route exact={true} path="/LastOrders" Component={LastOrders} />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </Router>
+        </Router>
       )
     case isAuthenticated && emailSecondly.includes(user.email):
       return (
