@@ -1,6 +1,6 @@
 import React from "react"
 
-const Delivery = () =>{
+const DeliveryApp = () =>{
     return(
         <div className="iframe-container">
             <iframe
@@ -12,4 +12,4 @@ const Delivery = () =>{
     )
 }
 
-export default Delivery
+export default DeliveryApp

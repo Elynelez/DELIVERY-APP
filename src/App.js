@@ -7,16 +7,16 @@ import './App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 
 // pages
-import TableDelivery from './pages/PrincipalUser/Table';
-import ExternalService from './pages/PrincipalUser/ExternalService';
-import Delivery from './pages/PrincipalUser/Delivery';
-import LastOrders from './pages/PrincipalUser/LastOrders';
-// import ReviewOrders from './pages/SecondUser/ReviewOrders';
-// import DefaultInfo from './pages/DefaultUsers/DefaultInfo';
-import Dashboard from './pages/DefaultUsers/Dashboard';
+import CoursiersTable from './pages/DeliveryPages/CoursiersTable';
+import ExternalServiceApp from './pages/DeliveryPages/ExternalServiceApp';
+import DeliveryApp from './pages/DeliveryPages/DeliveryApp';
+import AllOrders from './pages/DeliveryPages/AllOrders';
+import Dashboard from './pages/DefaultPages/Dashboard';
+// import SellerTable from './pages/SellerPages/SellerTable';
 
-const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
-const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
+const logisticEmails = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
+const bossEmails = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
+// const sellerEmails = []
 
 
 
@@ -24,7 +24,7 @@ function App() {
   const { isAuthenticated, user } = useAuth0();
 
   switch (true) {
-    case isAuthenticated && emailPrincipal.includes(user.email):
+    case isAuthenticated && logisticEmails.includes(user.email):
       return (
         <Router>
           <div className='flex'>
@@ -32,16 +32,16 @@ function App() {
             <div className='content'>
               <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
               <Routes>
-                <Route exact={true} path="/" Component={Delivery} />
-                <Route exact={true} path="/ExternalService" Component={ExternalService} />
-                <Route exact={true} path="/Mensajeros/:id" Component={TableDelivery} />
-                <Route exact={true} path="/LastOrders" Component={LastOrders} />
+                <Route exact={true} path="/" Component={DeliveryApp} />
+                <Route exact={true} path="/ExternalServiceApp" Component={ExternalServiceApp} />
+                <Route exact={true} path="/Mensajeros/:id" Component={CoursiersTable} />
+                <Route exact={true} path="/AllOrders" Component={AllOrders} />
               </Routes>
             </div>
           </div>
         </Router>
       )
-    case isAuthenticated && emailSecondly.includes(user.email):
+    case isAuthenticated && bossEmails.includes(user.email):
       return (
         <Router>
           <div className='flex'>
@@ -49,8 +49,8 @@ function App() {
             <div className='content'>
               <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
               <Routes>
-                <Route exact={true} path="/" Component={LastOrders} />
-                <Route exact={true} path="/Mensajeros/:id" Component={TableDelivery} />
+                <Route exact={true} path="/" Component={AllOrders} />
+                <Route exact={true} path="/Mensajeros/:id" Component={CoursiersTable} />
               </Routes>
             </div>
           </div>

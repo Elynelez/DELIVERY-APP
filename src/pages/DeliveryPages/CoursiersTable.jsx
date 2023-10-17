@@ -10,7 +10,7 @@ import { Modal, message } from 'antd';
 const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
 
-const TableDelivery = () => {
+const CoursiersTable = () => {
   const { user } = useAuth0();
   const { id } = useParams();
   const [data, setData] = useState([]);
@@ -215,4 +215,4 @@ const TableDelivery = () => {
   );
 };
 
-export default TableDelivery;
+export default CoursiersTable;

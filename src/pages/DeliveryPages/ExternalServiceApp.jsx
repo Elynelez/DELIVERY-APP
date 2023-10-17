@@ -1,6 +1,6 @@
 import React from "react"
 
-const ExternalService = () =>{
+const ExternalServiceApp = () =>{
     return(
         <div className="iframe-container">
             <iframe
@@ -12,4 +12,4 @@ const ExternalService = () =>{
     )
 }
 
-export default ExternalService
+export default ExternalServiceApp

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button, Menu, Spin } from "antd"
 import TableData from "../Controllers/TableData";
-import { ModalData, ReviewModal, EditModal } from "../Controllers/Modal";
 import { useAuth0 } from '@auth0/auth0-react';
 
 const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 
-const LastOrders = () => {
+const SellerTable = () => {
   const { user } = useAuth0();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true)
@@ -14,7 +13,7 @@ const LastOrders = () => {
 
   const loadData = () => {
     setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec")
+    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec")
       .then(response => response.json())
       .then(parsedData => {
         setData(parsedData);
@@ -35,7 +34,7 @@ const LastOrders = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec")
+    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec")
       .then(response => response.json())
       .then(parsedData => {
         setData(parsedData);
@@ -71,56 +70,20 @@ const LastOrders = () => {
     document.body.removeChild(link);
   };
 
-  const statusColorMap = {
-    'EN RUTA': 'blue',
-    'REPROGRAMADO': 'darkorange',
-    'ENTREGADO': 'green',
-    'ANULADO': 'red',
-    'PENDIENTE': '#dccd30',
-    'COMPLETO': 'gray',
-    'INCOMPLETO': 'yellow',
-  };
+  
 
   const columns = [
     { name: 'Fecha desp.', selector: "date_generate", sortable: true },
-    { name: 'Código', selector: "code", sortable: true},
-    { name: 'Mensajero', selector: "coursier", sortable: true },
+    { name: 'Código', selector: "order_id", sortable: true},
     { name: 'Cliente', selector: "client", sortable: true },
     { name: 'Vendedor', selector: "seller", sortable: true },
     { name: 'Dirección', selector: "address", sortable: true },
     { name: 'Condición', selector: "condition", sortable: true },
-    { name: 'Valor', selector: "total", sortable: true },
-    {
-      name: 'Estado', selector: 'status', sortable: true, cell: row => (
-        <div style={{ color: statusColorMap[row.status] || 'black' }}>
-          {row.status}
-        </div>
-      )
-    },
-    {
-      name: 'Acciones', button: true, cell: row => (
-        <Menu defaultSelectedKeys={['1']} style={{ background: "none" }}>
-          <Menu.SubMenu title="Acciones">
-            <Menu.Item key="1">
-              <ModalData arrayData={[{ title: "fecha de entrega", value: row.date_delivery }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
-            </Menu.Item>
-            {user && emailPrincipal.includes(user.email) ? (
-              <Menu.Item key="2">
-                <EditModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, date_delivery: (row.status === "REPROGRAMADO" || row.status === "COMPLETADO" || row.status === "COMPLETO (FR)") ? true : false, zone: row.zone, code: row.code, coursier: row.coursier, method: row.method, money_delivered: row.money_delivered }} />
-              </Menu.Item>
-            ) : (
-              <Menu.Item key="3">
-                <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: row.order_id, total: row.total, money_delivered: row.money_delivered, status: row.status, disabled: (row.status === "COMPLETO (FR)" || row.status === "INCOMPLETO") ? false : true }} />
-              </Menu.Item>
-            )}
-          </Menu.SubMenu>
-        </Menu>
-      )
-    }
+    { name: 'Valor', selector: "total_price", sortable: true },
   ]
 
-  const tableData = data.map(row => [row.date_generate, row.date_delivery, row.coursier, row.zone, row.code, row.client, row.address, row.seller, row.condition, row.method, row.total, JSON.parse(row.notation).map(obj => obj.notation).join(', '), row.money_delivered]);
-  tableData.reverse().unshift(["FECHA DESPACHO", "FECHA ENTREGA", "MENSAJERO", "ZONA", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO"])
+  const tableData = data.map(row => [row.date_generate, row.order_id, row.client, row.address, row.seller, row.condition, row.method, row.total_price]);
+  tableData.reverse().unshift(["FECHA GENERACIÓN", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR"])
   return (
     <div className="container py-5">
 
@@ -132,7 +95,7 @@ const LastOrders = () => {
         <>
           <div className="row align-items-center mb-4">
             <div className="col">
-              <h1 className="display-4">Últimos detalles</h1>
+              <h1 className="display-4">Mis ventas</h1>
             </div>
             <div className="col-auto">
               <Button type="primary" onClick={() => downloadTable(tableData, "complete delivery")}>
@@ -147,4 +110,4 @@ const LastOrders = () => {
   );
 };
 
-export default LastOrders;
+export default SellerTable;

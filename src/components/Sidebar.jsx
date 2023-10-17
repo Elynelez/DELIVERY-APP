@@ -4,8 +4,8 @@ import { Menu, Button } from 'antd';
 
 // auth
 import { useAuth0 } from '@auth0/auth0-react';
-const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
-// const emailSecondly = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
+const logisticEmails = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
+const bossEmails = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
 
 const Sidebar = (props) => {
     const { isAuthenticated, user } = useAuth0();
@@ -13,16 +13,16 @@ const Sidebar = (props) => {
     const showSidebar = (e) => {
         let tag = e.target.parentNode?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
         if (tag) {
-          let sidebar = tag.querySelector(".sidebar");
-          if (sidebar) {
-            sidebar.classList.toggle("close");
-          }
+            let sidebar = tag.querySelector(".sidebar");
+            if (sidebar) {
+                sidebar.classList.toggle("close");
+            }
         }
-      };
-      
+    };
+
 
     switch (true) {
-        case isAuthenticated && emailPrincipal.includes(user.email):
+        case isAuthenticated && logisticEmails.includes(user.email):
             return (
                 <div className="sidebar bg-light">
                     <Button type="primary" className='button-burger' onClick={(event) => { showSidebar(event.nativeEvent) }}>&#9776;</Button>
@@ -33,7 +33,7 @@ const Sidebar = (props) => {
                             </NavLink>
                         </Menu.Item>
                         <Menu.Item key="2">
-                            <NavLink to="/ExternalService" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaDeezer className='me-2' />
+                            <NavLink to="/ExternalServiceApp" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaDeezer className='me-2' />
                                 Subir Inter
                             </NavLink>
                         </Menu.Item>
@@ -49,14 +49,14 @@ const Sidebar = (props) => {
                             </Menu.SubMenu>
                         </Menu.Item>
                         <Menu.Item key="4">
-                            <NavLink to="/LastOrders" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
+                            <NavLink to="/AllOrders" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
                                 Últimos pedidos
                             </NavLink>
                         </Menu.Item>
                     </Menu>
                 </div>
             )
-        default:
+        case isAuthenticated && bossEmails.includes(user.email):
             return (
                 <div className="sidebar bg-light">
                     <Button type="primary" className='button-burger' onClick={(event) => { showSidebar(event.nativeEvent) }}>&#9776;</Button>
@@ -76,6 +76,19 @@ const Sidebar = (props) => {
                                     </Menu.Item>
                                 ))}
                             </Menu.SubMenu>
+                        </Menu.Item>
+                    </Menu>
+                </div>
+            )
+        default:
+            return (
+                <div className="sidebar bg-light">
+                    <Button type="primary" className='button-burger' onClick={(event) => { showSidebar(event.nativeEvent) }}>&#9776;</Button>
+                    <Menu defaultSelectedKeys={['1']} className='bg-light'>
+                        <Menu.Item key="1">
+                            <NavLink to="/" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
+                                Panel
+                            </NavLink>
                         </Menu.Item>
                     </Menu>
                 </div>
