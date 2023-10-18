@@ -43,7 +43,7 @@ const Sidebar = (props) => {
                         </Menu.Item>
                     </>
                 )}
-                {(isAuthenticated && bossEmails.includes(user.email)) || (isAuthenticated && logisticEmails.includes(user.email)) && (
+                {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
                     <>
                         <Menu.Item key="4">
                             <Menu.SubMenu key="4" title="Mensajeros">
