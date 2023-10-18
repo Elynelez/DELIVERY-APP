@@ -35,11 +35,9 @@ function App() {
               <>
                 <Route exact path="/DeliveryApp" element={<DeliveryApp />} />
                 <Route exact path="/ExternalServiceApp" element={<ExternalServiceApp />} />
-                <Route exact path="/Mensajeros/:id" element={<CoursiersTable />} />
-                <Route exact path="/AllOrders" element={<AllOrders />} />
               </>
             )}
-            {isAuthenticated && bossEmails.includes(user.email) && (
+            {(isAuthenticated && bossEmails.includes(user.email)) || (isAuthenticated && logisticEmails.includes(user.email)) && (
               <>
                 <Route exact path="/Mensajeros/:id" element={<CoursiersTable />} />
                 <Route exact path="/AllOrders" element={<AllOrders />} />
