@@ -3,8 +3,6 @@ import { Button, Menu, Spin } from "antd"
 import TableData from "../Controllers/TableData";
 import { useAuth0 } from '@auth0/auth0-react';
 
-const emailPrincipal = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
-
 const SellerTable = () => {
   const { user } = useAuth0();
   const [data, setData] = useState([]);
@@ -13,7 +11,7 @@ const SellerTable = () => {
 
   const loadData = () => {
     setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec")
+    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec?key="+user.email)
       .then(response => response.json())
       .then(parsedData => {
         setData(parsedData);
@@ -34,7 +32,7 @@ const SellerTable = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec")
+    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec?key="+user.email)
       .then(response => response.json())
       .then(parsedData => {
         setData(parsedData);

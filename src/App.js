@@ -12,11 +12,11 @@ import ExternalServiceApp from './pages/DeliveryPages/ExternalServiceApp';
 import DeliveryApp from './pages/DeliveryPages/DeliveryApp';
 import AllOrders from './pages/DeliveryPages/AllOrders';
 import Dashboard from './pages/DefaultPages/Dashboard';
-// import SellerTable from './pages/SellerPages/SellerTable';
+import SellerTable from './pages/SellerPages/SellerTable';
 
 const logisticEmails = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 const bossEmails = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
-// const sellerEmails = []
+const sellerEmails = ["pedidos.ducor@gmail.com"]
 
 
 
@@ -41,6 +41,11 @@ function App() {
               <>
                 <Route exact path="/Mensajeros/:id" element={<CoursiersTable />} />
                 <Route exact path="/AllOrders" element={<AllOrders />} />
+              </>
+            )}
+            {isAuthenticated && sellerEmails.includes(user.email) && (
+              <>
+                <Route exact path="/Sales" element={<SellerTable />} />
               </>
             )}
           </Routes>

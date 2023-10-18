@@ -6,6 +6,7 @@ import { Menu, Button } from 'antd';
 import { useAuth0 } from '@auth0/auth0-react';
 const logisticEmails = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 const bossEmails = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
+const sellerEmails = ["pedidos.ducor@gmail.com"]
 
 const Sidebar = (props) => {
     const { isAuthenticated, user } = useAuth0();
@@ -59,6 +60,15 @@ const Sidebar = (props) => {
                         <Menu.Item key="5">
                             <NavLink to="/AllOrders" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
                                 Últimos pedidos
+                            </NavLink>
+                        </Menu.Item>
+                    </>
+                )}
+                {isAuthenticated && sellerEmails.includes(user.email) && (
+                    <>
+                        <Menu.Item key="6">
+                            <NavLink to="/Sales" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaHome className='me-2' />
+                                Ventas
                             </NavLink>
                         </Menu.Item>
                     </>

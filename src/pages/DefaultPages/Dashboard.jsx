@@ -80,7 +80,7 @@ const Dashboard = () => {
                     <div className="main-cards">
                         <div className="card">
                             <div className="card-inner">
-                                <h3>PRODUCTOS</h3>
+                                <h3>MENSAJERIA</h3>
                                 <div>
                                     <PieChart width={400} height={400}>
                                         <Pie
