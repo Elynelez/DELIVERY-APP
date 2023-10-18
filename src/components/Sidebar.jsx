@@ -41,25 +41,9 @@ const Sidebar = (props) => {
                                 Subir Inter
                             </NavLink>
                         </Menu.Item>
-                        <Menu.Item key="4">
-                            <Menu.SubMenu key="4" title="Mensajeros">
-                                {props.couriers.map((mensajero, index) => (
-                                    <Menu.Item key={index + mensajero}>
-                                        <NavLink to={`/Mensajeros/${mensajero}`} exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
-                                            {mensajero}
-                                        </NavLink>
-                                    </Menu.Item>
-                                ))}
-                            </Menu.SubMenu>
-                        </Menu.Item>
-                        <Menu.Item key="5">
-                            <NavLink to="/AllOrders" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
-                                Últimos pedidos
-                            </NavLink>
-                        </Menu.Item>
                     </>
                 )}
-                {isAuthenticated && bossEmails.includes(user.email) && (
+                {(isAuthenticated && bossEmails.includes(user.email)) || (isAuthenticated && logisticEmails.includes(user.email)) && (
                     <>
                         <Menu.Item key="4">
                             <Menu.SubMenu key="4" title="Mensajeros">
