@@ -20,25 +20,29 @@ const Sidebar = (props) => {
         }
     };
 
-
-    switch (true) {
-        case isAuthenticated && logisticEmails.includes(user.email):
-            return (
-                <div className="sidebar bg-light">
-                    <Button type="primary" className='button-burger' onClick={(event) => { showSidebar(event.nativeEvent) }}>&#9776;</Button>
-                    <Menu defaultSelectedKeys={['1']} className='bg-light'>
-                        <Menu.Item key="1">
-                            <NavLink to="/" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaHome className='me-2' />
+    return (
+        <div className="sidebar bg-light">
+            <Button type="primary" className='button-burger' onClick={(event) => { showSidebar(event.nativeEvent) }}>&#9776;</Button>
+            <Menu defaultSelectedKeys={['1']} className='bg-light'>
+                <Menu.Item key="1">
+                    <NavLink to="/" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaHome className='me-2' />
+                        Dashboard
+                    </NavLink>
+                </Menu.Item>
+                {isAuthenticated && logisticEmails.includes(user.email) && (
+                    <>
+                        <Menu.Item key="2">
+                            <NavLink to="/DeliveryApp" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaHome className='me-2' />
                                 Crear Ruta
                             </NavLink>
                         </Menu.Item>
-                        <Menu.Item key="2">
+                        <Menu.Item key="3">
                             <NavLink to="/ExternalServiceApp" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaDeezer className='me-2' />
                                 Subir Inter
                             </NavLink>
                         </Menu.Item>
-                        <Menu.Item key="3">
-                            <Menu.SubMenu key="3" title="Mensajeros">
+                        <Menu.Item key="4">
+                            <Menu.SubMenu key="4" title="Mensajeros">
                                 {props.couriers.map((mensajero, index) => (
                                     <Menu.Item key={index + mensajero}>
                                         <NavLink to={`/Mensajeros/${mensajero}`} exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
@@ -48,26 +52,17 @@ const Sidebar = (props) => {
                                 ))}
                             </Menu.SubMenu>
                         </Menu.Item>
-                        <Menu.Item key="4">
+                        <Menu.Item key="5">
                             <NavLink to="/AllOrders" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
                                 Últimos pedidos
                             </NavLink>
                         </Menu.Item>
-                    </Menu>
-                </div>
-            )
-        case isAuthenticated && bossEmails.includes(user.email):
-            return (
-                <div className="sidebar bg-light">
-                    <Button type="primary" className='button-burger' onClick={(event) => { showSidebar(event.nativeEvent) }}>&#9776;</Button>
-                    <Menu defaultSelectedKeys={['1']} className='bg-light'>
-                        <Menu.Item key="1">
-                            <NavLink to="/" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
-                                Últimos pedidos
-                            </NavLink>
-                        </Menu.Item>
-                        <Menu.Item key="2">
-                            <Menu.SubMenu key="3" title="Mensajeros">
+                    </>
+                )}
+                {isAuthenticated && bossEmails.includes(user.email) && (
+                    <>
+                        <Menu.Item key="4">
+                            <Menu.SubMenu key="4" title="Mensajeros">
                                 {props.couriers.map((mensajero, index) => (
                                     <Menu.Item key={index + mensajero}>
                                         <NavLink to={`/Mensajeros/${mensajero}`} exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
@@ -77,23 +72,17 @@ const Sidebar = (props) => {
                                 ))}
                             </Menu.SubMenu>
                         </Menu.Item>
-                    </Menu>
-                </div>
-            )
-        default:
-            return (
-                <div className="sidebar bg-light">
-                    <Button type="primary" className='button-burger' onClick={(event) => { showSidebar(event.nativeEvent) }}>&#9776;</Button>
-                    <Menu defaultSelectedKeys={['1']} className='bg-light'>
-                        <Menu.Item key="1">
-                            <NavLink to="/" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
-                                Panel
+                        <Menu.Item key="5">
+                            <NavLink to="/AllOrders" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
+                                Últimos pedidos
                             </NavLink>
                         </Menu.Item>
-                    </Menu>
-                </div>
-            )
-    }
+                    </>
+                )}
+
+            </Menu>
+        </div>
+    )
 
 }
 

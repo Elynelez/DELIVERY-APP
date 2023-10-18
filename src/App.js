@@ -23,47 +23,33 @@ const bossEmails = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "induc
 function App() {
   const { isAuthenticated, user } = useAuth0();
 
-  switch (true) {
-    case isAuthenticated && logisticEmails.includes(user.email):
-      return (
-        <Router>
-          <div className='flex'>
-            <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
-            <div className='content'>
-              <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
-              <Routes>
-                <Route exact={true} path="/" Component={DeliveryApp} />
-                <Route exact={true} path="/ExternalServiceApp" Component={ExternalServiceApp} />
-                <Route exact={true} path="/Mensajeros/:id" Component={CoursiersTable} />
-                <Route exact={true} path="/AllOrders" Component={AllOrders} />
-              </Routes>
-            </div>
-          </div>
-        </Router>
-      )
-    case isAuthenticated && bossEmails.includes(user.email):
-      return (
-        <Router>
-          <div className='flex'>
-            <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
-            <div className='content'>
-              <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
-              <Routes>
-                <Route exact={true} path="/" Component={AllOrders} />
-                <Route exact={true} path="/Mensajeros/:id" Component={CoursiersTable} />
-              </Routes>
-            </div>
-          </div>
-        </Router>
-      )
-    default:
-      return (
-        <div>
+  return (
+    <Router>
+      <div className='flex'>
+        <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
+        <div className='content'>
           <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
-          <Dashboard />
+          <Routes>
+            <Route exact path="/" element={<Dashboard />} />
+            {isAuthenticated && logisticEmails.includes(user.email) && (
+              <>
+                <Route exact path="/DeliveryApp" element={<DeliveryApp />} />
+                <Route exact path="/ExternalServiceApp" element={<ExternalServiceApp />} />
+                <Route exact path="/Mensajeros/:id" element={<CoursiersTable />} />
+                <Route exact path="/AllOrders" element={<AllOrders />} />
+              </>
+            )}
+            {isAuthenticated && bossEmails.includes(user.email) && (
+              <>
+                <Route exact path="/Mensajeros/:id" element={<CoursiersTable />} />
+                <Route exact path="/AllOrders" element={<AllOrders />} />
+              </>
+            )}
+          </Routes>
         </div>
-      )
-  }
+      </div>
+    </Router>
+  )
 }
 
 export default App;
