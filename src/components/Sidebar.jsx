@@ -1,83 +1,209 @@
-import { NavLink } from 'react-router-dom'
-import * as FaIcons from 'react-icons/fa'
-import { Menu, Button } from 'antd';
-
-// auth
+import { React, useState } from "react";
+import { Link } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react';
+import "react-pro-sidebar/dist/css/styles.css";
+import { tokens } from "../theme.js";
+import { ProSidebar, Menu as SidebarMenu, MenuItem, SubMenu } from "react-pro-sidebar";
+import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
+import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+
 const logisticEmails = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
 const bossEmails = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
 const sellerEmails = ["pedidos.ducor@gmail.com"]
 
-const Sidebar = (props) => {
-    const { isAuthenticated, user } = useAuth0();
+const Item = ({ title, to, icon, selected, setSelected }) => {
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
+    return (
+        <MenuItem
+            active={selected === title}
+            style={{
+                color: colors.grey[100],
+            }}
+            onClick={() => setSelected(title)}
+            icon={icon}
+        >
+            <Typography>{title}</Typography>
+            <Link to={to} />
+        </MenuItem>
+    );
+};
 
-    const showSidebar = (e) => {
-        let tag = e.target.parentNode?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
-        if (tag) {
-            let sidebar = tag.querySelector(".sidebar");
-            if (sidebar) {
-                sidebar.classList.toggle("close");
-            }
-        }
-    };
+const FusionSidebar = (props) => {
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
+    const { isAuthenticated, user } = useAuth0();
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [selected, setSelected] = useState("Dashboard");
 
     return (
-        <div className="sidebar bg-light">
-            <Button type="primary" className='button-burger' onClick={(event) => { showSidebar(event.nativeEvent) }}>&#9776;</Button>
-            <Menu defaultSelectedKeys={['1']} className='bg-light'>
-                <Menu.Item key="1">
-                    <NavLink to="/" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaHome className='me-2' />
-                        Dashboard
-                    </NavLink>
-                </Menu.Item>
-                {isAuthenticated && logisticEmails.includes(user.email) && (
-                    <>
-                        <Menu.Item key="2">
-                            <NavLink to="/DeliveryApp" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaHome className='me-2' />
-                                Crear Ruta
-                            </NavLink>
-                        </Menu.Item>
-                        <Menu.Item key="3">
-                            <NavLink to="/ExternalServiceApp" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaDeezer className='me-2' />
-                                Subir Inter
-                            </NavLink>
-                        </Menu.Item>
-                    </>
-                )}
-                {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
-                    <>
-                        <Menu.Item key="4">
-                            <Menu.SubMenu key="4" title="Mensajeros">
-                                {props.couriers.map((mensajero, index) => (
-                                    <Menu.Item key={index + mensajero}>
-                                        <NavLink to={`/Mensajeros/${mensajero}`} exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
-                                            {mensajero}
-                                        </NavLink>
-                                    </Menu.Item>
-                                ))}
-                            </Menu.SubMenu>
-                        </Menu.Item>
-                        <Menu.Item key="5">
-                            <NavLink to="/AllOrders" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active">
-                                Últimos pedidos
-                            </NavLink>
-                        </Menu.Item>
-                    </>
-                )}
-                {isAuthenticated && sellerEmails.includes(user.email) && (
-                    <>
-                        <Menu.Item key="6">
-                            <NavLink to="/Sales" exact className='rounded py-2 w-100 d-inline-block px-3' activeclassname="active"><FaIcons.FaHome className='me-2' />
-                                Ventas
-                            </NavLink>
-                        </Menu.Item>
-                    </>
-                )}
+        <Box
+            sx={{
+                "& .pro-sidebar-inner": {
+                    background: `${colors.primary[400]} !important`,
+                },
+                "& .pro-icon-wrapper": {
+                    backgroundColor: "transparent !important",
+                },
+                "& .pro-inner-item": {
+                    padding: "5px 35px 5px 20px !important",
+                },
+                "& .pro-inner-item:hover": {
+                    color: "#868dfb !important",
+                },
+                "& .pro-menu-item.active": {
+                    color: "#6870fa !important",
+                },
+            }}
+        >
+            <ProSidebar collapsed={isCollapsed}>
+                <SidebarMenu iconShape="square">
+                    {/* LOGO AND MENU ICON */}
+                    <MenuItem
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
+                        style={{
+                            margin: "10px 0 20px 0",
+                            color: colors.grey[100],
+                        }}
+                    >
+                        {!isCollapsed && (
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                ml="15px"
+                            >
+                                <Typography variant="h3" color={colors.grey[100]}>
+                                    ADM
+                                </Typography>
+                                <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
+                                    <MenuOutlinedIcon />
+                                </IconButton>
+                            </Box>
+                        )}
+                    </MenuItem>
 
-            </Menu>
-        </div>
-    )
+                    {!isCollapsed && (
+                        <Box mb="25px">
+                            <Box display="flex" justifyContent="center" alignItems="center">
+                                <img
+                                    alt="profile-user"
+                                    width="100px"
+                                    height="100px"
+                                    src={user ? user.picture : "https://w7.pngwing.com/pngs/627/693/png-transparent-computer-icons-user-user-icon-thumbnail.png"}
+                                    style={{ cursor: "pointer", borderRadius: "50%" }}
+                                />
+                            </Box>
+                            <Box textAlign="center">
+                                <Typography
+                                    variant="h2"
+                                    color={colors.grey[100]}
+                                    fontWeight="bold"
+                                    sx={{ m: "10px 0 0 0" }}
+                                >
+                                    {user ? user.name : "invitado"}
+                                </Typography>
+                                <Typography variant="h5" color={colors.greenAccent[500]}>
+                                    Cargo
+                                </Typography>
+                            </Box>
+                        </Box>
+                    )}
 
-}
+                    <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+                        <Item
+                            title="Dashboard"
+                            to="/"
+                            icon={<HomeOutlinedIcon />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                        {isAuthenticated && logisticEmails.includes(user.email) && (
+                            <>
+                                <Typography
+                                    variant="h6"
+                                    color={colors.grey[300]}
+                                    sx={{ m: "15px 0 5px 20px" }}
+                                >
+                                    Canales
+                                </Typography>
+                                <Item
+                                    title="Delivery"
+                                    to="/DeliveryApp"
+                                    icon={<ContactsOutlinedIcon />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                                <Item
+                                    title="External Service"
+                                    to="/ExternalServiceApp"
+                                    icon={<ContactsOutlinedIcon />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                            </>
+                        )}
 
-export default Sidebar
+                        {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
+                            <>
+                                <Typography
+                                    variant="h6"
+                                    color={colors.grey[300]}
+                                    sx={{ m: "15px 0 5px 20px" }}
+                                >
+                                    Tablas
+                                </Typography>
+                                <SubMenu title="Mensajeros" icon={<PeopleOutlinedIcon />}>
+                                    {props.couriers.map((coursier) => (
+                                        <Item
+                                            title={coursier}
+                                            to={`/mensajeros/${coursier}`}
+                                            icon={<PersonOutlinedIcon />}
+                                            selected={selected}
+                                            setSelected={setSelected}
+                                        />
+                                    ))}
+                                </SubMenu>
+                                <Item
+                                    title="Todos"
+                                    to="/AllOrders"
+                                    icon={<ReceiptOutlinedIcon />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                            </>
+                        )}
+
+                        {isAuthenticated && sellerEmails.includes(user.email) && (
+                            <>
+                                <Typography
+                                    variant="h6"
+                                    color={colors.grey[300]}
+                                    sx={{ m: "15px 0 5px 20px" }}
+                                >
+                                    Ventas
+                                </Typography>
+                                <Item
+                                    title="Mis ventas"
+                                    to="/Sales"
+                                    icon={<CalendarTodayOutlinedIcon />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                            </>
+                        )}
+                    </Box>
+                </SidebarMenu>
+            </ProSidebar>
+        </Box>
+    );
+};
+
+export default FusionSidebar;

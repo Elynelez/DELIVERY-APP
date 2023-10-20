@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import { Button } from "antd";
+import { Box, IconButton, useTheme } from "@mui/material";
+import { useContext, useState } from "react";
+import { ColorModeContext, tokens } from "../theme";
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import {
   Collapse,
-  Navbar,
   NavbarToggler,
   NavbarBrand,
   Nav,
@@ -13,66 +18,77 @@ import {
 } from 'reactstrap';
 import { useAuth0 } from '@auth0/auth0-react';
 
-
-const NavbarNavigation = (props) =>{
+const NavbarNavigation = (props) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const colorMode = useContext(ColorModeContext);
   const [isOpen, setIsOpen] = useState(false);
-  const { logout, loginWithRedirect } = useAuth0()
   const toggle = () => setIsOpen(!isOpen);
-
-  const showSidebar = (e) => {
-    let tag = e.target.parentNode?.parentNode?.parentNode?.parentNode?.parentNode?.parentNode;
-    if (tag) {
-      let sidebar = tag.querySelector(".sidebar");
-      if (sidebar) {
-        sidebar.classList.toggle("close");
-      }
-    }
-  };
-  
+  const { logout, loginWithRedirect } = useAuth0()
 
   return (
-    <div>
-      <Navbar color='light' light expand="md">
-        <Button type="primary"className='button-burger' onClick={(event)=>{showSidebar(event.nativeEvent)}}>&#9776;</Button>
+    <Box display="flex" justifyContent="space-between" p={2}>
+      {/* SEARCH BAR */}
+      <Box
+        display="flex"
+        borderRadius="3px"
+      >
         <NavbarBrand href="/" className="text-primary">
-          <img alt="logo" src="https://static.wixstatic.com/media/06687e_4ce80914c2064ba3b0f8b3d0962d6577~mv2.png/v1/fill/w_406,h_109,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/06687e_4ce80914c2064ba3b0f8b3d0962d6577~mv2.png" width='200px'/>
+          <img alt="logo" src="./logo.png" width='200px' />
         </NavbarBrand>
-        <NavbarToggler onClick={toggle} />
-        <Collapse isOpen={isOpen} navbar>
-          <Nav className="ms-auto" navbar>
-            <UncontrolledDropdown nav inNavbar>
-              <DropdownToggle nav caret>
-                Mi perfil
-              </DropdownToggle>
-              <DropdownMenu right>
-                {props.isAuthenticated ? (
-                  <>
-                    <DropdownItem>
-                      <img
-                        style={{ borderRadius: '50%', width: '30px', marginRight: '10px' }}
-                        src={props.user.picture}
-                        alt={props.user.name}
-                      />
-                      <div style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {props.user.name}
-                      </div>
-                    </DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem onClick={() => logout()}>Salir</DropdownItem>
-                  </>
-                ) : (
-                  <DropdownItem onClick={() => loginWithRedirect()}>Iniciar sesión</DropdownItem>
-                )}
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav>
-        </Collapse>
-        <NavbarBrand>
-          <img alt="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARMAAAC3CAMAAAAGjUrGAAAAA1BMVEX///+nxBvIAAAAR0lEQVR4nO3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPBgxUwAAU+n3sIAAAAASUVORK5CYII=" style={{opacity: 0, width:'60px'}}/>
-        </NavbarBrand>
-      </Navbar>
-    </div>
+      </Box>
+
+      {/* ICONS */}
+      <Box display="flex">
+        <IconButton onClick={colorMode.toggleColorMode}>
+          {theme.palette.mode === "dark" ? (
+            <DarkModeOutlinedIcon />
+          ) : (
+            <LightModeOutlinedIcon />
+          )}
+        </IconButton>
+        <IconButton>
+          <NotificationsOutlinedIcon />
+        </IconButton>
+        <IconButton>
+          <SettingsOutlinedIcon />
+        </IconButton>
+        <IconButton>
+          <PersonOutlinedIcon />
+          <NavbarToggler onClick={toggle} />
+          <Collapse isOpen={isOpen} >
+            <Nav className="ms-auto" navbar>
+              <UncontrolledDropdown >
+                <DropdownToggle nav caret>
+                  perfil
+                </DropdownToggle>
+                <DropdownMenu right>
+                  {props.isAuthenticated ? (
+                    <>
+                      <DropdownItem>
+                        <img
+                          style={{ borderRadius: '50%', width: '30px', marginRight: '10px' }}
+                          src={props.user.picture}
+                          alt={props.user.name}
+                        />
+                        <div style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {props.user.name}
+                        </div>
+                      </DropdownItem>
+                      <DropdownItem divider />
+                      <DropdownItem onClick={() => logout()}>Salir</DropdownItem>
+                    </>
+                  ) : (
+                    <DropdownItem onClick={() => loginWithRedirect()}>Iniciar sesión</DropdownItem>
+                  )}
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            </Nav>
+          </Collapse>
+        </IconButton>
+      </Box>
+    </Box>
   );
-}
+};
 
 export default NavbarNavigation;
