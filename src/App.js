@@ -35,29 +35,6 @@ function App() {
           <div className='flex'>
             <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
             <div className='content'>
-              <NavbarNavigation />
-              <Routes>
-                <Route exact path="/" element={<Dashboard />} />
-                <Route exact path="/DeliveryApp" element={<DeliveryApp />} />
-                <Route exact path="/ExternalServiceApp" element={<ExternalServiceApp />} />
-                <Route exact path="/Mensajeros/:id" element={<CoursiersTable />} />
-                <Route exact path="/AllOrders" element={<AllOrders />} />
-              </Routes>
-            </div>
-          </div>
-        </Router>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
-  )
-
-  return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Router>
-          <div className='flex'>
-            <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
-            <div className='content'>
               <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
               <Routes>
                 <Route exact path="/" element={<Dashboard />} />
