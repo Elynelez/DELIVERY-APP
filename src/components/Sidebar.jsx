@@ -170,6 +170,13 @@ const FusionSidebar = (props) => {
                                             setSelected={setSelected}
                                         />
                                     ))}
+                                    <Item
+                                        title="Servicio Externo"
+                                        to={`/mensajeros/ExternalService`}
+                                        icon={<PersonOutlinedIcon />}
+                                        selected={selected}
+                                        setSelected={setSelected}
+                                    />
                                 </SubMenu>
                                 <Item
                                     title="Todos"

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Button, Menu, Spin } from "antd"
 import TableData from "../Controllers/DataTable/TableData";
+import { ModalData, ReviewModal, EditModal } from "../Controllers/Modal";
 import { useAuth0 } from '@auth0/auth0-react';
 
-const SellerTable = () => {
+const ESTable = () => {
   const { user } = useAuth0();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true)
@@ -11,7 +12,7 @@ const SellerTable = () => {
 
   const loadData = () => {
     setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec?key="+user.email)
+    fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?dataExternalService")
       .then(response => response.json())
       .then(parsedData => {
         setData(parsedData);
@@ -32,7 +33,7 @@ const SellerTable = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec?key="+user.email)
+    fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?dataExternalService")
       .then(response => response.json())
       .then(parsedData => {
         setData(parsedData);
@@ -68,20 +69,40 @@ const SellerTable = () => {
     document.body.removeChild(link);
   };
 
-  
+  const statusColorMap = {
+    'EN RUTA': 'blue',
+  };
 
   const columns = [
     { name: 'Fecha desp.', selector: "date_generate", sortable: true },
-    { name: 'Código', selector: "order_id", sortable: true},
+    { name: 'Código', selector: "code", sortable: true},
     { name: 'Cliente', selector: "client", sortable: true },
     { name: 'Vendedor', selector: "seller", sortable: true },
     { name: 'Dirección', selector: "address", sortable: true },
     { name: 'Condición', selector: "condition", sortable: true },
-    { name: 'Valor', selector: "total_price", sortable: true },
+    { name: 'Valor', selector: "total", sortable: true },
+    {
+      name: 'Estado', selector: 'status', sortable: true, cell: row => (
+        <div style={{ color: statusColorMap[row.status] || 'black' }}>
+          {row.status}
+        </div>
+      )
+    },
+    {
+      name: 'Acciones', button: true, cell: row => (
+        <Menu defaultSelectedKeys={['1']} style={{ background: "none" }}>
+          <Menu.SubMenu title="Acciones">
+            <Menu.Item key="1">
+              <ModalData arrayData={[{ title: "fecha de entrega", value: row.date_delivery }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
+            </Menu.Item>
+          </Menu.SubMenu>
+        </Menu>
+      )
+    }
   ]
 
-  const tableData = data.map(row => [row.date_generate, row.order_id, row.client, row.address, row.seller, row.condition, row.method, row.total_price]);
-  tableData.reverse().unshift(["FECHA GENERACIÓN", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR"])
+  const tableData = data.map(row => [row.date_generate, row.date_delivery, row.coursier, row.zone, row.code, row.client, row.address, row.seller, row.condition, row.method, row.total, JSON.parse(row.notation).map(obj => obj.notation).join(', '), row.money_delivered]);
+  tableData.reverse().unshift(["FECHA DESPACHO", "FECHA ENTREGA", "MENSAJERO", "ZONA", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO"])
   return (
     <div className="container py-5">
 
@@ -93,7 +114,7 @@ const SellerTable = () => {
         <>
           <div className="row align-items-center mb-4">
             <div className="col">
-              <h1 className="display-4">Mis ventas</h1>
+              <h1 className="display-4">Últimos detalles</h1>
             </div>
             <div className="col-auto">
               <Button type="primary" onClick={() => downloadTable(tableData, "complete delivery")}>
@@ -108,4 +129,4 @@ const SellerTable = () => {
   );
 };
 
-export default SellerTable;
+export default ESTable;

@@ -13,6 +13,7 @@ import DeliveryApp from './pages/DeliveryPages/DeliveryApp';
 import AllOrders from './pages/DeliveryPages/AllOrders';
 import Dashboard from './pages/DefaultPages/Dashboard';
 import SellerTable from './pages/SellerPages/SellerTable';
+import ESTable from './pages/DeliveryPages/ESTable';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -26,6 +27,25 @@ const sellerEmails = ["pedidos.ducor@gmail.com"]
 function App() {
   const { isAuthenticated, user } = useAuth0();
   const [theme, colorMode] = useMode();
+
+  // return(
+  //   <ColorModeContext.Provider value={colorMode}>
+  //     <ThemeProvider theme={theme}>
+  //       <CssBaseline />
+  //       <Router>
+  //         <div className='flex'>
+  //           <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
+  //           <div className='content'>
+  //             <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
+  //             <Routes>
+  //             <Route exact path="/" element={<AllOrders />} />
+  //             </Routes>
+  //           </div>
+  //         </div>
+  //       </Router>
+  //     </ThemeProvider>
+  //   </ColorModeContext.Provider>
+  // )
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -48,6 +68,7 @@ function App() {
                   <>
                     <Route exact path="/Mensajeros/:id" element={<CoursiersTable />} />
                     <Route exact path="/AllOrders" element={<AllOrders />} />
+                    {/* <Route exact path="/Mensajeros/Inter" element={<ESTable />} /> */}
                   </>
                 )}
                 {isAuthenticated && sellerEmails.includes(user.email) && (

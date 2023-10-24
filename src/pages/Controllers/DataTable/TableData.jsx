@@ -147,4 +147,4 @@ const TableData = (props) => {
   );
 };
 
-export default TableData;
+export default TableData

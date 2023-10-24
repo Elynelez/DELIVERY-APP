@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Spin, Menu } from "antd"
 import { useParams } from 'react-router-dom';
-import TableData from "../Controllers/TableData";
+import TableData from "../Controllers/DataTable/TableData";
 import { ModalData, EditModal, ReviewModal } from "../Controllers/Modal";
 // auth
 import { useAuth0 } from '@auth0/auth0-react';
