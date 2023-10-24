@@ -28,7 +28,7 @@ function App() {
   const { isAuthenticated, user } = useAuth0();
   const [theme, colorMode] = useMode();
 
-  // return(
+  // return (
   //   <ColorModeContext.Provider value={colorMode}>
   //     <ThemeProvider theme={theme}>
   //       <CssBaseline />
@@ -38,7 +38,8 @@ function App() {
   //           <div className='content'>
   //             <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
   //             <Routes>
-  //             <Route exact path="/" element={<AllOrders />} />
+  //               <Route exact path="/" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
+  //               <Route exact path="/Mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -67,7 +68,7 @@ function App() {
                 {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
                   <>
                     <Route exact path="/Mensajeros/:id" element={<CoursiersTable />} />
-                    <Route exact path="/AllOrders" element={<AllOrders />} />
+                    <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
                     {/* <Route exact path="/Mensajeros/Inter" element={<ESTable />} /> */}
                   </>
                 )}

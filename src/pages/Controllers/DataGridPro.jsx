@@ -144,7 +144,7 @@ const DataTableGrid = (props) => {
       <br />
       <Button
         type="primary"
-        style={{ backgroundColor: "#788296" }}
+        style={{ backgroundColor: colors.blueAccent[1000] }}
         onClick={() => { updateMultipleStatus() }}
         disabled={disabledButton}>
         Corroborar masivo

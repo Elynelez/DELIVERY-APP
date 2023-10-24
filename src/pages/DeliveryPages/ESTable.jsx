@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Button, Menu, Spin } from "antd"
-import TableData from "../Controllers/DataTable/TableData";
-import { ModalData, ReviewModal, EditModal } from "../Controllers/Modal";
-import { useAuth0 } from '@auth0/auth0-react';
+import { Spin, Menu } from "antd"
+import DataTableGrid from "../Controllers/DataGridPro";
+import { ModalData } from "../Controllers/Modal";
+import { Box, Typography } from "@mui/material";
+import { tokens } from "./../../theme";
+import { useTheme } from "@mui/material";
 
 const ESTable = () => {
-  const { user } = useAuth0();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true)
   const [reloadData, setReloadData] = useState(false);
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   const loadData = () => {
     setLoading(true);
     fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?dataExternalService")
       .then(response => response.json())
       .then(parsedData => {
-        setData(parsedData);
+        let dataO = parsedData.map(element => {
+          element.id = element.order_id
+          return element
+        });
+        setData(dataO);
         setLoading(false);
       })
       .catch(error => {
@@ -36,7 +43,11 @@ const ESTable = () => {
     fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?dataExternalService")
       .then(response => response.json())
       .then(parsedData => {
-        setData(parsedData);
+        let dataO = parsedData.map(element => {
+          element.id = element.order_id
+          return element
+        });
+        setData(dataO);
         setLoading(false);
       })
       .catch(error => {
@@ -45,55 +56,40 @@ const ESTable = () => {
       });
   }, []);
 
-  const downloadTable = (tableData, name) => {
-    const uri = 'data:application/vnd.ms-excel;base64,';
-    const template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" /><meta name="ProgId" content="Excel.Sheet"/><meta http-equiv="X-UA-Compatible" content="IE=edge" /><style>table{border-collapse:collapse;}th,td{border:1px solid gray;padding:10px;}th{background-color:lightgray;}</style><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
-    const base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) };
-
-    const tableHtml = tableData
-      .map(row => {
-        return `<tr>${row
-          .map(cell => `<td>${cell}</td>`)
-          .join('')}</tr>`;
-      })
-      .join('');
-
-    const content = template.replace('{table}', tableHtml);
-    const encodedUri = uri + base64(content);
-
-    const link = document.createElement('a');
-    link.href = encodedUri;
-    link.download = `${name}.xls`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const statusColorMap = {
-    'EN RUTA': 'blue',
+    'EN RUTA': '#A48BF4',
   };
 
   const columns = [
-    { name: 'Fecha desp.', selector: "date_generate", sortable: true },
-    { name: 'Código', selector: "code", sortable: true},
-    { name: 'Cliente', selector: "client", sortable: true },
-    { name: 'Vendedor', selector: "seller", sortable: true },
-    { name: 'Dirección', selector: "address", sortable: true },
-    { name: 'Condición', selector: "condition", sortable: true },
-    { name: 'Valor', selector: "total", sortable: true },
+    { headerName: 'Fecha desp.', field: "date_generate", flex: 1 },
+    { headerName: 'Código', field: "code", flex: 1 },
+    { headerName: 'Cliente', field: "client", flex: 1 },
+    { headerName: 'Vendedor', field: "seller", flex: 1 },
+    { headerName: 'Dirección', field: "address", flex: 1 },
+    { headerName: 'Condición', field: "condition", flex: 1 },
     {
-      name: 'Estado', selector: 'status', sortable: true, cell: row => (
-        <div style={{ color: statusColorMap[row.status] || 'black' }}>
-          {row.status}
+      headerName: 'Valor', field: "total", flex: 1, renderCell: (params) => (
+        params.row.method === "EFECTIVO" ?
+          <div style={{ color: '#5105DE' }}>
+            {params.row.total}
+          </div> : <div>
+            {params.row.total}
+          </div>
+      )
+    },
+    {
+      headerName: 'Estado', field: 'status', flex: 1, renderCell: (params) => (
+        <div style={{ display: "flex", alignItems: "center", textAlign: "center", backgroundColor: colors.black[100], width: "80px", height: "40px", borderRadius: "5px", color: statusColorMap[params.row.status] || 'white' }}>
+          <p style={{ display: "inline-block", margin: "auto", overflow: "hidden", padding: "1px 2px 1px"}}>{params.row.status}</p>
         </div>
       )
     },
     {
-      name: 'Acciones', button: true, cell: row => (
-        <Menu defaultSelectedKeys={['1']} style={{ background: "none" }}>
+      headerName: 'Acciones', renderCell: params => (
+        <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
           <Menu.SubMenu title="Acciones">
-            <Menu.Item key="1">
-              <ModalData arrayData={[{ title: "fecha de entrega", value: row.date_delivery }, { title: "Zona", value: row.zone }, { title: "Medio de pago", value: row.method }, { title: "Observaciones", value: JSON.parse(row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: row.money_delivered }]} />
+            <Menu.Item key="3">
+              <ModalData arrayData={[{ title: "fecha de entrega", value: params.row.date_delivery }, { title: "Zona", value: params.row.zone }, { title: "Medio de pago", value: params.row.method }, { title: "Observaciones", value: JSON.parse(params.row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: params.row.money_delivered }]} />
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
@@ -101,8 +97,6 @@ const ESTable = () => {
     }
   ]
 
-  const tableData = data.map(row => [row.date_generate, row.date_delivery, row.coursier, row.zone, row.code, row.client, row.address, row.seller, row.condition, row.method, row.total, JSON.parse(row.notation).map(obj => obj.notation).join(', '), row.money_delivered]);
-  tableData.reverse().unshift(["FECHA DESPACHO", "FECHA ENTREGA", "MENSAJERO", "ZONA", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO"])
   return (
     <div className="container py-5">
 
@@ -111,19 +105,22 @@ const ESTable = () => {
           <Spin tip="Cargando datos..." />
         </div>
       ) : (
-        <>
-          <div className="row align-items-center mb-4">
-            <div className="col">
-              <h1 className="display-4">Últimos detalles</h1>
-            </div>
-            <div className="col-auto">
-              <Button type="primary" onClick={() => downloadTable(tableData, "complete delivery")}>
-                Descargar
-              </Button>
-            </div>
-          </div>
-          <TableData columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading}/>
-        </>
+        <Box m="20px">
+          <Box mb="30px">
+            <Typography
+              variant="h2"
+              color={colors.grey[100]}
+              fontWeight="bold"
+              sx={{ m: "0 0 5px 0" }}
+            >
+              PEDIDOS DE MENSAJERÍA EXTERNA
+            </Typography>
+            <Typography variant="h5" color={colors.greenAccent[400]}>
+              últimos detalles
+            </Typography>
+          </Box>
+          <DataTableGrid columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading} />
+        </Box>
       )}
     </div>
   );
