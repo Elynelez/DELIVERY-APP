@@ -69,7 +69,7 @@ function App() {
                   <>
                     <Route exact path="/Mensajeros/:id" element={<CoursiersTable />} />
                     <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
-                    {/* <Route exact path="/Mensajeros/Inter" element={<ESTable />} /> */}
+                    <Route exact path="/Mensajeros/Inter" element={<ESTable />} />
                   </>
                 )}
                 {isAuthenticated && sellerEmails.includes(user.email) && (
