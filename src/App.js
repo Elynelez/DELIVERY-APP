@@ -38,8 +38,8 @@ function App() {
   //           <div className='content'>
   //             <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
   //             <Routes>
-  //               <Route exact path="/" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
-  //               <Route exact path="/Mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
+  //               <Route exact path="/" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
+  //               {/* <Route exact path="/Mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} /> */}
   //             </Routes>
   //           </div>
   //         </div>
@@ -67,9 +67,9 @@ function App() {
                 )}
                 {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
                   <>
-                    <Route exact path="/Mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
+                    <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
                     <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
-                    <Route exact path="/Mensajeros/Inter" element={<ESTable />} />
+                    <Route exact path="/mensajeros/ExternalService" element={<ESTable />} />
                   </>
                 )}
                 {isAuthenticated && sellerEmails.includes(user.email) && (
