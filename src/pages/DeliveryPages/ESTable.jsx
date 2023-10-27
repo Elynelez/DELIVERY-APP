@@ -5,8 +5,10 @@ import { ModalData, ReviewModal } from "../Controllers/Modal";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const ESTable = () => {
+  const { user } = useAuth0()
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true)
   const [reloadData, setReloadData] = useState(false);
@@ -92,7 +94,7 @@ const ESTable = () => {
               <ModalData arrayData={[{ title: "fecha de entrega", value: params.row.date_delivery }, { title: "Zona", value: params.row.zone }, { title: "Medio de pago", value: params.row.method }, { title: "Observaciones", value: JSON.parse(params.row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: params.row.money_delivered }]} />
             </Menu.Item>
             <Menu.Item key="3">
-              <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, platform: "ExternalService", status: params.row.status, disabled: (params.row.status === "COMPLETO") ? true : false }} />
+              <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, platform: "ExternalService", user: user.email, status: params.row.status, disabled: (params.row.status === "COMPLETO") ? true : false }} />
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>

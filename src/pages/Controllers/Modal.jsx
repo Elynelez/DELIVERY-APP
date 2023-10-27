@@ -277,6 +277,12 @@ const ReviewModal = (props) => {
               <Input readOnly />
             </Form.Item>
             <Form.Item
+              name="user"
+              label="usuario"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
               name="total"
               label="Valor del pedido"
             >
@@ -293,6 +299,12 @@ const ReviewModal = (props) => {
               label="Estado del pedido"
             >
               <Input readOnly />
+            </Form.Item>
+            <Form.Item
+              name="notation"
+              label="Observaciones"
+            >
+              <Input />
             </Form.Item>
             <Form.Item
               name="checked"
