@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Spin, Menu } from "antd"
 import DataTableGrid from "../Controllers/DataGridPro";
-import { ModalData } from "../Controllers/Modal";
+import { ModalData, ReviewModal } from "../Controllers/Modal";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
@@ -80,7 +80,7 @@ const ESTable = () => {
     {
       headerName: 'Estado', field: 'status', flex: 1, renderCell: (params) => (
         <div style={{ display: "flex", alignItems: "center", textAlign: "center", backgroundColor: colors.black[100], width: "80px", height: "40px", borderRadius: "5px", color: statusColorMap[params.row.status] || 'white' }}>
-          <p style={{ display: "inline-block", margin: "auto", overflow: "hidden", padding: "1px 2px 1px"}}>{params.row.status}</p>
+          <p style={{ display: "inline-block", margin: "auto", overflow: "hidden", padding: "1px 2px 1px" }}>{params.row.status}</p>
         </div>
       )
     },
@@ -88,8 +88,11 @@ const ESTable = () => {
       headerName: 'Acciones', renderCell: params => (
         <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
           <Menu.SubMenu title="Acciones">
-            <Menu.Item key="3">
+            <Menu.Item key="1">
               <ModalData arrayData={[{ title: "fecha de entrega", value: params.row.date_delivery }, { title: "Zona", value: params.row.zone }, { title: "Medio de pago", value: params.row.method }, { title: "Observaciones", value: JSON.parse(params.row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: params.row.money_delivered }]} />
+            </Menu.Item>
+            <Menu.Item key="3">
+              <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, platform: "ExternalService", status: params.row.status, disabled: (params.row.status === "COMPLETO") ? true : false }} />
             </Menu.Item>
           </Menu.SubMenu>
         </Menu>
@@ -119,7 +122,7 @@ const ESTable = () => {
               últimos detalles
             </Typography>
           </Box>
-          <DataTableGrid columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading} />
+          <DataTableGrid columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading} typeSheet={"ExternalService"}/>
         </Box>
       )}
     </div>

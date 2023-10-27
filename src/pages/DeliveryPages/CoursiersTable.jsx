@@ -198,7 +198,7 @@ const CoursiersTable = (props) => {
               últimos detalles
             </Typography>
           </Box>
-          <DataTableGrid columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading} />
+          <DataTableGrid columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading} typeSheet={"Delivery"}/>
         </Box>
       )}
     </div>

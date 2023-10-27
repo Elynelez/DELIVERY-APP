@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Rubik:wght@600&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap");
 *{
   margin: 0;
   padding: 0;
@@ -7,11 +7,7 @@
 }
 
 body{
-  font-family: 'Rubik', sans-serif;
-}
-
-.transparent-table{
-  background-color: green;
+  font-family: "Source Sans Pro", sans-serif;;
 }
 
 :root{
@@ -22,40 +18,6 @@ body{
 
 .flex{
   display: flex;
-}
-
-.navbar{
-  background-color: var(--bofy);
-  padding: 1rem 2rem;
-  border-bottom: 1px solid var(--gray);
-}
-
-.sidebar{
-  padding-top: 15px;
-  text-align: left;
-  width: 15rem;
-  height: calc(160vh - 52px);
-  border-right: 1px solid var(--gray);
-  background-color: darkblue;
-}
-
-.sidebar.close{
-  width: 15rem;
-  position: absolute;
-  z-index: 1;
-}
-
-.sidebar ul{
-  list-style: none;
-  padding: 1rem 2rem;
-}
-
-.sidebar ul li {
-  margin-bottom: 1rem; 
-}
-
-.sidebar ul li a{
-  text-decoration: none;
 }
 
 .content {
@@ -72,16 +34,6 @@ body{
   height: 100%;
 }
 
-.active{
-  background-color: var(--ducor);
-  color: white;
-}
-
-.button-burger{
-  background: gray; 
-  margin: 4px;
-  display: none
-}
 /* dashboard start */
 .main-container {
   grid-area: main;
@@ -146,26 +98,198 @@ body{
 }
 
 /* end dashboard */
+/* start car designs */
+.container-cart-icon{
+  display: inline
+}
+.container-icon {
+	position: relative;
+}
+
+.count-products {
+	position: absolute;
+	top: 5%;
+	left: 30%;
+
+	background-color: #000;
+	color: #fff;
+	width: 15px;
+	height: 15px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+}
+
+#contador-productos {
+	font-size: 12px;
+}
+
+.container-cart-products {
+	position: absolute;
+	top: 50px;
+	right: 0;
+
+	background-color: #fff;
+	width: 400px;
+	z-index: 1;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+	border-radius: 10px;
+}
+
+.cart-product {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30px;
+
+	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.info-cart-product {
+	display: flex;
+	justify-content: space-between;
+	flex: 0.8;
+}
+
+.titulo-producto-carrito {
+	font-size: 20px;
+}
+
+.precio-producto-carrito {
+	font-weight: 700;
+	font-size: 20px;
+	margin-left: 10px;
+}
+
+.cantidad-producto-carrito {
+	font-weight: 400;
+	font-size: 20px;
+}
+
+.icon-close {
+	width: 25px;
+	height: 25px;
+}
+
+.icon-close:hover {
+	stroke: red;
+	cursor: pointer;
+}
+
+.cart-total {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 20px 0;
+	gap: 20px;
+}
+
+.cart-total h3 {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.total-pagar {
+	font-size: 20px;
+	font-weight: 900;
+}
+
+.hidden-cart {
+	display: none;
+}
+/* end car designs */
+/* start car */
+.container-items {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 20px;
+}
+
+.item {
+	border-radius: 10px;
+}
+
+.item:hover {
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.item img {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+	border-radius: 10px 10px 0 0;
+	transition: all 0.5s;
+}
+
+.item figure {
+	overflow: hidden;
+  margin: 0;
+}
+
+.item:hover img {
+  /* transition: 10s; */
+	transform: scale(1.2);
+  /* height: 400px;
+  position: absolute;
+  width: 50px; */
+
+}
+
+.info-product {
+	padding: 15px 30px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+  height: 250px;
+  /* text-align: center; */
+}
+
+.info-product h2{
+  font-size: 25px;
+  height: 100px;
+  overflow: hidden;
+}
+
+.price {
+	font-size: 18px;
+	font-weight: 900;
+}
+
+.cart-empty {
+	padding: 20px;
+	text-align: center;
+}
+
+.hidden {
+	display: none;
+}
+
+.btn-clear-all {
+	border: none;
+	background-color: #000;
+	color: #fff;
+	padding: 15px 0;
+	display: block;
+	width: 100%;
+	margin-top: 10px;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	font-family: inherit;
+	cursor: pointer;
+  font-size: 16px;
+  transition: all .3s ease;
+}
+
+.btn-clear-all:hover{
+  background-color: #333;
+  transform: scale(1.03);
+  border-radius: 0;
+}
+
+/* end car */
 @media screen and (max-width: 1500px) {
-  .button-burger{
-    display: block;
-  }
-  .sidebar{
-    width: 0rem;
-    transition: all 0.7s ease;
-    z-index: -1;
-    position:absolute;
-  }
-  /* .flex {
-    flex-direction: column;
-  }
-  .sidebar{
-    width: 100%;
-    height: 100%;
-    border-right: 1px solid var(--gray);
-  }
-  .sidebar ul{
-    display: flex;
-  } */
+
 }
 

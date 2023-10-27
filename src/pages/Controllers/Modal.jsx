@@ -271,6 +271,12 @@ const ReviewModal = (props) => {
               <Input readOnly />
             </Form.Item>
             <Form.Item
+              name="platform"
+              label="Tipo"
+            >
+              <Input readOnly />
+            </Form.Item>
+            <Form.Item
               name="total"
               label="Valor del pedido"
             >

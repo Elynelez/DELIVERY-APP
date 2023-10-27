@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
 import NavbarNavigation from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import './App.css';
@@ -14,19 +15,25 @@ import AllOrders from './pages/DeliveryPages/AllOrders';
 import Dashboard from './pages/DefaultPages/Dashboard';
 import SellerTable from './pages/SellerPages/SellerTable';
 import ESTable from './pages/DeliveryPages/ESTable';
+import SellerCar from './pages/SellerPages/SellerCar';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 
-const logisticEmails = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
-const bossEmails = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
+const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
+const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]
 const sellerEmails = ["pedidos.ducor@gmail.com"]
+const ExternalServiceEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
 
 
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
   const [theme, colorMode] = useMode();
+
+  const [allProducts, setAllProducts] = useState([])
+  const [total, setTotal] = useState(0)
+  const [countProducts, setCountProducts] = useState(0)
 
   // return (
   //   <ColorModeContext.Provider value={colorMode}>
@@ -36,10 +43,27 @@ function App() {
   //         <div className='flex'>
   //           <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
   //           <div className='content'>
-  //             <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
+  //             <NavbarNavigation
+  //               user={user}
+  //               isAuthenticated={isAuthenticated}
+  //               allProducts={allProducts}
+  //               setAllProducts={setAllProducts}
+  //               total={total} setTotal={setTotal}
+  //               countProducts={countProducts}
+  //               setCountProducts={setCountProducts}
+  //             />
   //             <Routes>
-  //               <Route exact path="/" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
-  //               {/* <Route exact path="/Mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} /> */}
+  //               <Route exact path="/"
+  //                 element={
+  //                   <SellerCar
+  //                     allProducts={allProducts}
+  //                     setAllProducts={setAllProducts}
+  //                     total={total} setTotal={setTotal}
+  //                     countProducts={countProducts}
+  //                     setCountProducts={setCountProducts}
+  //                   />} />
+  //               <Route exact path="/Mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+  //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -56,7 +80,15 @@ function App() {
           <div className='flex'>
             <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
             <div className='content'>
-              <NavbarNavigation user={user} isAuthenticated={isAuthenticated} />
+              <NavbarNavigation
+                user={user}
+                isAuthenticated={isAuthenticated}
+                allProducts={allProducts}
+                setAllProducts={setAllProducts}
+                total={total} setTotal={setTotal}
+                countProducts={countProducts}
+                setCountProducts={setCountProducts}
+              />
               <Routes>
                 <Route exact path="/" element={<Dashboard />} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
@@ -67,14 +99,18 @@ function App() {
                 )}
                 {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
                   <>
-                    <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
-                    <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
-                    <Route exact path="/mensajeros/ExternalService" element={<ESTable />} />
+                    <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+                    <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
                   </>
                 )}
                 {isAuthenticated && sellerEmails.includes(user.email) && (
                   <>
                     <Route exact path="/Sales" element={<SellerTable />} />
+                  </>
+                )}
+                {isAuthenticated && ExternalServiceEmails.includes(user.email) && (
+                  <>
+                    <Route exact path="/mensajeros/ExternalService" element={<ESTable ExternalServiceEmails={ExternalServiceEmails} />} />
                   </>
                 )}
               </Routes>

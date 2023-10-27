@@ -92,7 +92,7 @@ const DataTableGrid = (props) => {
     const selectedIDs = new Set(ids);
     const selectedRows = props.data.filter((row) =>
       selectedIDs.has(row.id.toString()))
-    let data = selectedRows.filter(object => object.condition === "COBRAR" || object.condition.includes("PAGO EN CASA")).map(object => [object.order_id, object.total, user.email]);
+    let data = selectedRows.filter(object => object.condition === "COBRAR" || object.condition.includes("PAGO EN CASA")).map(object => [object.order_id, object.total, user.email, props.typeSheet]);
     setDisabledButton(data.length < 2);
     setDataStatus(data);
     console.log(data)
