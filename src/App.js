@@ -108,7 +108,7 @@ function App() {
                     <Route exact path="/Sales" element={<SellerTable />} />
                   </>
                 )}
-                {isAuthenticated && ExternalServiceEmails.includes(user.email) && (
+                {isAuthenticated && (bossEmails.includes(user.email) || ExternalServiceEmails.includes(user.email)) && (
                   <>
                     <Route exact path="/mensajeros/ExternalService" element={<ESTable ExternalServiceEmails={ExternalServiceEmails} />} />
                   </>
