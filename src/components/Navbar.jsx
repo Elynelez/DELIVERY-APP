@@ -10,10 +10,7 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import {
-  Collapse,
   NavbarBrand,
-  Nav,
-  UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
@@ -26,7 +23,6 @@ const NavbarNavigation = (props) => {
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
   const { logout, loginWithRedirect } = useAuth0()
   const [active, setActive] = useState(false)
 
@@ -89,36 +85,8 @@ const NavbarNavigation = (props) => {
               {props.allProducts.length ? (
                 <>
                   <div className='row-product'>
-                    {props.allProducts.map(product => (
-                      // <DropdownItem>
-                      //   <div className='info-cart-product'>
-                      //     <span className='cantidad-producto-carrito'>
-                      //       {product.carQuantity}
-                      //     </span>
-                      //     <p className='titulo-producto-carrito'>
-                      //       {product.name}
-                      //     </p>
-                      //     <span className='precio-producto-carrito'>
-                      //       {product.sale_price}
-                      //     </span>
-                      //   </div>
-                      //   <svg
-                      //     xmlns='http://www.w3.org/2000/svg'
-                      //     fill='none'
-                      //     viewBox='0 0 24 24'
-                      //     strokeWidth='1.5'
-                      //     stroke='currentColor'
-                      //     className='icon-close'
-                      //     onClick={() => onDeleteProduct(product)}
-                      //   >
-                      //     <path
-                      //       strokeLinecap='round'
-                      //       strokeLinejoin='round'
-                      //       d='M6 18L18 6M6 6l12 12'
-                      //     />
-                      //   </svg>
-                      // </DropdownItem>
-                      <div className='cart-product' key={product.code}>
+                    {props.allProducts.map((product, index) => (
+                      <DropdownItem key={index}>
                         <div className='info-cart-product'>
                           <span className='cantidad-producto-carrito'>
                             {product.carQuantity}
@@ -129,31 +97,35 @@ const NavbarNavigation = (props) => {
                           <span className='precio-producto-carrito'>
                             {product.sale_price}
                           </span>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth='1.5'
+                            stroke='currentColor'
+                            className='icon-close'
+                            onClick={() => onDeleteProduct(product)}
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M6 18L18 6M6 6l12 12'
+                            />
+                          </svg>
                         </div>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          fill='none'
-                          viewBox='0 0 24 24'
-                          strokeWidth='1.5'
-                          stroke='currentColor'
-                          className='icon-close'
-                          onClick={() => onDeleteProduct(product)}
-                        >
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            d='M6 18L18 6M6 6l12 12'
-                          />
-                        </svg>
-                      </div>
+                      </DropdownItem>
                     ))}
                   </div>
 
-                  <div className='cart-total'>
+                  <DropdownItem className='cart-total'>
                     <h3>Total:</h3>
                     <span className='total-pagar'>${props.total}</span>
-                  </div>
-
+                  </DropdownItem>
+                  <a href="/order/form" className="link-button">
+                    <button className='btn-clear-all' >
+                      Ir a formulario
+                    </button>
+                  </a>
                   <button className='btn-clear-all' onClick={onCleanCart}>
                     Vaciar Carrito
                   </button>
@@ -165,68 +137,6 @@ const NavbarNavigation = (props) => {
               <DropdownItem divider />
             </DropdownMenu>
           </Dropdown>
-          {/* <Collapse isOpen={active} >
-            <Nav className="ms-auto" navbar>
-              <UncontrolledDropdown >
-                <DropdownToggle nav caret>
-                  <DropdownMenu right>
-                    <div
-                      className={`container-cart-products ${active ? '' : 'hidden-cart'
-                        }`}
-                    >
-                      {props.allProducts.length ? (
-                        <>
-                          <div className='row-product'>
-                            {props.allProducts.map(product => (
-                              <div className='cart-product' key={product.code}>
-                                <div className='info-cart-product'>
-                                  <span className='cantidad-producto-carrito'>
-                                    {product.carQuantity}
-                                  </span>
-                                  <p className='titulo-producto-carrito'>
-                                    {product.name}
-                                  </p>
-                                  <span className='precio-producto-carrito'>
-                                    ${product.sale_price}
-                                  </span>
-                                </div>
-                                <svg
-                                  xmlns='http://www.w3.org/2000/svg'
-                                  fill='none'
-                                  viewBox='0 0 24 24'
-                                  strokeWidth='1.5'
-                                  stroke='currentColor'
-                                  className='icon-close'
-                                  onClick={() => onDeleteProduct(product)}
-                                >
-                                  <path
-                                    strokeLinecap='round'
-                                    strokeLinejoin='round'
-                                    d='M6 18L18 6M6 6l12 12'
-                                  />
-                                </svg>
-                              </div>
-                            ))}
-                          </div>
-
-                          <div className='cart-total'>
-                            <h3>Total:</h3>
-                            <span className='total-pagar'>${props.total}</span>
-                          </div>
-
-                          <button className='btn-clear-all' onClick={onCleanCart}>
-                            Vaciar Carrito
-                          </button>
-                        </>
-                      ) : (
-                        <p className='cart-empty'>El carrito está vacío</p>
-                      )}
-                    </div>
-                  </DropdownMenu>
-                </DropdownToggle>
-              </UncontrolledDropdown>
-            </Nav>
-          </Collapse> */}
         </IconButton>
         <IconButton>
           <NotificationsOutlinedIcon />
@@ -235,35 +145,31 @@ const NavbarNavigation = (props) => {
           <SettingsOutlinedIcon />
         </IconButton>
         <IconButton>
-          <PersonOutlinedIcon onClick={toggle} />
-          <Collapse isOpen={isOpen} >
-            <Nav className="ms-auto" navbar>
-              <UncontrolledDropdown >
-                <DropdownToggle nav caret>
-                  <DropdownMenu right>
-                    {props.isAuthenticated ? (
-                      <>
-                        <DropdownItem>
-                          <img
-                            style={{ borderRadius: '50%', width: '30px', marginRight: '10px' }}
-                            src={props.user.picture}
-                            alt={props.user.name}
-                          />
-                          <div style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {props.user.name}
-                          </div>
-                        </DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem onClick={() => logout()}>Salir</DropdownItem>
-                      </>
-                    ) : (
-                      <DropdownItem onClick={() => loginWithRedirect()}>Iniciar sesión</DropdownItem>
-                    )}
-                  </DropdownMenu>
-                </DropdownToggle>
-              </UncontrolledDropdown>
-            </Nav>
-          </Collapse>
+          <Dropdown isOpen={isOpen} toggle={() => { setIsOpen(!isOpen) }}>
+            <DropdownToggle nav caret>
+              <PersonOutlinedIcon />
+            </DropdownToggle>
+            <DropdownMenu right>
+              {props.isAuthenticated ? (
+                <>
+                  <DropdownItem>
+                    <img
+                      style={{ borderRadius: '50%', width: '30px', marginRight: '10px' }}
+                      src={props.user.picture}
+                      alt={props.user.name}
+                    />
+                    <div style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {props.user.name}
+                    </div>
+                  </DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem onClick={() => logout()}>Salir</DropdownItem>
+                </>
+              ) : (
+                <DropdownItem onClick={() => loginWithRedirect()}>Iniciar sesión</DropdownItem>
+              )}
+            </DropdownMenu>
+          </Dropdown>
         </IconButton>
       </Box>
     </Box>

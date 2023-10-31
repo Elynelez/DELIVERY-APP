@@ -1,107 +1,110 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Rubik:wght@600&display=swap');
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap");
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
-body{
-  font-family: "Source Sans Pro", sans-serif;;
+body {
+	font-family: "Source Sans Pro", sans-serif;
+	;
 }
 
-:root{
-  --light: #fff;
-  --ducor: transparent;
-  --gray: #e7e9e7;
+:root {
+	--light: #fff;
+	--ducor: transparent;
+	--gray: #e7e9e7;
 }
 
-.flex{
-  display: flex;
+.flex {
+	display: flex;
 }
 
 .content {
-  flex: 1;
+	flex: 1;
 }
 
 .iframe-container {
-  width: 100%;
-  height: 100vh; 
+	width: 100%;
+	height: 100vh;
 }
 
 .iframe-content {
-  width: 100%;
-  height: 100%;
+	width: 100%;
+	height: 100%;
 }
 
 /* dashboard start */
 .main-container {
-  grid-area: main;
-  overflow-y: auto;
-  padding: 20px 20px;
+	grid-area: main;
+	overflow-y: auto;
+	padding: 20px 20px;
 }
 
-.main-title{
-  display: flex;
-  justify-content: space-between;
+.main-title {
+	display: flex;
+	justify-content: space-between;
 }
 
-.main-cards{
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 20px;
-  margin: 15px 0;
+.main-cards {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	gap: 20px;
+	margin: 15px 0;
 }
 
-.card{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 8px 15px;
-  border-radius: 5px;
+.card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 8px 15px;
+	border-radius: 5px;
 }
 
-.card:first-child{
-  background-color: blue;
-  color: white;
+.card:first-child {
+	background-color: blue;
+	color: white;
 }
 
-.card:nth-child(2){
-  background-color: green;
-  color: white;
+.card:nth-child(2) {
+	background-color: green;
+	color: white;
 }
 
-.card:nth-child(3){
-  background-color: orangered;
-  color: white;
+.card:nth-child(3) {
+	background-color: orangered;
+	color: white;
 }
 
-.card:nth-child(4){
-  background-color: red;
-  color: white;
+.card:nth-child(4) {
+	background-color: red;
+	color: white;
 }
 
-.card-inner{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 25px;
+.card-inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 25px;
 }
 
-.charts{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-top: 60px;
-  height: 300px;
+.charts {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+	margin-top: 60px;
+	height: 300px;
 }
 
 /* end dashboard */
 /* start car designs */
-.container-cart-icon{
-  display: inline
+.container-cart-icon {
+	display: inline
 }
+
 .container-icon {
 	position: relative;
 }
@@ -154,23 +157,26 @@ body{
 }
 
 .titulo-producto-carrito {
-	font-size: 20px;
+	font-size: 15px;
+	margin-left: 3px;
+	overflow: hidden;
+	width: 110px;
 }
 
 .precio-producto-carrito {
 	font-weight: 700;
-	font-size: 20px;
+	font-size: 15px;
 	margin-left: 10px;
 }
 
 .cantidad-producto-carrito {
 	font-weight: 400;
-	font-size: 20px;
+	font-size: 15px;
 }
 
 .icon-close {
-	width: 25px;
-	height: 25px;
+	width: 20px;
+	height: 20px;
 }
 
 .icon-close:hover {
@@ -199,6 +205,7 @@ body{
 .hidden-cart {
 	display: none;
 }
+
 /* end car designs */
 /* start car */
 .container-items {
@@ -225,13 +232,13 @@ body{
 
 .item figure {
 	overflow: hidden;
-  margin: 0;
+	margin: 0;
 }
 
 .item:hover img {
-  /* transition: 10s; */
+	/* transition: 10s; */
 	transform: scale(1.2);
-  /* height: 400px;
+	/* height: 400px;
   position: absolute;
   width: 50px; */
 
@@ -242,14 +249,14 @@ body{
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-  height: 250px;
-  /* text-align: center; */
+	height: 250px;
+	/* text-align: center; */
 }
 
-.info-product h2{
-  font-size: 25px;
-  height: 100px;
-  overflow: hidden;
+.info-product h2 {
+	font-size: 25px;
+	height: 100px;
+	overflow: hidden;
 }
 
 .price {
@@ -274,22 +281,20 @@ body{
 	display: block;
 	width: 100%;
 	margin-top: 10px;
-	border-bottom-left-radius: 10px;
-	border-bottom-right-radius: 10px;
 	font-family: inherit;
 	cursor: pointer;
-  font-size: 16px;
-  transition: all .3s ease;
+	font-size: 16px;
 }
 
-.btn-clear-all:hover{
-  background-color: #333;
-  transform: scale(1.03);
-  border-radius: 0;
+.link-button{
+	text-decoration: none;
 }
 
 /* end car */
 @media screen and (max-width: 1500px) {
-
+	.container-items {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 20px;
+	}
 }
-

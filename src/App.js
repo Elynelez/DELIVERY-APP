@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NavbarNavigation from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import './App.css';
@@ -16,6 +16,7 @@ import Dashboard from './pages/DefaultPages/Dashboard';
 import SellerTable from './pages/SellerPages/SellerTable';
 import ESTable from './pages/DeliveryPages/ESTable';
 import SellerCar from './pages/SellerPages/SellerCar';
+import SellerForm from './pages/SellerPages/SellerForm';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -23,7 +24,7 @@ import { ColorModeContext, useMode } from "./theme";
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
 const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]
 const sellerEmails = ["pedidos.ducor@gmail.com"]
-const ExternalServiceEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
+const ExternalServiceEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "linap.inducor@gmail.com"]
 
 
 
@@ -31,9 +32,27 @@ function App() {
   const { isAuthenticated, user } = useAuth0();
   const [theme, colorMode] = useMode();
 
-  const [allProducts, setAllProducts] = useState([])
-  const [total, setTotal] = useState(0)
-  const [countProducts, setCountProducts] = useState(0)
+  const [allProducts, setAllProducts] = useState(() => {
+    const savedProducts = localStorage.getItem("allProducts");
+    return savedProducts ? JSON.parse(savedProducts) : [];
+  });
+  const [total, setTotal] = useState(() => {
+    const savedTotal = localStorage.getItem("total");
+    return savedTotal ? Number(savedTotal) : 0;
+  })
+  const [countProducts, setCountProducts] = useState(() => {
+    const savedCount = localStorage.getItem("countProducts");
+    return savedCount ? Number(savedCount) : 0;
+  })
+
+
+  
+  useEffect(() => {
+    localStorage.setItem("allProducts", JSON.stringify(allProducts));
+    localStorage.setItem("total", total)
+    localStorage.setItem("countProducts", countProducts)
+  }, [allProducts]);
+
 
   // return (
   //   <ColorModeContext.Provider value={colorMode}>
@@ -62,8 +81,9 @@ function App() {
   //                     countProducts={countProducts}
   //                     setCountProducts={setCountProducts}
   //                   />} />
-  //               <Route exact path="/Mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+  //               <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
   //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+  //               <Route exact path="/order/form" element={<SellerForm allProducts={allProducts}/>} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -85,7 +105,8 @@ function App() {
                 isAuthenticated={isAuthenticated}
                 allProducts={allProducts}
                 setAllProducts={setAllProducts}
-                total={total} setTotal={setTotal}
+                total={total} 
+                setTotal={setTotal}
                 countProducts={countProducts}
                 setCountProducts={setCountProducts}
               />
