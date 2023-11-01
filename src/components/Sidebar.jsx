@@ -13,10 +13,6 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 
-const logisticEmails = ["logistica.inducor@gmail.com", "pedidos.ducor@gmail.com"]
-const bossEmails = ["contableducor@gmail.com", "pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
-const sellerEmails = ["pedidos.ducor@gmail.com"]
-
 const Item = ({ title, to, icon, selected, setSelected }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -35,7 +31,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     );
 };
 
-const FusionSidebar = (props) => {
+const Sidebar = (props) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const { isAuthenticated, user } = useAuth0();
@@ -125,7 +121,7 @@ const FusionSidebar = (props) => {
                             selected={selected}
                             setSelected={setSelected}
                         />
-                        {isAuthenticated && logisticEmails.includes(user.email) && (
+                        {isAuthenticated && props.logisticEmails.includes(user.email) && (
                             <>
                                 <Typography
                                     variant="h6"
@@ -151,7 +147,7 @@ const FusionSidebar = (props) => {
                             </>
                         )}
 
-                        {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
+                        {isAuthenticated && (props.bossEmails.includes(user.email) || props.logisticEmails.includes(user.email)) && (
                             <>
                                 <Typography
                                     variant="h6"
@@ -188,7 +184,26 @@ const FusionSidebar = (props) => {
                             </>
                         )}
 
-                        {isAuthenticated && sellerEmails.includes(user.email) && (
+                        {isAuthenticated && user.email.includes("linap") && (
+                            <>
+                                <Typography
+                                    variant="h6"
+                                    color={colors.grey[300]}
+                                    sx={{ m: "15px 0 5px 20px" }}
+                                >
+                                    Interrapidísimo
+                                </Typography>
+                                <Item
+                                    title="Servicio Externo"
+                                    to="/mensajeros/ExternalService"
+                                    icon={<PersonOutlinedIcon />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                            </>
+                        )}
+
+                        {isAuthenticated && props.sellerEmails.includes(user.email) && (
                             <>
                                 <Typography
                                     variant="h6"
@@ -213,4 +228,4 @@ const FusionSidebar = (props) => {
     );
 };
 
-export default FusionSidebar;
+export default Sidebar;

@@ -46,7 +46,7 @@ function App() {
   })
 
 
-  
+
   useEffect(() => {
     localStorage.setItem("allProducts", JSON.stringify(allProducts));
     localStorage.setItem("total", total)
@@ -83,7 +83,7 @@ function App() {
   //                   />} />
   //               <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
   //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/order/form" element={<SellerForm allProducts={allProducts}/>} />
+  //               <Route exact path="/order/form" element={<SellerForm allProducts={allProducts} />} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -98,14 +98,20 @@ function App() {
         <CssBaseline />
         <Router>
           <div className='flex'>
-            <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
+            <Sidebar
+              couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]}
+              logisticEmails={logisticEmails}
+              bossEmails={bossEmails}
+              sellerEmails={sellerEmails}
+              ExternalServiceEmails={ExternalServiceEmails}
+            />
             <div className='content'>
               <NavbarNavigation
                 user={user}
                 isAuthenticated={isAuthenticated}
                 allProducts={allProducts}
                 setAllProducts={setAllProducts}
-                total={total} 
+                total={total}
                 setTotal={setTotal}
                 countProducts={countProducts}
                 setCountProducts={setCountProducts}
