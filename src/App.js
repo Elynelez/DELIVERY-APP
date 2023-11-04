@@ -83,7 +83,8 @@ function App() {
   //                   />} />
   //               <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
   //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/order/form" element={<SellerForm allProducts={allProducts} />} />
+  //               <Route exact path="/order/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
+  //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -137,7 +138,7 @@ function App() {
                 )}
                 {isAuthenticated && (bossEmails.includes(user.email) || ExternalServiceEmails.includes(user.email)) && (
                   <>
-                    <Route exact path="/mensajeros/ExternalService" element={<ESTable ExternalServiceEmails={ExternalServiceEmails} />} />
+                    <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} ExternalServiceEmails={ExternalServiceEmails} />} />
                   </>
                 )}
               </Routes>
