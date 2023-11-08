@@ -17,6 +17,7 @@ import SellerTable from './pages/SellerPages/SellerTable';
 import ESTable from './pages/DeliveryPages/ESTable';
 import SellerCar from './pages/SellerPages/SellerCar';
 import SellerForm from './pages/SellerPages/SellerForm';
+import CreateProduct from './pages/PackagePages/CreateProduct';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -85,6 +86,7 @@ function App() {
   //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
   //               <Route exact path="/order/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
   //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
+  //               <Route exact path="/create" element={<CreateProduct />} />
   //             </Routes>
   //           </div>
   //         </div>

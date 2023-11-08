@@ -215,7 +215,7 @@ const CoursiersTable = (props) => {
             </Menu.Item>
             {user && props.bossEmails.includes(user.email) && (
               <Menu.Item key="4">
-                <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, status: params.row.status, disabled: (params.row.status === "COMPLETO (FR)" || params.row.status === "INCOMPLETO") ? false : true }} />
+                <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, status: params.row.status, disabled: (params.row.status.includes("COMPLETO") && params.row.status !== "INCOMPLETO") ? true : false }} />
               </Menu.Item>
             )}
           </Menu.SubMenu>
