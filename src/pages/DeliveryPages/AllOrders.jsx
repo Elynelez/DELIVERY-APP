@@ -109,7 +109,7 @@ const AllOrders = (props) => {
             )}
             {user && props.bossEmails.includes(user.email) && (
               <Menu.Item key="3">
-                <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, platform: "ExternalService", user: user.email, status: params.row.status, disabled: (params.row.status.includes("COMPLETO") && params.row.status !== "INCOMPLETO") ? true : false }} />
+                <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, platform: "Coursiers", user: user.email, status: params.row.status, disabled: (params.row.status.includes("COMPLETO") && params.row.status !== "INCOMPLETO") ? true : false }} />
               </Menu.Item>
             )}
           </Menu.SubMenu>

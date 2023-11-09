@@ -280,7 +280,7 @@ const ReviewModal = (props) => {
               name="user"
               label="usuario"
             >
-              <Input />
+              <Input readOnly/>
             </Form.Item>
             <Form.Item
               name="total"
