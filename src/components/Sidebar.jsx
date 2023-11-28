@@ -10,10 +10,10 @@ import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import CalendarToday from "@mui/icons-material/CalendarToday";
 import Inventory from "@mui/icons-material/Inventory";
 import Games from "@mui/icons-material/Games";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import { Inventory } from "@mui/icons-material";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
     const theme = useTheme();
@@ -217,7 +217,7 @@ const Sidebar = (props) => {
                                 <Item
                                     title="Mis ventas"
                                     to="/Sales"
-                                    icon={<CalendarTodayOutlinedIcon />}
+                                    icon={<CalendarToday />}
                                     selected={selected}
                                     setSelected={setSelected}
                                 />
