@@ -158,7 +158,7 @@ const Sidebar = (props) => {
                                 >
                                     Tablas
                                 </Typography>
-                                <SubMenu title="coursiers" icon={<PeopleOutlinedIcon />}>
+                                <SubMenu title="Mensajeros" icon={<PeopleOutlinedIcon />}>
                                     {props.couriers.map((coursier) => (
                                         <Item
                                             title={coursier}
