@@ -11,7 +11,7 @@ const RBExitProduct = () =>{
                 overflow="hidden"
                 allowtransparency="true"
                 frameborder="0"
-                src={"https://script.google.com/macros/s/AKfycbyj-SVZtbarkSUKNmk5JWroAv2clZxMnJ9-D09lmi0V8BYnjJHN8P_g11SU4d3Fl57g/exec/cash?user="+user}
+                src={"https://script.google.com/macros/s/AKfycbw2qnpT92wXJf9liQBQVTILWo95maaZ7Y6S0VVYvlynt0UOVSw4loZZUebd9_UFX4bq/exec/cash?user="+user}
                 className="iframe-content"
             />
         </div>
