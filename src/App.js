@@ -18,6 +18,9 @@ import ESTable from './pages/DeliveryPages/ESTable';
 import SellerCar from './pages/SellerPages/SellerCar';
 import SellerForm from './pages/SellerPages/SellerForm';
 import CreateProduct from './pages/PackagePages/CreateProduct';
+import EnterProduct from './pages/PackagePages/EnterProduct';
+import ExitProduct from './pages/PackagePages/ExitProduct';
+import RBExitProduct from './pages/PackagePages/RBExitProduct';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -26,6 +29,8 @@ const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com"
 const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]
 const sellerEmails = ["pedidos.ducor@gmail.com"]
 const ExternalServiceEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "linap.inducor@gmail.com"]
+const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "ainducor@gmail.com"]
+const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "empaque.inducor@gmail.com"]
 
 
 
@@ -84,9 +89,10 @@ function App() {
   //                   />} />
   //               <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
   //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/order/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
+  //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
   //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
   //               <Route exact path="/create" element={<CreateProduct />} />
+  //               <Route exact path="/enter" element={<EnterProduct />} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -107,6 +113,8 @@ function App() {
               bossEmails={bossEmails}
               sellerEmails={sellerEmails}
               ExternalServiceEmails={ExternalServiceEmails}
+              exitsInventoryEmails={exitsInventoryEmails}
+              entriesInventoryEmails={entriesInventoryEmails}
             />
             <div className='content'>
               <NavbarNavigation
@@ -129,7 +137,7 @@ function App() {
                 )}
                 {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
                   <>
-                    <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+                    <Route exact path="/coursiers/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
                     <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
                   </>
                 )}
@@ -140,7 +148,18 @@ function App() {
                 )}
                 {isAuthenticated && (bossEmails.includes(user.email) || ExternalServiceEmails.includes(user.email)) && (
                   <>
-                    <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} ExternalServiceEmails={ExternalServiceEmails} />} />
+                    <Route exact path="/coursiers/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} ExternalServiceEmails={ExternalServiceEmails} />} />
+                  </>
+                )}
+                {isAuthenticated && exitsInventoryEmails.includes(user.email) && (
+                  <>
+                    <Route exact path="/inventory/exit" element={<ExitProduct />} />
+                    <Route exact path="/inventory/cash" element={<RBExitProduct />} />
+                  </>
+                )}
+                {isAuthenticated && entriesInventoryEmails.includes(user.email) && (
+                  <>
+                    <Route exact path="/inventory/enter" element={<EnterProduct />} />
                   </>
                 )}
               </Routes>

@@ -49,7 +49,7 @@ const NavbarNavigation = (props) => {
         borderRadius="3px"
       >
         <NavbarBrand href="/" className="text-primary">
-          <img alt="logo" src="/logo.png" width='200px' />
+          <img alt="logo" src="/logo.png" width='200px' style={{filter: colors.black[200]}}/>
         </NavbarBrand>
       </Box>
       <Box
@@ -121,7 +121,7 @@ const NavbarNavigation = (props) => {
                     <h3>Total:</h3>
                     <span className='total-pagar'>${props.total}</span>
                   </DropdownItem>
-                  <a href="/order/form" className="link-button">
+                  <a href="/sales/form" className="link-button">
                     <button className='btn-clear-all' >
                       Ir a formulario
                     </button>

@@ -6,7 +6,8 @@ export const tokens = (mode) => ({
   ...(mode === "dark"
     ? {
       black: {
-        100: "#1F2A40"
+        100: "#1F2A40",
+        200: "brightness(0) invert(1)"
       },
       grey: {
         100: "#e0e0e0",
@@ -67,7 +68,8 @@ export const tokens = (mode) => ({
     }
     : {
       black: {
-        100: "rgba(0, 0, 0, 0.7)"
+        100: "rgba(0, 0, 0, 0.7)",
+        200: "grayscale(100%)"
       },
       grey: {
         100: "#141414",

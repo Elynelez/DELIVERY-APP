@@ -1,8 +1,9 @@
 import React from "react"
 
 const CreateProduct = () =>{
+
     return(
-        <div className="iframe-container">
+        <div className="iframe-container" >
             <iframe
                 title="createProduct"
                 overflow="hidden"

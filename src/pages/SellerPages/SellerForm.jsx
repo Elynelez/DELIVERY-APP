@@ -129,7 +129,7 @@ const SellerForm = (props) => {
                                     variant="filled"
                                     type="text"
                                     select
-                                    label="Ducor"
+                                    label="Sucursal"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     name="branchOffice"
