@@ -123,8 +123,6 @@ const CoursiersTable = (props) => {
 
   }
 
-
-
   useEffect(() => {
     if (deleteRow !== null) {
       fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?key=" + id)
