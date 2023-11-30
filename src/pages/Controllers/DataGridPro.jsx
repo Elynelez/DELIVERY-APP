@@ -1,10 +1,13 @@
 import { Box } from "@mui/material";
-import { DataGridPro, GridToolbar } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridToolbar, GridToolbarContainer } from '@mui/x-data-grid-pro';
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
 import { React, useState } from "react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { Button, Modal, message, Select } from "antd";
+import { DatePicker, Button, Modal, message, Select } from "antd";
+// materials
+import GetApp from '@mui/icons-material/GetApp';
+
 
 const DataTableGrid = (props) => {
   const { user } = useAuth0();
@@ -16,41 +19,100 @@ const DataTableGrid = (props) => {
   const [filteredData, setFilteredData] = useState(props.data);
   const [selectedStatus, setSelectedStatus] = useState(null)
 
-  // const DateRangeFilter = ({ onFilter }) => {
-  //   const [startDate, setStartDate] = useState("");
-  //   const [endDate, setEndDate] = useState("");
+  const downloadTable = () => {
+    const uri = 'data:application/vnd.ms-excel;base64,';
+    const template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" /><meta name="ProgId" content="Excel.Sheet"/><meta http-equiv="X-UA-Compatible" content="IE=edge" /><style>table{border-collapse:collapse;}th,td{border:1px solid gray;padding:10px;}th{background-color:lightgray;}</style><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
+    const base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) };
 
-  //   const handleFilter = () => {
-  //     onFilter(startDate, endDate);
-  //   };
+    var thead = `<tr>` + ["GUÍA", "FECHA DESPACHO", "FECHA DESPACHO", "FECHA ENTREGA", "ZONA", "CÓDIGO", "MENSAJERO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "TOTAL", "OBSERVACIONES", "DINERO ENTREGADO", "ESTADO"].map((e) => {
+      return `<th>${e}</th>`
+    }).join('') + `</tr>`
 
-  //   return (
-  //     <div>
-  //       <input
-  //         type="date"
-  //         placeholder="Start Date"
-  //         value={startDate}
-  //         onChange={(e) => setStartDate(e.target.value)}
-  //       />
-  //       <input
-  //         type="date"
-  //         placeholder="End Date"
-  //         value={endDate}
-  //         onChange={(e) => setEndDate(e.target.value)}
-  //       />
-  //       <button onClick={handleFilter}>Filtrar</button>
-  //     </div>
-  //   );
-  // };
+    const tbody = props.data.map(row => {
+      return `<tr>${Object.keys(row).map((e) => {
+        return `<td>${row[e]}</td>`
+      }).join('')}</tr>`
+    }).join('')
 
-  // const handleDateFilter = (startDate, endDate) => {
-  //   const filtered = props.data.filter((item) => {
-  //     const itemDate = new Date(item.startDate);
-  //     return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
-  //   });
+    const tableHtml = thead + tbody
 
-  //   setFilteredData(filtered);
-  // };
+    const content = template.replace('{table}', tableHtml);
+    const encodedUri = uri + base64(content);
+
+    const link = document.createElement('a');
+    link.href = encodedUri;
+    link.download = `Routes.xls`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const CustomToolbar = () => {
+
+    return (
+      <GridToolbarContainer >
+        <GridToolbar />
+        <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTable}>
+          <GetApp /><p style={{ fontSize: "10px", paddingTop: "15px" }}>EXPORTAR EXCEL COMPLETO</p>
+        </div>
+      </GridToolbarContainer>
+    );
+  };
+
+  const DateRangeFilter = ({ onFilter }) => {
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
+    const handleFilter = () => {
+      if (startDate && endDate) {
+        onFilter(startDate, endDate);
+      } else {
+        message.error('Por favor, selecciona fechas de inicio y fin');
+      }
+    };
+    const deleteFilter = () => {
+      setFilteredData(props.data)
+    };
+
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <DatePicker
+          placeholder="Fecha de inicio"
+          style={{ backgroundColor: colors.blueAccent[1000], color: "white" }}
+          value={startDate}
+          onChange={(date) => setStartDate(date)}
+        />
+        <DatePicker
+          placeholder="Fecha de fin"
+          style={{ backgroundColor: colors.blueAccent[1000], color: "white" }}
+          value={endDate}
+          onChange={(date) => setEndDate(date)}
+        />
+        <Button
+          type="primary"
+          style={{ backgroundColor: colors.blueAccent[1000], color: "white" }}
+          onClick={handleFilter}>
+          Filtrar
+        </Button>
+        <Button
+          onClick={deleteFilter}
+          style={{ backgroundColor: colors.blueAccent[1000], color: "white" }}>
+          Quitar filtro
+        </Button>
+      </div>
+    );
+  };
+
+  const handleDateFilter = (startDate, endDate) => {
+    const filtered = props.data.filter((item) => {
+      const itemDate = new Date(item.date_generate_ISO);
+      console.log(item.date_generate_ISO)
+      return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
+    });
+
+    setFilteredData(filtered);
+
+  };
 
   const updateMultipleStatus = () => {
     var dataStatusNew = dataStatus.map(arr => [...arr, selectedStatus])
@@ -167,20 +229,22 @@ const DataTableGrid = (props) => {
       Total sumado: $
       <p style={{ display: "inline-block" }}>{totalSum}</p>
       <br />
-      <Button
-        type="primary"
-        style={{ backgroundColor: colors.blueAccent[1000] }}
-        onClick={() => { updateMultipleStatus() }}
-        disabled={disabledButton}>
-        Cambiar Estado
-      </Button>
-      {/* <DateRangeFilter onFilter={handleDateFilter} /> */}
+      <div style={{ display: 'flex', gap: "5px" }}>
+        <Button
+          type="primary"
+          style={{ backgroundColor: colors.blueAccent[1000] }}
+          onClick={() => { updateMultipleStatus() }}
+          disabled={disabledButton}>
+          Cambiar Estado
+        </Button>
+        <DateRangeFilter onFilter={handleDateFilter} />
+      </div>
       <DataGridPro
         onRowSelectionModelChange={selectedRows}
         checkboxSelection
-        rows={props.data}
+        rows={filteredData}
         columns={props.columns}
-        slots={{ toolbar: GridToolbar }}
+        slots={{ toolbar: CustomToolbar }}
         pagination={{ paginationModel: { pageSize: 25 } }}
       />
     </Box>
