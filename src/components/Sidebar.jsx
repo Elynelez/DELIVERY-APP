@@ -186,7 +186,7 @@ const Sidebar = (props) => {
                             </>
                         )}
 
-                        {isAuthenticated && user.email.includes("linap") && (
+                        {isAuthenticated && user.email.includes("atencionalcliente.magicmechas") && (
                             <>
                                 <Typography
                                     variant="h6"
