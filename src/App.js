@@ -28,7 +28,7 @@ import { ColorModeContext, useMode } from "./theme";
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
 const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]
 const sellerEmails = ["pedidos.ducor@gmail.com"]
-const ExternalServiceEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "atencionalcliente.magicmechas@gmail.com"]
+const ExternalServiceEmails = ["atencionalcliente.magicmechas@gmail.com", "aocampo.inducor@gmail.com"]
 const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com","ainducor@gmail.com"]
 const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com","empaque.inducor@gmail.com"]
 

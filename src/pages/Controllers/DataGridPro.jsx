@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import { DataGridPro, GridToolbar, GridToolbarContainer } from '@mui/x-data-grid-pro';
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
+import { useLocation } from 'react-router-dom';
 import { React, useState } from "react";
 import { useAuth0 } from '@auth0/auth0-react';
 import { DatePicker, Button, Modal, message, Select } from "antd";
@@ -10,6 +11,7 @@ import GetApp from '@mui/icons-material/GetApp';
 
 
 const DataTableGrid = (props) => {
+  const location = useLocation()
   const { user } = useAuth0();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -52,9 +54,11 @@ const DataTableGrid = (props) => {
     return (
       <GridToolbarContainer >
         <GridToolbar />
-        <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTable}>
-          <GetApp /><p style={{ fontSize: "10px", paddingTop: "15px" }}>EXPORTAR EXCEL COMPLETO</p>
-        </div>
+        {location.pathname.includes("AllOrders") && (
+          <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTable}>
+            <GetApp /><p style={{ fontSize: "10px", paddingTop: "15px" }}>EXPORTAR EXCEL COMPLETO</p>
+          </div>
+        )}
       </GridToolbarContainer>
     );
   };
