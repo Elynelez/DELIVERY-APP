@@ -287,15 +287,22 @@ body {
 	font-size: 16px;
 }
 
-.link-button{
+.link-button {
 	text-decoration: none;
 }
 
 /* end car */
-@media screen and (max-width: 1500px) {
+@media screen and (max-width: 600px) {
+	.text-primary{
+		display: none;
+	}
 	.container-items {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: 20px;
+	}
+
+	.MuiBox-root.css-1j1s727{
+		display: none;
 	}
 }
