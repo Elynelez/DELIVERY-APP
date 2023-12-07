@@ -249,6 +249,32 @@ const Sidebar = (props) => {
                                 />
                             </>
                         )}
+
+                        {isAuthenticated && props.entriesInventoryEmails.includes(user.email) && (
+                            <>
+                                <Typography
+                                    variant="h6"
+                                    color={colors.grey[300]}
+                                    sx={{ m: "15px 0 5px 20px" }}
+                                >
+                                    Entradas
+                                </Typography>
+                                <Item
+                                    title="Formualrio de Entradas"
+                                    to="/inventory/enter"
+                                    icon={<Inventory />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                                <Item
+                                    title="Creación"
+                                    to="/inventory/create"
+                                    icon={<Games />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                            </>
+                        )}
                     </Box>
                 </SidebarMenu>
             </ProSidebar>

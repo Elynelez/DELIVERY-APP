@@ -160,6 +160,7 @@ function App() {
                 {isAuthenticated && entriesInventoryEmails.includes(user.email) && (
                   <>
                     <Route exact path="/inventory/enter" element={<EnterProduct />} />
+                    <Route exact path="/inventory/create" element={<CreateProduct />} />
                   </>
                 )}
               </Routes>
