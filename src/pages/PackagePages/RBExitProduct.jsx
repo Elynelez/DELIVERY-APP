@@ -126,7 +126,7 @@ const RBExitProduct = () => {
                             const filterSKUS = rangeItems.filter(object => valuesFinal.includes(object.sku));
 
                             const sentValues = filterSKUS.map((obj, index) => {
-                                return [factureNumber.value, platform.value, obj.code, obj.sku, obj.name, quantityInputs[index].value, "", user.value]
+                                return [factureNumber.value, platform.value, obj.code, obj.sku, obj.name, quantityInputs[index].value, "", user.email]
                             })
 
                             if (notExistentSkus.length > 0) {
