@@ -30,7 +30,7 @@ const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "induc
 const sellerEmails = ["pedidos.ducor@gmail.com"]
 const ExternalServiceEmails = ["atencionalcliente.magicmechas@gmail.com"]
 const entriesInventoryEmails = ["aocampo.inducor@gmail.com","pedidos.ducor@gmail.com", "inducorsas@gmail.com","ainducor@gmail.com"]
-const exitsInventoryEmails = ["vivian.ducor@gmail.com", "aocampo.inducor@gmail.com","pedidos.ducor@gmail.com", "inducorsas@gmail.com","empaque.inducor@gmail.com"]
+const exitsInventoryEmails = ["elinarnyex@gmail.com", "vivian.ducor@gmail.com", "aocampo.inducor@gmail.com","pedidos.ducor@gmail.com", "inducorsas@gmail.com","empaque.inducor@gmail.com"]
 
 
 
