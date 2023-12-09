@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Spin } from "antd"
+import { Button, Spin, message } from "antd"
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -151,10 +151,12 @@ const RBExitProduct = () => {
                             })
                                 .then(response => response.json())
                                 .then(data => {
-                                    setLoading(false); 
+                                    setLoading(false);
+                                    message.success('cargado exitosamente') 
                                 })
                                 .catch(error => {
                                     console.error('Error changing row:', error);
+                                    message.info('no se pudo completar la operación')
                                 });
                             setAllValues([]);
                         },
