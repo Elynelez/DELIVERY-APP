@@ -101,6 +101,25 @@ body {
 }
 
 /* end dashboard */
+.container-main-RB {
+	text-align: center;
+	align-items: center;
+}
+
+.input-sweet-table {
+	width: 80px;
+	margin: 0
+}
+
+.input-sweet-table-main {
+	width: 150px;
+	margin: 0
+}
+
+#page table {
+	width: 100%;
+}
+
 /* start car designs */
 .container-cart-icon {
 	display: inline
@@ -292,17 +311,25 @@ body {
 }
 
 /* end car */
+.buttonRepeat {
+	background-color: #fff;
+}
+
+/* RBExitProduct */
+
+/* end RBExitProduct */
 @media screen and (max-width: 600px) {
-	.text-primary{
+	.text-primary {
 		display: none;
 	}
+
 	.container-items {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: 20px;
 	}
 
-	.MuiBox-root.css-1j1s727{
+	.MuiBox-root.css-1j1s727 {
 		display: none;
 	}
 }
