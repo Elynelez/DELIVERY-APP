@@ -92,7 +92,7 @@ function App() {
   //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
   //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
   //               <Route exact path="/create" element={<CreateProduct />} />
-  //               <Route exact path="/inventory/cash" element={<RBExitProduct />} />
+  //               <Route exact path="/inventory/cash" element={<EnterProduct />} />
   //             </Routes>
   //           </div>
   //         </div>
