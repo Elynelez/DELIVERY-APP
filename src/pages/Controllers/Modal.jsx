@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Input, Checkbox, Spin, message, Select } from 'antd';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 
 const ModalData = (props) => {
@@ -280,7 +281,7 @@ const ReviewModal = (props) => {
               name="user"
               label="usuario"
             >
-              <Input readOnly/>
+              <Input readOnly />
             </Form.Item>
             <Form.Item
               name="total"
@@ -325,4 +326,117 @@ const ReviewModal = (props) => {
   );
 }
 
-export { ModalData, EditModal, ReviewModal };
+const ConfirmInventoryModal = (props) => {
+  const [form] = Form.useForm();
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const onFinish = (values) => {
+    Modal.confirm({
+      title: '¿Seguro que quieres actualizar este contenido?',
+      content: 'Esta acción no se puede deshacer.',
+      onOk: () => {
+        message.info('unos momentos')
+        setLoading(true);
+        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?updateOrder", {
+          redirect: "follow",
+          method: 'POST',
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(values)
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            message.success('Estado actualizado exitosamente');
+            setLoading(false);
+            setVisible(false)
+            props.setReloadData(true);
+          })
+          .catch(error => {
+            console.error('Error changing row:', error);
+            message.info('no se pudo completar la operación')
+          });
+      },
+    });
+  }
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
+  return (
+    <div>
+      <Button type='primary' style={{ backgroundColor: "green" }} onClick={showModal}>
+        Confirmar
+      </Button>
+      <Modal
+        visible={visible}
+        title="Actualizar"
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancelar
+          </Button>
+        ]}
+      >
+        <Spin spinning={loading}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Sku</TableCell>
+                  <TableCell>Nombre del Producto</TableCell>
+                  <TableCell align="right">Cantidad</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {props.rows.map((obj) => (
+                  <TableRow key={obj.sku}>
+                    <TableCell>{obj.sku}</TableCell>
+                    <TableCell>{obj.name}</TableCell>
+                    <TableCell align="right">{obj.quantity}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <Form form={form} onFinish={onFinish} initialValues={props.initialValues} layout="vertical">
+            <Form.Item
+              label="Cd"
+              name="cells"
+              labelAlign="left"
+            >
+              <Input readOnly />
+            </Form.Item>
+            <Form.Item
+              label="Plataforma"
+              name="platform"
+              labelAlign="left"
+            >
+              <Select placeholder="selecciona la plataforma">
+                <Select.Option value="Mercadolibre" key={1}>Mercadolibre</Select.Option>
+                <Select.Option value="Shopify" key={2}>Magic Mechas</Select.Option>
+                <Select.Option value="DC Bogotá" key={3}>DC Bogotá</Select.Option>
+                <Select.Option value="Linio" key={4}>Linio</Select.Option>
+                <Select.Option value="Falabella" key={5}>Falabella</Select.Option>
+                <Select.Option value="Rappi" key={6}>Rappi</Select.Option>
+                <Select.Option value="Otro" key={7}>Otro</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item>
+              <input type="submit" className="btn btn-primary" />
+            </Form.Item>
+          </Form>
+        </Spin>
+      </Modal>
+    </div>
+  );
+}
+export { ModalData, EditModal, ReviewModal, ConfirmInventoryModal };

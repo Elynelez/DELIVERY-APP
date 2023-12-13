@@ -118,6 +118,10 @@ const DataTableGrid = (props) => {
 
   };
 
+  const updateOrderStatus = () => {
+    console.log("dbabdsa")
+  }
+
   const updateMultipleStatus = () => {
     var dataStatusNew = dataStatus.map(arr => [...arr, selectedStatus])
     Modal.confirm({
@@ -230,17 +234,35 @@ const DataTableGrid = (props) => {
         },
       }}
     >
-      Total sumado: $
-      <p style={{ display: "inline-block" }}>{totalSum}</p>
-      <br />
+      {props.typeSheet == "Inventory" ? (
+        <></>
+      ) : (
+        <>
+          Total sumado: $
+          <p style={{ display: "inline-block" }}>{totalSum}</p>
+          <br />
+        </>
+      )}
+
       <div style={{ display: 'flex', gap: "5px" }}>
-        <Button
-          type="primary"
-          style={{ backgroundColor: colors.blueAccent[1000] }}
-          onClick={() => { updateMultipleStatus() }}
-          disabled={disabledButton}>
-          Cambiar Estado
-        </Button>
+        {props.typeSheet == "Inventory" ? (
+          <Button
+            type="primary"
+            style={{ backgroundColor: colors.blueAccent[1000] }}
+            onClick={() => { updateOrderStatus() }}
+            disabled={false}>
+            Cambiar Estado
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            style={{ backgroundColor: colors.blueAccent[1000] }}
+            onClick={() => { updateMultipleStatus() }}
+            disabled={disabledButton}>
+            Cambiar Estado
+          </Button>
+        )}
+
         <DateRangeFilter onFilter={handleDateFilter} />
       </div>
       <DataGridPro

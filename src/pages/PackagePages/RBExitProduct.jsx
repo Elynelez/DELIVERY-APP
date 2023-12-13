@@ -83,10 +83,10 @@ const RBExitProduct = () => {
                               <input class="swal2-input input-sweet-table-main" id="factureNumber" required>
                             </div>
                             <br>
-                            <div>
+                            <div style="display: none">
                               <label class="form-label">Plataforma de entrega</label>
                               <br>
-                              <input class="swal2-input input-sweet-table-main" id="platform" required>
+                              <input class="swal2-input input-sweet-table-main" id="platform" value="POR CONFIRMAR" required>
                             </div>
                             <table style="width: 100%">
                                 <thead>
@@ -126,7 +126,7 @@ const RBExitProduct = () => {
                             const filterSKUS = rangeItems.filter(object => valuesFinal.includes(object.sku));
 
                             const sentValues = filterSKUS.map((obj, index) => {
-                                return [factureNumber.value, platform.value, obj.code, obj.sku, obj.name, quantityInputs[index].value, "", user.email]
+                                return [factureNumber.value, platform.value, obj.code, obj.sku, obj.name, quantityInputs[index].value, obj.brand, user.email]
                             })
 
                             if (notExistentSkus.length > 0) {

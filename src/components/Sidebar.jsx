@@ -247,6 +247,13 @@ const Sidebar = (props) => {
                                     selected={selected}
                                     setSelected={setSelected}
                                 />
+                                <Item
+                                    title="Pendientes"
+                                    to="/inventory/table"
+                                    icon={<CalendarToday />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
                             </>
                         )}
 

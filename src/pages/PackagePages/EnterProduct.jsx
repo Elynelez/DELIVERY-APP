@@ -143,7 +143,7 @@ const EnterProduct = () =>{
                                             <div className="input-group-limit-enter" id={num}>
                                                 <div className="input-group-enter">
                                                     <label htmlFor="sku" className="form-label-enter">Sku del producto</label>
-                                                    <input list="productsList" className="input-info-enter" id="sku" name="sku" onInput={(event) => { labelChangeProps(event.target) }} onChange={(event) => { validateInput(event.target) }} required />
+                                                    <input list="productsList" className="input-info-enter" id="sku" name="sku" onInput={(event) => { labelChangeProps(event.target) }} onBlur={(event) => { validateInput(event.target) }} required />
                                                     <datalist id="productsList">
                                                         {rangeItems.map(obj => (
                                                             <option value={obj.sku} code={obj.code}>{obj.name}</option>

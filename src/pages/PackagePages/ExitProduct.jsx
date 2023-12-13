@@ -132,9 +132,9 @@ const ExitProduct = () => {
                                             <label htmlFor="facture-number" className="form-label-exit">Número del pedido</label>
                                             <input className="input-info-exit" type="text" id="facture-number" name="facture-number" onInput={(event) => { labelChangeProps(event.target) }} required />
                                         </div>
-                                        <div className="input-group-exit">
-                                            <label htmlFor="platform" className="form-label-exit">Plataforma</label>
-                                            <input className="input-info-exit" type="text" id="platform" name="platform" onInput={(event) => { labelChangeProps(event.target) }} required />
+                                        <div className="input-group-exit" style={{visibility: "hidden"}}>
+                                            <label htmlFor="platform" className="form-label-exit" >Plataforma</label>
+                                            <input className="input-info-exit" type="text" id="platform" name="platform" value="POR CONFIRMAR" onInput={(event) => { labelChangeProps(event.target) }} required />
                                         </div>
                                     </div>
                                     <h4>Productos</h4>
@@ -143,7 +143,7 @@ const ExitProduct = () => {
                                             <div className="input-group-limit-exit" id={num}>
                                                 <div className="input-group-exit">
                                                     <label htmlFor="sku" className="form-label-exit">Sku del producto</label>
-                                                    <input list="productsList" className="input-info-exit" id="sku" name="sku" onInput={(event) => { labelChangeProps(event.target) }} onChange={(event) => { validateInput(event.target) }} required />
+                                                    <input list="productsList" className="input-info-exit" id="sku" name="sku" onInput={(event) => { labelChangeProps(event.target) }} onBlur={(event) => { validateInput(event.target) }} required />
                                                     <datalist id="productsList">
                                                         {rangeItems.map(obj => (
                                                             <option value={obj.sku} code={obj.code}>{obj.name}</option>
