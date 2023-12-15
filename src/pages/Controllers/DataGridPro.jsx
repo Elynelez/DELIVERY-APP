@@ -245,7 +245,7 @@ const DataTableGrid = (props) => {
       )}
 
       <div style={{ display: 'flex', gap: "5px" }}>
-        {props.typeSheet == "Inventory" ? (
+        {props.typeSheet === "Inventory" ? (
           <Button
             type="primary"
             style={{ backgroundColor: colors.blueAccent[1000] }}
@@ -253,7 +253,7 @@ const DataTableGrid = (props) => {
             disabled={false}>
             Cambiar Estado
           </Button>
-        ) : (
+        ) : props.typeSheet === "Delivery" || props.typeSheet === "ExternalService" ? (
           <Button
             type="primary"
             style={{ backgroundColor: colors.blueAccent[1000] }}
@@ -261,6 +261,8 @@ const DataTableGrid = (props) => {
             disabled={disabledButton}>
             Cambiar Estado
           </Button>
+        ) : (
+          <></>
         )}
 
         <DateRangeFilter onFilter={handleDateFilter} />

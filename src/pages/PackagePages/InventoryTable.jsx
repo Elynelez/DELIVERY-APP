@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Spin, Menu, Button } from "antd"
-import { ConfirmInventoryModal, EditInventoryOrder } from "../Controllers/Modal";
+import { Spin, Menu } from "antd"
 import DataTableGrid from "../Controllers/DataGridPro";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
 
-const PendingOrders = () => {
+const InventoryTable = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true)
-    // const [deleteRow, setDeleteRow] = useState(null)
-    // const [cancelledOrder, setCancelledOrder] = useState(null)
     const [reloadData, setReloadData] = useState(false);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    const loadData = () => {
-        setLoading(true);
-        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?exitsOrders")
+    useEffect(() => {
+        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?")
             .then(response => response.json())
             .then(parsedData => {
-                console.log(parsedData)
+                parsedData.forEach((obj, index)=>{
+                    obj.id = index
+                })
                 setData(parsedData)
                 setLoading(false)
             })
@@ -28,33 +26,24 @@ const PendingOrders = () => {
                 console.error('Error fetching data:', error);
                 setLoading(false);
             });
-    };
-
-    useEffect(() => {
-        loadData();
     }, [])
 
-    useEffect(() => {
-        if (reloadData) {
-            loadData();
-            setReloadData(false);
-        }
-    }, [reloadData]);
-
     const columns = [
-        { headerName: 'Fecha', field: "date_generate", flex: 1 },
-        { headerName: 'Número de orden', field: "order_number", flex: 1 },
-        { headerName: 'Plataforma', field: "platform", flex: 1 },
-        { headerName: 'Usuario', field: "user", flex: 1 },
+        { headerName: 'Sku', field: "sku", flex: 1 },
+        { headerName: 'Nombre', field: "name", flex: 2 },
+        { headerName: 'Cantidad', field: "quantity", flex: 0.5 },
+        { headerName: 'Marca', field: "brand", flex: 1 },
+        { headerName: 'Precio', field: "sale_price", flex: 1 },
         {
             headerName: 'Acciones', renderCell: params => (
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
                     <Menu.SubMenu title="Acciones">
                         <Menu.Item key="0">
-                            <ConfirmInventoryModal initialValues={{ cells: params.row.cells }} rows={params.row.items} setReloadData={setReloadData} />
-                        </Menu.Item>
-                        <Menu.Item key="1">
-                            <EditInventoryOrder rows={params.row.items} orderNumber={params.row.order_number} setReloadData={setReloadData} />
+                            <button>Agregar Sku</button>
+                            <button>Enlazar Mco</button>
+                            <button>Ajustar Cantidad</button>
+                            <button>Editar Producto</button>
+                            <button>Eliminar Producto</button>
                         </Menu.Item>
                     </Menu.SubMenu>
                 </Menu>
@@ -64,7 +53,6 @@ const PendingOrders = () => {
 
     return (
         <div className="container py-5">
-
             {loading ? (
                 <div className="text-center">
                     <Spin tip="Cargando datos..." />
@@ -78,7 +66,7 @@ const PendingOrders = () => {
                             fontWeight="bold"
                             sx={{ m: "0 0 5px 0" }}
                         >
-                            PENDIENTES DE CONFIRMAR
+                            INVENTARIO DE PRODUCTOS
                         </Typography>
                         <Typography variant="h5" color={colors.greenAccent[400]}>
                             últimos detalles
@@ -89,7 +77,7 @@ const PendingOrders = () => {
                         data={data}
                         setReloadData={setReloadData}
                         setLoading={setLoading}
-                        typeSheet={"Inventory"}
+                        typeSheet={"Nothing"}
                     />
                 </Box>
             )}
@@ -97,4 +85,4 @@ const PendingOrders = () => {
     )
 }
 
-export default PendingOrders;
+export default InventoryTable

@@ -22,6 +22,8 @@ import EnterProduct from './pages/PackagePages/EnterProduct';
 import ExitProduct from './pages/PackagePages/ExitProduct';
 import RBExitProduct from './pages/PackagePages/RBExitProduct';
 import PendingOrders from './pages/PackagePages/PendingOrders';
+import TableMercadoLibre from './pages/AccountingPages/Mercadolibre';
+import InventoryTable from './pages/PackagePages/InventoryTable';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -29,7 +31,7 @@ import { ColorModeContext, useMode } from "./theme";
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
 const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]
 const sellerEmails = ["pedidos.ducor@gmail.com"]
-const ExternalServiceEmails = ["atencionalcliente.magicmechas@gmail.com"]
+const ExternalServiceEmails = ["atencionalcliente.magicmechas@gmail.com", "klcf.inducor@gmail.com"]
 const entriesInventoryEmails = ["aocampo.inducor@gmail.com","pedidos.ducor@gmail.com", "inducorsas@gmail.com","ainducor@gmail.com"]
 const exitsInventoryEmails = ["contableducor@gmail.com", "elinarnyex@gmail.com", "vivian.ducor@gmail.com", "aocampo.inducor@gmail.com","pedidos.ducor@gmail.com", "inducorsas@gmail.com","empaque.inducor@gmail.com"]
 
@@ -93,9 +95,11 @@ function App() {
   //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
   //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
   //               <Route exact path="/create" element={<CreateProduct />} />
-  //               <Route exact path="/inventory/test" element={<RBExitProduct />} />
+  //               <Route exact path="/inventory/ko" element={<InventoryTable />} />
+  //               <Route exact path="/inventory/test" element={<EnterProduct />} />
   //               <Route exact path="/inventory/cash" element={<ExitProduct />} />
   //               <Route exact path="/inventory/table" element={<PendingOrders />} />
+  //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre/>} />
   //             </Routes>
   //           </div>
   //         </div>
