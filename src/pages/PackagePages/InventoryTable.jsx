@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Spin, Menu } from "antd"
+import { Spin, Menu, Button } from "antd"
 import DataTableGrid from "../Controllers/DataGridPro";
+import { AddSkuModal } from "../Controllers/Modals/InventoryModals";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
@@ -13,7 +14,7 @@ const InventoryTable = () => {
     const colors = tokens(theme.palette.mode);
 
     useEffect(() => {
-        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?")
+        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec")
             .then(response => response.json())
             .then(parsedData => {
                 parsedData.forEach((obj, index)=>{
@@ -39,12 +40,14 @@ const InventoryTable = () => {
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
                     <Menu.SubMenu title="Acciones">
                         <Menu.Item key="0">
-                            <button>Agregar Sku</button>
-                            <button>Enlazar Mco</button>
-                            <button>Ajustar Cantidad</button>
-                            <button>Editar Producto</button>
-                            <button>Eliminar Producto</button>
+                            <AddSkuModal cell={params.row.cell}>Agregar Sku</AddSkuModal>
                         </Menu.Item>
+                        <Menu.Item key="1">
+                            <Button>Ajustar Cantidad</Button>
+                        </Menu.Item>
+                            {/* <button>Enlazar Mco</button>
+                            <button>Editar Producto</button>
+                            <button>Eliminar Producto</button> */}
                     </Menu.SubMenu>
                 </Menu>
             )

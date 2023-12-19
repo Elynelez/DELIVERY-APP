@@ -24,6 +24,7 @@ import RBExitProduct from './pages/PackagePages/RBExitProduct';
 import PendingOrders from './pages/PackagePages/PendingOrders';
 import TableMercadoLibre from './pages/AccountingPages/Mercadolibre';
 import InventoryTable from './pages/PackagePages/InventoryTable';
+import SearchES from './pages/DefaultPages/SearchES';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -61,7 +62,7 @@ function App() {
     localStorage.setItem("total", total)
     localStorage.setItem("countProducts", countProducts)
   }, [allProducts]);
-
+ 
 
   // return (
   //   <ColorModeContext.Provider value={colorMode}>
@@ -100,6 +101,7 @@ function App() {
   //               <Route exact path="/inventory/cash" element={<ExitProduct />} />
   //               <Route exact path="/inventory/table" element={<PendingOrders />} />
   //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre/>} />
+  //               <Route exact path="/search/ES" element={<SearchES/>} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -136,6 +138,7 @@ function App() {
               />
               <Routes>
                 <Route exact path="/" element={<Dashboard />} />
+                <Route exact path="/search/ES" element={<SearchES/>} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
                     <Route exact path="/DeliveryApp" element={<DeliveryApp />} />

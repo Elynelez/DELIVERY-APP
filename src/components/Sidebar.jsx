@@ -123,6 +123,13 @@ const Sidebar = (props) => {
                             selected={selected}
                             setSelected={setSelected}
                         />
+                        <Item
+                            title="Consultar inter"
+                            to="/search/ES"
+                            icon={<HomeOutlinedIcon />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
                         {isAuthenticated && props.logisticEmails.includes(user.email) && (
                             <>
                                 <Typography
