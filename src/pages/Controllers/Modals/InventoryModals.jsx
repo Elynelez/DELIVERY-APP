@@ -376,8 +376,41 @@ const AddSkuModal = (props) => {
     setVisible(false);
   };
 
-  const onFinish = () => {
-    console.log("ok")
+  const onFinish = (values) => {
+    var listSkus = props.dataSkus.map(obj => { return obj.sku })
+    if (listSkus.includes(values.sku)) {
+      message.error('este sku ya existe, no lo puedes poner nuevamente')
+    } else {
+      Modal.confirm({
+        title: '¿Seguro que quieres agregar este sku a este producto?',
+        content: 'Esta acción no se puede deshacer.',
+        onOk: () => {
+          message.info('unos momentos')
+          setLoading(true);
+          values.cell = props.cell
+          fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?addCode", {
+            redirect: "follow",
+            method: 'POST',
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8",
+            },
+            body: JSON.stringify(values)
+          })
+            .then(response => response.json())
+            .then(data => {
+              message.success('Contenido actualizado exitosamente');
+              setLoading(false)
+              setVisible(false)
+              props.setReloadData(true)
+            })
+            .catch(error => {
+              console.error('Error deleting row:', error);
+              message.info('no se pudo completar la operación')
+            });
+        },
+      });
+    }
+
   }
 
   return (
@@ -394,8 +427,6 @@ const AddSkuModal = (props) => {
         ]}
       >
         <Spin spinning={loading}>
-
-
           <Form form={form} onFinish={onFinish} layout="vertical">
             <Form.Item
               label="Sku"
@@ -403,7 +434,7 @@ const AddSkuModal = (props) => {
               labelAlign="left"
               required="true"
             >
-              <Input />
+              <Input onChange={() => { setDisabled(false) }} />
             </Form.Item>
             <Form.Item>
               <input type="submit" className="btn btn-primary m-2" disabled={disabled} />
@@ -415,4 +446,89 @@ const AddSkuModal = (props) => {
   )
 }
 
-export { ConfirmInventoryModal, AddSkuModal };
+const ModifyQuantity = (props) => {
+  const [form] = Form.useForm();
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth0()
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
+  const onFinish = (values) => {
+    values.inventory_quantity = props.data.quantity
+    values.real_quantity = Number(values.real_quantity)
+    values.sku = props.data.sku
+    values.code = props.data.code
+    values.name = props.data.name
+    values.brand = props.data.brand
+    values.user = "user.email"
+
+    Modal.confirm({
+      title: '¿Seguro que quieres ajustar la cantidad del inventario?',
+      content: 'Esta acción no se puede deshacer.',
+      onOk: () => {
+        message.info('unos momentos')
+        setLoading(true);
+        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?settingQuantity", {
+          redirect: "follow",
+          method: 'POST',
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(values)
+        })
+          .then(response => response.json())
+          .then(data => {
+            message.success('Contenido actualizado exitosamente');
+            setLoading(false)
+            setVisible(false)
+            props.setReloadData(true)
+          })
+          .catch(error => {
+            console.error('Error deleting row:', error);
+            message.info('no se pudo completar la operación')
+          });
+      },
+    });
+  }
+
+  return (
+    <div>
+      <Button onClick={showModal}>Ajustar cantidad</Button>
+      <Modal
+        visible={visible}
+        title="Actualizar"
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancelar
+          </Button>
+        ]}
+      >
+        <Spin spinning={loading}>
+          <Form form={form} onFinish={onFinish} layout="vertical">
+            <Form.Item
+              label="Cantidad"
+              name="real_quantity"
+              labelAlign="left"
+              rules={[{ required: true, message: "sin vacíos niña" }, { pattern: /^[0-9]+$/, message: "no pueden haber negativos" }]}
+            >
+              <Input type="number" />
+            </Form.Item>
+            <Form.Item>
+              <Button htmlType="submit" >Enviar</Button>
+            </Form.Item>
+          </Form>
+        </Spin>
+      </Modal>
+    </div>
+  )
+}
+
+export { ConfirmInventoryModal, AddSkuModal, ModifyQuantity };

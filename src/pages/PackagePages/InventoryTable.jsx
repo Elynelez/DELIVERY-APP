@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Spin, Menu, Button } from "antd"
 import DataTableGrid from "../Controllers/DataGridPro";
-import { AddSkuModal } from "../Controllers/Modals/InventoryModals";
+import { AddSkuModal, ModifyQuantity } from "../Controllers/Modals/InventoryModals";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
@@ -13,11 +13,12 @@ const InventoryTable = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    useEffect(() => {
+    const loadData = () => {
+        setLoading(true);
         fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec")
             .then(response => response.json())
             .then(parsedData => {
-                parsedData.forEach((obj, index)=>{
+                parsedData.forEach((obj, index) => {
                     obj.id = index
                 })
                 setData(parsedData)
@@ -27,7 +28,18 @@ const InventoryTable = () => {
                 console.error('Error fetching data:', error);
                 setLoading(false);
             });
+    }
+
+    useEffect(() => {
+        loadData()
     }, [])
+
+    useEffect(() => {
+        if (reloadData) {
+            loadData();
+            setReloadData(false);
+        }
+    }, [reloadData]);
 
     const columns = [
         { headerName: 'Sku', field: "sku", flex: 1 },
@@ -40,12 +52,12 @@ const InventoryTable = () => {
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
                     <Menu.SubMenu title="Acciones">
                         <Menu.Item key="0">
-                            <AddSkuModal cell={params.row.cell}>Agregar Sku</AddSkuModal>
+                            <AddSkuModal cell={params.row.cell} dataSkus={data} setReloadData={setReloadData}>Agregar Sku</AddSkuModal>
                         </Menu.Item>
                         <Menu.Item key="1">
-                            <Button>Ajustar Cantidad</Button>
+                            <ModifyQuantity data={params.row} setReloadData={setReloadData}>Ajustar Cantidad</ModifyQuantity >
                         </Menu.Item>
-                            {/* <button>Enlazar Mco</button>
+                        {/* <button>Enlazar Mco</button>
                             <button>Editar Producto</button>
                             <button>Eliminar Producto</button> */}
                     </Menu.SubMenu>

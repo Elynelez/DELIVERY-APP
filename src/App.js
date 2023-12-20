@@ -165,13 +165,14 @@ function App() {
                   <>
                     <Route exact path="/inventory/exit" element={<ExitProduct />} />
                     <Route exact path="/inventory/cash" element={<RBExitProduct />} />
-                    <Route exact path="/inventory/table" element={<PendingOrders />} />
+                    <Route exact path="/inventory/pending" element={<PendingOrders />} />
                   </>
                 )}
                 {isAuthenticated && entriesInventoryEmails.includes(user.email) && (
                   <>
                     <Route exact path="/inventory/enter" element={<EnterProduct />} />
                     <Route exact path="/inventory/create" element={<CreateProduct />} />
+                    <Route exact path="/inventory/table" element={<InventoryTable />} />
                   </>
                 )}
               </Routes>
