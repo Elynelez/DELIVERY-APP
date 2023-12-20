@@ -137,8 +137,8 @@ function App() {
                 setCountProducts={setCountProducts}
               />
               <Routes>
-                <Route exact path="/" element={<Dashboard />} />
-                <Route exact path="/search/ES" element={<SearchES/>} />
+                {/* <Route exact path="/" element={<Dashboard />} /> */}
+                <Route exact path="/" element={<SearchES/>} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
                     <Route exact path="/DeliveryApp" element={<DeliveryApp />} />

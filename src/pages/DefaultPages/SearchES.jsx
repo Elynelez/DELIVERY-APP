@@ -61,7 +61,7 @@ const SearchES = () => {
                 <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '90vh' }}>
                     <div className="bg_buscador_rast text-center p-4">
                         <img src="https://cdn-icons-png.flaticon.com/512/44/44266.png" width={'150px'} alt="logo" style={{ filter: colors.black[200] }} />
-                        <h1 className="h1classRastreoEnvio">Rastrea la ubicación de tu envío</h1>
+                        <h1 className="h1classRastreoEnvio">Consulta las observaciones de tu pedido</h1>
 
                         <Form form={form} onFinish={onFinish} layout="vertical">
 
@@ -76,7 +76,7 @@ const SearchES = () => {
                                 labelAlign="left"
                             >
                                 <Input
-                                    placeholder="Número de Guía (Ej: 12345678911)"
+                                    placeholder="Número de pedido (ejem: BOG12222)"
                                     id="txtNumGuia"
                                     step="1"
                                     min="1"
