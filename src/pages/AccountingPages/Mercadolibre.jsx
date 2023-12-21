@@ -16,13 +16,17 @@ import { Modal, message } from 'antd';
 const TableMercadoLibre = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true)
+    const [newRow, setNewRow] = useState({})
 
     const loadData = () => {
         setLoading(true);
         fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec")
             .then(response => response.json())
             .then(parsedData => {
-                setData(parsedData);
+                var newData = parsedData.map(obj => {
+                    return { ...obj, name: obj.client.name };
+                });
+                setData(newData);
                 setLoading(false);
             })
             .catch(error => {
@@ -36,12 +40,32 @@ const TableMercadoLibre = () => {
         console.log(data)
     }, []);
 
+    useEffect(() => {
+        setData((prevRows) => {
+            const updatedRows = prevRows.map((row) => {
+                // Comprobar si la fila es la que estamos editando
+                if (row.id === newRow.id) {
+                    // Actualizar la fila con el objeto editado
+                    return { ...row, ...newRow };
+                }
+                return row;
+            });
+            return updatedRows;
+        });
+
+    }, [newRow])
+
 
     const columns = [
         { headerName: 'Fecha desp.', field: "date_generate", flex: 1 },
-        { headerName: 'Cliente', field: "client", flex: 1, align: 'left', headerAlign: 'left', rendercell: ({value}) => {
-            <p>{value.client.name}</p>
-        }},
+        { headerName: 'Cliente', field: "name", flex: 1, headerAlign: 'left' },
+        { headerName: 'Productos', field: "name", flex: 1, headerAlign: 'left' },
+        { headerName: 'Metodo de Pago', field: "method", flex: 1, headerAlign: 'left', renderCell: (params) => {
+            <div>{params.row.transaction.method}</div>
+        } },
+        { headerName: 'Valor', field: "name", flex: 1, headerAlign: 'left' },
+        { headerName: 'Acciones', field: "name", flex: 1, headerAlign: 'left' },
+
     ]
 
     return (

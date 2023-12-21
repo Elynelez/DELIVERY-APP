@@ -23,8 +23,9 @@ const SearchES = () => {
                     setLoading(false)
                     return;
                 } else {
-                    if (data.length > 0 && data[0].notation.length >= 1) {
-                        var messageResult = data[0].notation.map( not => {return not.notation})
+                    console.log(data)
+                    if (data.length > 0) {
+                        var messageResult = data[0].notation.map( not => {return not.notation}).length > 0 ? data[0].notation.map( not => {return not.notation}) : ["no hay ninguna observación"]
                         Swal.fire({
                             icon: 'success',
                             title: 'Aquí estan las observaciones',
