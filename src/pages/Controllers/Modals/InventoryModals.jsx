@@ -467,7 +467,7 @@ const ModifyQuantity = (props) => {
     values.code = props.data.code
     values.name = props.data.name
     values.brand = props.data.brand
-    values.user = "user.email"
+    values.user = user.email
 
     Modal.confirm({
       title: '¿Seguro que quieres ajustar la cantidad del inventario?',
