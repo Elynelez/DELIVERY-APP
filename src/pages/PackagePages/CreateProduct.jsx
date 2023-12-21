@@ -104,8 +104,8 @@ const CreateProduct = () => {
                                                     <input className="input-info-create" id="sku" name="sku" onInput={(event) => { labelChangeProps(event.target) }} required />
                                                 </div>
                                                 <div className="input-group-create">
-                                                    <label htmlFor="name" className="form-label-create">Cantidad</label>
-                                                    <input className="input-info-create" type="number" min="1" max="999" id="name" name="name" onInput={(event) => { labelChangeProps(event.target) }} required />
+                                                    <label htmlFor="name" className="form-label-create">Nombre</label>
+                                                    <input className="input-info-create" id="name" name="name" onInput={(event) => { labelChangeProps(event.target) }} required />
                                                 </div>
                                                 <div className="input-group-create">
                                                     <label htmlFor="cost" className="form-label-create">Costo</label>
