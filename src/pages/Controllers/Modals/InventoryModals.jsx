@@ -1,366 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Input, Spin, message, Select } from 'antd';
+import { Modal, Button, Form, Input, Spin, message, Select, Row, Col, Typography } from 'antd';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
+import { v4 } from 'uuid';
 import { useAuth0 } from '@auth0/auth0-react';
 
-const ConfirmInventoryModal = (props) => {
-  const [form] = Form.useForm();
-  const { user } = useAuth0();
-  const [allValues, setAllValues] = useState([]);
-  const [rangeItems, setRangeItems] = useState([]);
-  const packers = ["ANYELO", "TATIANA", "KILIAN", "INDUCOR", "NICOLAS", "PILAR", "tatiana", "pilar"];
-  const [deleteRow, setDeleteRow] = useState(null)
-  const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [disabled, setDisabled] = useState(true)
 
-  const showModal = () => {
-    setVisible(true);
-  };
-
-  const handleCancel = () => {
-    setVisible(false);
-  };
-
-  const ExitElements = () => {
-    Swal.fire({
-      title: "Ya van " + allValues.length + " elementos",
-      input: "text",
-      inputPlaceholder: "Ingresa el siguiente SKU",
-      showCancelButton: true,
-      cancelButtonText: "Cancelar",
-      confirmButtonText: "Aceptar",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      inputValidator: (value) => {
-        if (!value) {
-          return "Debes ingresar un SKU válido";
-        }
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        let valor = result.value;
-
-        const objectValues = {};
-
-        for (const sku of allValues) {
-          if (objectValues[sku]) {
-            objectValues[sku]++;
-          } else {
-            objectValues[sku] = 1;
-          }
-        }
-
-        if (valor === null || valor.trim() === "" || packers.includes(valor)) {
-          var allValuesInputs = Object.entries(objectValues).map((groupSKU, index) => {
-            return `
-              <tr>
-                  <th scope="row">${index + 1}</th>
-                  <td scope="row">
-                      <input class="swal2-input input-sweet-table-main" value="${groupSKU[0]}" id="skuInput">
-                  </td>
-                  <td scope="row">
-                      <input class="swal2-input input-sweet-table" type="number" value="${groupSKU[1]}" id="quantityInput">
-                  </td>
-                  <td scope="row">
-                      <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" cursor="pointer" class="delete-button">
-                          <path fill="gray" d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" />
-                      </svg>
-                  </td>
-              </tr>`;
-          });
-
-          Swal.fire({
-            title: 'RESUMEN DE LA OPERACIÓN',
-            html: `
-            <div id="page" style="max-height: 200px; overflow-y: auto;">
-                <div>
-                  <label class="form-label">Número del pedido</label>
-                  <br>
-                  <input class="swal2-input input-sweet-table-main" id="factureNumber" value="`+ props.orderNumber + `" readonly>
-                </div>
-                <br>
-                <div style="display: none">
-                  <label class="form-label">Celdas</label>
-                  <br>
-                  <input class="swal2-input input-sweet-table-main" id="cells_order" value="`+ props.initialValues.cells + `" readonly>
-                </div>
-                <br>
-                <div>
-                  <label class="form-label">Plataforma de entrega</label>
-                  <br>
-                  <select class="swal2-input input-sweet-table-main" id="platform_order" required>
-                    <option value="" selected disabled hidden></option>
-                    <option value="Mercadolibre" >Mercadolibre</option>
-                    <option value="Shopify" >Magic Mechas</option>
-                    <option value="DC Bogotá" >DC Bogotá</option>
-                    <option value="Linio" >Linio</option>
-                    <option value="Falabella" >Falabella</option>
-                    <option value="Rappi" >Rappi</option>
-                    <option value="Otro" >Otro</option>
-                  </select>
-                </div>
-                <br>
-                <table style="width: 100%">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">EAN</th>
-                            <th scope="col">Cant.</th>
-                            <th scope="col">Elm.</th>
-                        </tr>
-                    </thead>
-                    <tbody>`
-              +
-              allValuesInputs.join("")
-              +
-              `</tbody>
-                </table>
-            </div>
-            `,
-            showCancelButton: true,
-            confirmButtonText: 'Enviar',
-            cancelButtonText: 'Cancelar',
-            preConfirm: () => {
-
-              const skuInputs = document.querySelectorAll("#skuInput");
-              const quantityInputs = document.querySelectorAll("#quantityInput");
-              const factureNumber = document.getElementById("factureNumber")
-              const platformOrder = document.getElementById("platform_order")
-              const cellsOrder = document.getElementById("cells_order")
-
-              const valuesFinal = Array.from(skuInputs).map(input => input.value)
-
-              const rangeSkus = rangeItems.map(objectValue => {
-                return objectValue.sku
-              })
-
-              const notExistentSkus = valuesFinal.filter(sku => !rangeSkus.includes(sku));
-
-              const filterSKUS = rangeItems.filter(object => valuesFinal.includes(object.sku));
-
-              const sentValues = filterSKUS.map((obj, index) => {
-                return [factureNumber.value, platformOrder.value, obj.code, obj.sku, obj.name, quantityInputs[index].value, obj.brand, user.email, cellsOrder.value.split(",")]
-              })
-
-              if (notExistentSkus.length > 0) {
-                Swal.showValidationMessage("Estos códigos no existen: " + notExistentSkus.toString());
-                return false;
-              }
-
-              if (valuesFinal.length < 1 || platformOrder.value.trim() == "" || factureNumber.value.trim() == "") {
-                Swal.showValidationMessage("no seas tonto bro, ¿Cómo vas a enviar algo vacío 🙄?");
-                return false;
-              }
-
-              console.log(sentValues)
-
-              setLoading(true);
-              fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?exitCorrection", {
-                redirect: "follow",
-                method: 'POST',
-                headers: {
-                  "Content-Type": "text/plain;charset=utf-8",
-                },
-                body: JSON.stringify(sentValues)
-              })
-                .then(response => response.json())
-                .then(data => {
-                  console.log(data)
-                  setLoading(false);
-                  message.success('cargado exitosamente')
-                  handleCancel()
-                  props.setReloadData(true);
-                })
-                .catch(error => {
-                  console.error('Error changing row:', error);
-                  message.info('no se pudo completar la operación')
-                });
-              setAllValues([]);
-            },
-          });
-
-          document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', (event) => {
-              event.target.parentNode.parentNode.parentNode.remove()
-            });
-          });
-        } else {
-          allValues.push(valor);
-          ExitElements(valor);
-        }
-      }
-    });
-  };
-
-  const onFinish = (values) => {
-    Modal.confirm({
-      title: '¿Seguro que quieres actualizar este contenido?',
-      content: 'Esta acción no se puede deshacer.',
-      onOk: () => {
-        message.info('unos momentos')
-        setLoading(true);
-        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?updateOrder", {
-          redirect: "follow",
-          method: 'POST',
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8",
-          },
-          body: JSON.stringify(values)
-        })
-          .then(response => response.json())
-          .then(data => {
-            message.success('Estado actualizado exitosamente');
-            setLoading(false);
-            setVisible(false)
-            props.setReloadData(true);
-          })
-          .catch(error => {
-            console.error('Error changing row:', error);
-            message.info('no se pudo completar la operación')
-          });
-      },
-    });
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    const objectGroup = {}
-    for (const obj of props.rows) {
-      const sku = obj.sku;
-      objectGroup[sku] = obj.quantity;
-    }
-
-    const resultArray = Array.from(Object.entries(objectGroup).flatMap(([key, value]) => Array(value).fill(key))).filter(function (i) { return i !== "undefined" })
-
-    setAllValues(resultArray)
-    fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec")
-      .then(response => response.json())
-      .then(parsedData => {
-        setRangeItems(parsedData)
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  }, []);
-
-  const deleteRowById = (cells) => {
-    console.log(cells)
-    Modal.confirm({
-      title: '¿Seguro que quieres eliminar este contenido?',
-      content: 'Esta acción no se puede deshacer.',
-      onOk: () => {
-        message.info('unos momentos')
-        setLoading(true);
-        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?delete", {
-          redirect: "follow",
-          method: 'POST',
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8",
-          },
-          body: JSON.stringify(cells)
-        })
-          .then(response => response.json())
-          .then(data => {
-            message.success('Contenido borrado exitosamente');
-            setDeleteRow(data.data.id)
-          })
-          .catch(error => {
-            console.error('Error deleting row:', error);
-            message.info('no se pudo completar la operación')
-          });
-      },
-    });
-
-  }
-
-  useEffect(() => {
-    if (deleteRow !== null) {
-      props.loadData()
-    }
-  }, [deleteRow]);
-
-  return (
-    <div>
-      <Button type='primary' style={{ backgroundColor: "green" }} onClick={showModal}>
-        Confirmar
-      </Button>
-      <Modal
-        visible={visible}
-        title="Actualizar"
-        onCancel={handleCancel}
-        footer={[
-          <Button key="cancel" onClick={handleCancel}>
-            Cancelar
-          </Button>
-        ]}
-      >
-        <Spin spinning={loading}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Sku</TableCell>
-                  <TableCell>Nombre del Producto</TableCell>
-                  <TableCell align="right">Cantidad</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {props.rows.map((obj) => (
-                  <TableRow key={obj.sku}>
-                    <TableCell>{obj.sku}</TableCell>
-                    <TableCell>{obj.name}</TableCell>
-                    <TableCell align="right">{obj.quantity}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <br />
-
-
-          <Form form={form} onFinish={onFinish} initialValues={props.initialValues} layout="vertical">
-            <Form.Item
-              hidden="true"
-              label="Cd"
-              name="cells"
-              labelAlign="left"
-            >
-              <Input readOnly />
-            </Form.Item>
-            <Form.Item
-              label="Plataforma"
-              name="platform"
-              labelAlign="left"
-              required="true"
-
-            >
-              <Select placeholder="selecciona la plataforma" onChange={() => { setDisabled(false) }}>
-                <Select.Option value="Mercadolibre" key={1}>Mercadolibre</Select.Option>
-                <Select.Option value="Shopify" key={2}>Magic Mechas</Select.Option>
-                <Select.Option value="DC Bogotá" key={3}>DC Bogotá</Select.Option>
-                <Select.Option value="Linio" key={4}>Linio</Select.Option>
-                <Select.Option value="Falabella" key={5}>Falabella</Select.Option>
-                <Select.Option value="Rappi" key={6}>Rappi</Select.Option>
-                <Select.Option value="Otro" key={7}>Otro</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item>
-              <input type="submit" className="btn btn-primary m-2" disabled={disabled} />
-              <input className="btn btn-warning w-25 m-2" onClick={ExitElements} value="Editar" />
-              <input className="btn btn-danger w-25 m-2" onClick={() => { deleteRowById(props.initialValues.cells) }} value="Eliminar" />
-            </Form.Item>
-          </Form>
-        </Spin>
-      </Modal>
-    </div>
-  );
-}
 
 const AddSkuModal = (props) => {
   const [form] = Form.useForm();
@@ -531,4 +175,436 @@ const ModifyQuantity = (props) => {
   )
 }
 
-export { ConfirmInventoryModal, AddSkuModal, ModifyQuantity };
+const ExitElements = ({ rangeItems, setLoading, prev, nameButton, platformStatus, urlFetch, valueOrder, cells, cash, setReloadData }) => {
+  const { user } = useAuth0();
+  const [allValues, setAllValues] = useState(prev);
+  const [visible, setVisible] = useState(false);
+  const [key, setKey] = useState(0);
+  const [skuProduct, setSkuProduct] = useState('')
+  const packers = ["ANYELO", "TATIANA", "KILIAN", "INDUCOR", "NICOLAS", "PILAR", "tatiana", "pilar"];
+  const [status, setStatus] = useState(false)
+  const [objectValues, setObjectValues] = useState({})
+  const [form] = Form.useForm();
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  useEffect(() => {
+    setKey(key => key + 1);
+  }, [visible])
+
+  const handleCancel = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setVisible(false);
+      setAllValues([]);
+      setSkuProduct("");
+      setStatus(false);
+      setObjectValues({});
+      form.resetFields();
+      setLoading(false);
+    }, 2000);
+  };
+
+  const onFinish = (values) => {
+    const idExit = v4()
+
+    const rangeSkus = rangeItems.map(objectValue => {
+      return objectValue.sku
+    })
+
+    const notExistentSkus = values.projects.filter(obj => !rangeSkus.includes(obj.sku)).map(obj => { return obj.sku })
+    const valuesFinal = values.projects.map(obj => { return obj.sku })
+
+    const filterSKUS = rangeItems.filter(object => valuesFinal.includes(object.sku))
+
+    var sentValues
+
+    if (cash) {
+      sentValues = filterSKUS.map((obj) => {
+        var qt = values.projects.filter(object => object.sku == obj.sku)
+        return [values.order_number, values.platform_order == undefined ? "POR CONFIRMAR" : values.platform_order, obj.code, obj.sku, obj.name, Number(qt[0].quantity), obj.brand, user ? user.email : "good", idExit]
+      })
+    } else {
+      sentValues = filterSKUS.map((obj) => {
+        var qt = values.projects.filter(object => object.sku == obj.sku)
+        return [values.order_number, values.platform_order == undefined ? "POR CONFIRMAR" : values.platform_order, obj.code, obj.sku, obj.name, Number(qt[0].quantity), obj.brand, user ? user.email : "good", idExit, values.cells]
+      })
+    }
+
+    if (notExistentSkus.length > 0) {
+      alert("Estos códigos no existen: " + notExistentSkus.toString());
+      return false;
+    }
+
+    if (values.projects.length < 1) {
+      alert("no seas tonto bro, ¿Cómo vas a enviar algo vacío 🙄?");
+      return false;
+    }
+
+    setLoading(true);
+    fetch(urlFetch, {
+      redirect: "follow",
+      method: 'POST',
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+      body: JSON.stringify(sentValues)
+    })
+      .then(response => response.json())
+      .then(data => {
+        handleCancel()
+        message.success('cargado exitosamente')
+        setLoading(false)
+        setReloadData(true)
+      })
+      .catch(error => {
+        console.error('Error changing row:', error);
+        message.info('no se pudo completar la operación')
+      });
+    form.resetFields()
+  }
+
+  const Modalito = (props) => {
+    const values = Object.entries(props.oValues).map(([sku, quantity]) => { return { sku, quantity } })
+    return (
+      <Modal
+        title="RESUMEN DE LA OPERACIÓN"
+        open={visible}
+        onCancel={handleCancel}
+        onOk={undefined}
+      >
+        <Form form={form} onFinish={onFinish} layout="vertical">
+          <Form.Item
+            hidden="true"
+            label="Cd"
+            name="cells"
+            labelAlign="left"
+            initialValue={cells}
+          >
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item
+            label="número de pedido"
+            name="order_number"
+            rules={[{ required: true }]}
+            initialValue={valueOrder}
+          >
+            <Input placeholder="field name" />
+          </Form.Item>
+          <Form.Item
+            label="Plataforma"
+            name="platform_order"
+            rules={[{ required: platformStatus, message: 'Por favor, selecciona un número de pedido' }]}
+            style={{ display: platformStatus ? 'block' : 'none' }}
+          >
+            <Select
+              id="platform_order"
+              placeholder="Selecciona la plataforma"
+              allowClear
+            >
+              <Select.Option value="Mercadolibre">Mercadolibre</Select.Option>
+              <Select.Option value="Shopify">Magic Mechas</Select.Option>
+              <Select.Option value="DC Bogotá">DC Bogotá</Select.Option>
+              <Select.Option value="Linio">Linio</Select.Option>
+              <Select.Option value="Falabella">Falabella</Select.Option>
+              <Select.Option value="Rappi">Rappi</Select.Option>
+              <Select.Option value="Otro">Otro</Select.Option>
+            </Select>
+          </Form.Item>
+          <Row gutter={[16, 16]}>
+            <Col span={8}>
+              <Typography.Text strong>SKU</Typography.Text>
+            </Col>
+            <Col span={8}>
+              <Typography.Text strong>Cantidad</Typography.Text>
+            </Col>
+            <Col span={8}>
+              <Typography.Text strong>Acciones</Typography.Text>
+            </Col>
+          </Row>
+          <Form.List name="projects" initialValue={values}>
+            {(fields, { add, remove }) => (
+              <>
+                <Form.Item>
+                  <Button type="dashed" onClick={add} >
+                    Add
+                  </Button>
+                </Form.Item>
+
+                {fields.map((field, index, ...fields) => (
+
+                  <Row gutter={[16, 16]} key={index}>
+                    <Col span={8}>
+                      <Form.Item
+                        {...fields}
+                        name={[index, "sku"]}
+                        rules={[{ required: true }]}
+                      >
+                        <Input placeholder="field name" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        {...fields}
+                        name={[index, "quantity"]}
+                        rules={[{ required: true }]}
+                      >
+                        <Input placeholder="field name" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Button danger onClick={() => remove(index)}>
+                        Eliminar
+                      </Button>
+                    </Col>
+                  </Row>
+                ))}
+              </>
+            )}
+          </Form.List>
+          <Form.Item>
+            <input type="submit" className="btn btn-primary" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    )
+  }
+
+  const Sequence = (e) => {
+
+    const objVal = {};
+    for (const sku of allValues) {
+      if (objVal[sku]) {
+        objVal[sku]++;
+      } else {
+        objVal[sku] = 1;
+      }
+    }
+
+    if (!skuProduct.trim()) {
+      message.error("Ingresa un valor correcto");
+    } else if (packers.includes(skuProduct)) {
+      setStatus(true);
+      setObjectValues(objVal);
+    } else {
+      setAllValues((values) => [...values, skuProduct]);
+      setSkuProduct('');
+      e.target.focus();
+    }
+
+  }
+
+  return (
+    <div>
+      <Button type="primary" onClick={showModal}>
+        {nameButton}
+      </Button>
+      {status ? <Modalito key={key} oValues={objectValues} /> : <Modal
+        title={`Ya van ${allValues.length} elementos`}
+        open={visible}
+        onCancel={handleCancel}
+        onOk={undefined}
+      >
+        <Input
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              e.target.blur()
+            }
+          }}
+          onBlur={Sequence}
+          onChange={(e) => { setSkuProduct(e.target.value) }}
+          value={skuProduct}
+        />
+      </Modal>}
+
+    </div>
+  )
+}
+
+const ConfirmInventoryModal = (props) => {
+  const [form] = Form.useForm();
+  const [allValues, setAllValues] = useState([]);
+  const [rangeItems, setRangeItems] = useState(props.rangeItems);
+  const [deleteRow, setDeleteRow] = useState(null)
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(true)
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
+  useEffect(() => {
+    const objectGroup = {}
+    for (const obj of props.rows) {
+      const sku = obj.sku;
+      objectGroup[sku] = obj.quantity;
+    }
+
+    const resultArray = Array.from(Object.entries(objectGroup).flatMap(([key, value]) => Array(value).fill(key))).filter(function (i) { return i !== "undefined" })
+
+    setAllValues(resultArray)
+  }, []);
+
+  const deleteRowById = (cells) => {
+    console.log(cells)
+    Modal.confirm({
+      title: '¿Seguro que quieres eliminar este contenido?',
+      content: 'Esta acción no se puede deshacer.',
+      onOk: () => {
+        message.info('unos momentos')
+        setLoading(true);
+        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?delete", {
+          redirect: "follow",
+          method: 'POST',
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(cells)
+        })
+          .then(response => response.json())
+          .then(data => {
+            message.success('Contenido borrado exitosamente');
+            setDeleteRow(data.data.id)
+          })
+          .catch(error => {
+            console.error('Error deleting row:', error);
+            message.info('no se pudo completar la operación')
+          });
+      },
+    });
+
+  }
+
+  useEffect(() => {
+    if (deleteRow !== null) {
+      props.loadData()
+    }
+  }, [deleteRow]);
+
+  const onFinish = (values) => {
+    Modal.confirm({
+      title: '¿Seguro que quieres actualizar este contenido?',
+      content: 'Esta acción no se puede deshacer.',
+      onOk: () => {
+        message.info('unos momentos')
+        setLoading(true);
+        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?updateOrder", {
+          redirect: "follow",
+          method: 'POST',
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(values)
+        })
+          .then(response => response.json())
+          .then(data => {
+            message.success('Estado actualizado exitosamente');
+            setLoading(false);
+            setVisible(false)
+            props.setReloadData(true);
+          })
+          .catch(error => {
+            console.error('Error changing row:', error);
+            message.info('no se pudo completar la operación')
+          });
+      },
+    });
+  }
+
+  return (
+    <div>
+      <Button type='primary' style={{ backgroundColor: "green" }} onClick={showModal}>
+        Confirmar
+      </Button>
+      <Modal
+        visible={visible}
+        title="Actualizar"
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancelar
+          </Button>
+        ]}
+      >
+        <Spin spinning={loading}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Sku</TableCell>
+                  <TableCell>Nombre del Producto</TableCell>
+                  <TableCell align="right">Cantidad</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {props.rows.map((obj) => (
+                  <TableRow key={obj.sku}>
+                    <TableCell>{obj.sku}</TableCell>
+                    <TableCell>{obj.name}</TableCell>
+                    <TableCell align="right">{obj.quantity}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <br />
+
+
+          <Form form={form} onFinish={onFinish} initialValues={props.initialValues} layout="vertical">
+            <Form.Item
+              hidden="true"
+              label="Cd"
+              name="cells"
+              labelAlign="left"
+            >
+              <Input readOnly />
+            </Form.Item>
+            <Form.Item
+              label="Plataforma"
+              name="platform"
+              labelAlign="left"
+              required="true"
+
+            >
+              <Select placeholder="selecciona la plataforma" onChange={() => { setDisabled(false) }}>
+                <Select.Option value="Mercadolibre" key={1}>Mercadolibre</Select.Option>
+                <Select.Option value="Shopify" key={2}>Magic Mechas</Select.Option>
+                <Select.Option value="DC Bogotá" key={3}>DC Bogotá</Select.Option>
+                <Select.Option value="Linio" key={4}>Linio</Select.Option>
+                <Select.Option value="Falabella" key={5}>Falabella</Select.Option>
+                <Select.Option value="Rappi" key={6}>Rappi</Select.Option>
+                <Select.Option value="Otro" key={7}>Otro</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item>
+              <input type="submit" className="btn btn-primary m-2" disabled={disabled} />
+              <ExitElements
+                prev={allValues}
+                rangeItems={rangeItems}
+                setLoading={props.setLoading}
+                nameButton={"Editar"}
+                platformStatus={true}
+                urlFetch={"https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?exitCorrection"}
+                valueOrder={props.orderNumber}
+                cells={props.initialValues.cells}
+                setReloadData={props.setReloadData}
+              />
+              <input className="btn btn-danger w-25 m-2" onClick={() => { deleteRowById(props.initialValues.cells) }} value="Eliminar" />
+            </Form.Item>
+          </Form>
+        </Spin>
+      </Modal>
+    </div>
+  );
+}
+
+export { ConfirmInventoryModal, AddSkuModal, ModifyQuantity, ExitElements };

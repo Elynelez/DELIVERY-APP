@@ -10,34 +10,59 @@ const PendingOrders = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true)
     const [reloadData, setReloadData] = useState(false);
+    const [rangeItems, setRangeItems] = useState([]);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const API_URL = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec";
 
-    const loadData = () => {
-        setLoading(true);
-        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?exitsOrders")
-            .then(response => response.json())
-            .then(parsedData => {
-                console.log(parsedData)
-                setData(parsedData)
-                setLoading(false)
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                setLoading(false);
-            });
+
+    const fetchData = async (url) => {
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
     };
 
-    useEffect(() => {
-        loadData();
-    }, [])
-
-    useEffect(() => {
-        if (reloadData) {
-            loadData();
-            setReloadData(false);
+    const loadRange = async () => {
+        setLoading(true);
+        try {
+            const parsedData = await fetchData(API_URL);
+            setRangeItems(parsedData);
+        } finally {
+            setLoading(false);
         }
-    }, [reloadData]);
+    };
+
+    const loadData = async () => {
+        setLoading(true);
+        try {
+          const parsedData = await fetchData(`${API_URL}?exitsOrders`);
+          setData(parsedData);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      useEffect(() => {
+        (async () => {
+          await loadRange();
+          await loadData();
+        })();
+      }, []);
+      
+      useEffect(() => {
+        if (reloadData) {
+          (async () => {
+            await loadRange()
+            await loadData();
+            setReloadData(false);
+          })();
+        }
+      }, [reloadData]);
 
     const columns = [
         { headerName: 'Fecha', field: "date_generate", flex: 1 },
@@ -49,7 +74,15 @@ const PendingOrders = () => {
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
                     <Menu.SubMenu title="Acciones">
                         <Menu.Item key="0">
-                            <ConfirmInventoryModal orderNumber={params.row.order_number} initialValues={{ cells: params.row.cells }} rows={params.row.items} setReloadData={setReloadData} loadData={loadData}/>
+                            <ConfirmInventoryModal
+                                rangeItems={rangeItems}
+                                orderNumber={params.row.order_number}
+                                initialValues={{ cells: params.row.cells }}
+                                rows={params.row.items}
+                                setReloadData={setReloadData}
+                                loadData={loadData}
+                                setLoading={setLoading}
+                            />
                         </Menu.Item>
                     </Menu.SubMenu>
                 </Menu>

@@ -5,7 +5,7 @@ import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../theme.js";
 import { ProSidebar, Menu as SidebarMenu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
-import { 
+import {
     HomeOutlined as HomeOutlinedIcon,
     PeopleOutlined as PeopleOutlinedIcon,
     ContactsOutlined as ContactsOutlinedIcon,
@@ -129,6 +129,20 @@ const Sidebar = (props) => {
                             title="Consultar inter"
                             to="/"
                             icon={<HomeOutlinedIcon />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                        <Typography
+                            variant="h6"
+                            color={colors.grey[300]}
+                            sx={{ m: "15px 0 5px 20px" }}
+                        >
+                            Inventario
+                        </Typography>
+                        <Item
+                            title="Inventario"
+                            to="/inventory/table"
+                            icon={<CalendarToday />}
                             selected={selected}
                             setSelected={setSelected}
                         />

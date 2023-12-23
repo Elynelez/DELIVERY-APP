@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useAuth0 } from '@auth0/auth0-react';
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
 import { Button, Spin, message } from "antd"
+import { v4 } from 'uuid';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const ExitProduct = () => {
     const { user } = useAuth0();
@@ -78,6 +79,7 @@ const ExitProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const idExit = v4()
         let skus = document.querySelectorAll("#sku")
         let quantity = document.querySelectorAll("#quantity")
         let factureNumber = document.getElementById("facture-number")
@@ -87,7 +89,7 @@ const ExitProduct = () => {
 
             const skuText = getTextFromDatalist(sku);
 
-            return [factureNumber.value, platform.value, skuText.code, sku.value, skuText.text, quantity[index].value, "", user.email]
+            return [factureNumber.value, platform.value, skuText.code, sku.value, skuText.text, quantity[index].value, "", user.email, idExit]
         })
 
         setLoading(true);

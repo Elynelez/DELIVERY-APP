@@ -5,13 +5,15 @@ import { AddSkuModal, ModifyQuantity } from "../Controllers/Modals/InventoryModa
 import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
+import { useAuth0 } from '@auth0/auth0-react';
 
-const InventoryTable = () => {
+const InventoryTable = (props) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true)
     const [reloadData, setReloadData] = useState(false);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const { user } = useAuth0();
 
     const loadData = () => {
         setLoading(true);
@@ -51,15 +53,20 @@ const InventoryTable = () => {
             headerName: 'Acciones', renderCell: params => (
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
                     <Menu.SubMenu title="Acciones">
-                        <Menu.Item key="0">
-                            <AddSkuModal cell={params.row.cell} dataSkus={data} setReloadData={setReloadData}>Agregar Sku</AddSkuModal>
-                        </Menu.Item>
-                        <Menu.Item key="1">
-                            <ModifyQuantity data={params.row} setReloadData={setReloadData}>Ajustar Cantidad</ModifyQuantity >
-                        </Menu.Item>
-                        {/* <button>Enlazar Mco</button>
+                        {user && props.settingInventoryEmails.includes(user.email) && (
+                            <>
+                                <Menu.Item key="0">
+                                    <AddSkuModal cell={params.row.cell} dataSkus={data} setReloadData={setReloadData}>Agregar Sku</AddSkuModal>
+                                </Menu.Item>
+                                <Menu.Item key="1">
+                                    <ModifyQuantity data={params.row} setReloadData={setReloadData}>Ajustar Cantidad</ModifyQuantity >
+                                </Menu.Item>
+                                {/* <button>Enlazar Mco</button>
                             <button>Editar Producto</button>
                             <button>Eliminar Producto</button> */}
+                            </>
+                        )}
+
                     </Menu.SubMenu>
                 </Menu>
             )

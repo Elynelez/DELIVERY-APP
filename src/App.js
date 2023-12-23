@@ -29,12 +29,20 @@ import SearchES from './pages/DefaultPages/SearchES';
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 
+// Logistic Shipping
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
-const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]
-const sellerEmails = ["pedidos.ducor@gmail.com"]
 const ExternalServiceEmails = ["atencionalcliente.magicmechas@gmail.com", "klcf.inducor@gmail.com"]
-const entriesInventoryEmails = ["aocampo.inducor@gmail.com","pedidos.ducor@gmail.com", "inducorsas@gmail.com","ainducor@gmail.com", "rramirez.inducor@gmail.com"]
-const exitsInventoryEmails = ["aforero.inducor@gmail.com", "aocampo.inducor@gmail.com","pedidos.ducor@gmail.com", "inducorsas@gmail.com","empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
+
+// Boss Functions
+const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]
+
+// Sells
+const sellerEmails = ["pedidos.ducor@gmail.com"]
+
+// Inventory
+const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com",  "ainducor@gmail.com", ]
+const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com",  "empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
+const settingInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
 
 
 
@@ -64,52 +72,52 @@ function App() {
   }, [allProducts]);
  
 
-  // return (
-  //   <ColorModeContext.Provider value={colorMode}>
-  //     <ThemeProvider theme={theme}>
-  //       <CssBaseline />
-  //       <Router>
-  //         <div className='flex'>
-  //           <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
-  //           <div className='content'>
-  //             <NavbarNavigation
-  //               user={user}
-  //               isAuthenticated={isAuthenticated}
-  //               allProducts={allProducts}
-  //               setAllProducts={setAllProducts}
-  //               total={total} setTotal={setTotal}
-  //               countProducts={countProducts}
-  //               setCountProducts={setCountProducts}
-  //             />
-  //             <Routes>
-  //               <Route exact path="/"
-  //                 element={
-  //                   <SellerCar
-  //                     allProducts={allProducts}
-  //                     setAllProducts={setAllProducts}
-  //                     total={total} setTotal={setTotal}
-  //                     countProducts={countProducts}
-  //                     setCountProducts={setCountProducts}
-  //                   />} />
-  //               <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
-  //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
-  //               <Route exact path="/create" element={<CreateProduct />} />
-  //               <Route exact path="/inventory/ko" element={<InventoryTable />} />
-  //               <Route exact path="/inventory/test" element={<EnterProduct />} />
-  //               <Route exact path="/inventory/cash" element={<ExitProduct />} />
-  //               <Route exact path="/inventory/rbexit" element={<RBExitProduct />} />
-  //               <Route exact path="/inventory/table" element={<PendingOrders />} />
-  //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre/>} />
-  //               <Route exact path="/search/ES" element={<SearchES/>} />
-  //             </Routes>
-  //           </div>
-  //         </div>
-  //       </Router>
-  //     </ThemeProvider>
-  //   </ColorModeContext.Provider>
-  // )
+  return (
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <div className='flex'>
+            <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
+            <div className='content'>
+              <NavbarNavigation
+                user={user}
+                isAuthenticated={isAuthenticated}
+                allProducts={allProducts}
+                setAllProducts={setAllProducts}
+                total={total} setTotal={setTotal}
+                countProducts={countProducts}
+                setCountProducts={setCountProducts}
+              />
+              <Routes>
+                <Route exact path="/"
+                  element={
+                    <SellerCar
+                      allProducts={allProducts}
+                      setAllProducts={setAllProducts}
+                      total={total} setTotal={setTotal}
+                      countProducts={countProducts}
+                      setCountProducts={setCountProducts}
+                    />} />
+                <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+                <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+                <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
+                <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
+                <Route exact path="/create" element={<CreateProduct />} />
+                <Route exact path="/inventory/ko" element={<InventoryTable />} />
+                <Route exact path="/inventory/test" element={<EnterProduct />} />
+                <Route exact path="/inventory/cash" element={<ExitProduct />} />
+                <Route exact path="/inventory/rbexit" element={<RBExitProduct />} />
+                <Route exact path="/inventory/table" element={<PendingOrders />} />
+                <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre/>} />
+                <Route exact path="/search/ES" element={<SearchES/>} />
+              </Routes>
+            </div>
+          </div>
+        </Router>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
+  )
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -173,7 +181,7 @@ function App() {
                   <>
                     <Route exact path="/inventory/enter" element={<EnterProduct />} />
                     <Route exact path="/inventory/create" element={<CreateProduct />} />
-                    <Route exact path="/inventory/table" element={<InventoryTable />} />
+                    <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails}/>} />
                   </>
                 )}
               </Routes>
