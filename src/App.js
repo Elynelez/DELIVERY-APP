@@ -72,52 +72,52 @@ function App() {
   }, [allProducts]);
  
 
-  return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Router>
-          <div className='flex'>
-            <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
-            <div className='content'>
-              <NavbarNavigation
-                user={user}
-                isAuthenticated={isAuthenticated}
-                allProducts={allProducts}
-                setAllProducts={setAllProducts}
-                total={total} setTotal={setTotal}
-                countProducts={countProducts}
-                setCountProducts={setCountProducts}
-              />
-              <Routes>
-                <Route exact path="/"
-                  element={
-                    <SellerCar
-                      allProducts={allProducts}
-                      setAllProducts={setAllProducts}
-                      total={total} setTotal={setTotal}
-                      countProducts={countProducts}
-                      setCountProducts={setCountProducts}
-                    />} />
-                <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-                <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-                <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
-                <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
-                <Route exact path="/create" element={<CreateProduct />} />
-                <Route exact path="/inventory/ko" element={<InventoryTable />} />
-                <Route exact path="/inventory/test" element={<EnterProduct />} />
-                <Route exact path="/inventory/cash" element={<ExitProduct />} />
-                <Route exact path="/inventory/rbexit" element={<RBExitProduct />} />
-                <Route exact path="/inventory/table" element={<PendingOrders />} />
-                <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre/>} />
-                <Route exact path="/search/ES" element={<SearchES/>} />
-              </Routes>
-            </div>
-          </div>
-        </Router>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
-  )
+  // return (
+  //   <ColorModeContext.Provider value={colorMode}>
+  //     <ThemeProvider theme={theme}>
+  //       <CssBaseline />
+  //       <Router>
+  //         <div className='flex'>
+  //           <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
+  //           <div className='content'>
+  //             <NavbarNavigation
+  //               user={user}
+  //               isAuthenticated={isAuthenticated}
+  //               allProducts={allProducts}
+  //               setAllProducts={setAllProducts}
+  //               total={total} setTotal={setTotal}
+  //               countProducts={countProducts}
+  //               setCountProducts={setCountProducts}
+  //             />
+  //             <Routes>
+  //               <Route exact path="/"
+  //                 element={
+  //                   <SellerCar
+  //                     allProducts={allProducts}
+  //                     setAllProducts={setAllProducts}
+  //                     total={total} setTotal={setTotal}
+  //                     countProducts={countProducts}
+  //                     setCountProducts={setCountProducts}
+  //                   />} />
+  //               <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+  //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+  //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
+  //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
+  //               <Route exact path="/create" element={<CreateProduct />} />
+  //               <Route exact path="/inventory/ko" element={<InventoryTable />} />
+  //               <Route exact path="/inventory/test" element={<EnterProduct />} />
+  //               <Route exact path="/inventory/cash" element={<ExitProduct />} />
+  //               <Route exact path="/inventory/rbexit" element={<RBExitProduct />} />
+  //               <Route exact path="/inventory/table" element={<PendingOrders />} />
+  //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre/>} />
+  //               <Route exact path="/search/ES" element={<SearchES/>} />
+  //             </Routes>
+  //           </div>
+  //         </div>
+  //       </Router>
+  //     </ThemeProvider>
+  //   </ColorModeContext.Provider>
+  // )
 
   return (
     <ColorModeContext.Provider value={colorMode}>
