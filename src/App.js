@@ -42,7 +42,7 @@ const sellerEmails = ["pedidos.ducor@gmail.com"]
 // Inventory
 const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com",  "ainducor@gmail.com", ]
 const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com",  "empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
-const settingInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
+const settingInventoryEmails = ["rramirez.inducor@gmail.com"]
 
 
 
@@ -181,6 +181,11 @@ function App() {
                   <>
                     <Route exact path="/inventory/enter" element={<EnterProduct />} />
                     <Route exact path="/inventory/create" element={<CreateProduct />} />
+                    <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails}/>} />
+                  </>
+                )}
+                {isAuthenticated && settingInventoryEmails.includes(user.email) && (
+                  <>
                     <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails}/>} />
                   </>
                 )}
