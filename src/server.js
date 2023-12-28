@@ -3,6 +3,7 @@ const app = express()
 const http = require('http');
 const { Server } = require('socket.io')
 const cors = require("cors")
+const PORT = process.env.PORT || 8080;
 
 app.use(cors())
 
@@ -30,4 +31,4 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(8080);
+server.listen(PORT);
