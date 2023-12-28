@@ -48,7 +48,7 @@ const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com
 const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com", "empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
 const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
 
-const socket = io(`http://localhost:${PORT}`);
+const socket = io(process.env.NODE_ENV === 'production' ? '/' : `http://localhost:${PORT}`);
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
