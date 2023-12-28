@@ -2,7 +2,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import NavbarNavigation from './components/Navbar';
 import Sidebar from './components/Sidebar';
+// import { io } from 'socket.io'
 import './App.css';
+// import { io } from 'socket.io-client';
 
 // auth
 import { useAuth0 } from '@auth0/auth0-react';
@@ -40,11 +42,11 @@ const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "induc
 const sellerEmails = ["pedidos.ducor@gmail.com"]
 
 // Inventory
-const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com",  "ainducor@gmail.com", ]
-const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com",  "empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
-const settingInventoryEmails = ["rramirez.inducor@gmail.com"]
+const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "ainducor@gmail.com", "rramirez.inducor@gmail.com"]
+const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com", "empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
+const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
 
-
+// const socket = io('http://181.62.244.139:8080');
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
@@ -63,6 +65,47 @@ function App() {
     return savedCount ? Number(savedCount) : 0;
   })
 
+  const [rangeItems, setRangeItems] = useState(() => {
+    const savedRange = localStorage.getItem("cacheRangeItems")
+    return savedRange ? JSON.parse(savedRange) : [];
+  })
+
+  // const [cacheData, setCacheData] = useState(() => {
+  //   const savedCacheData = localStorage.getItem("cacheDataPendingOrders")
+  //   return savedCacheData ? JSON.parse(savedCacheData) : [];
+  // })  
+
+  // useEffect(() => {
+    
+  //   socket.on('connect', () => {
+  //     console.log('Conexión exitosa:', socket.id);
+  //   });
+
+    
+  //   socket.on('connect_error', (error) => {
+  //     console.error('Error en la conexión:', error);
+  //   });
+
+  //   socket.on('connect_timeout', (timeout) => {
+  //     console.error('Tiempo de conexión agotado:', timeout);
+  //   });
+
+  //   socket.on('error', (error) => {
+  //     console.error('Error general:', error);
+  //   });
+
+  //   socket.on('disconnect', (reason) => {
+  //     console.log('Desconectado:', reason);
+  //   });
+
+  //   return () => {
+  //     socket.off('connect');
+  //     socket.off('connect_error');
+  //     socket.off('connect_timeout');
+  //     socket.off('error');
+  //     socket.off('disconnect');
+  //   };
+  // }, []);
 
 
   useEffect(() => {
@@ -70,54 +113,61 @@ function App() {
     localStorage.setItem("total", total)
     localStorage.setItem("countProducts", countProducts)
   }, [allProducts]);
- 
 
-  // return (
-  //   <ColorModeContext.Provider value={colorMode}>
-  //     <ThemeProvider theme={theme}>
-  //       <CssBaseline />
-  //       <Router>
-  //         <div className='flex'>
-  //           <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
-  //           <div className='content'>
-  //             <NavbarNavigation
-  //               user={user}
-  //               isAuthenticated={isAuthenticated}
-  //               allProducts={allProducts}
-  //               setAllProducts={setAllProducts}
-  //               total={total} setTotal={setTotal}
-  //               countProducts={countProducts}
-  //               setCountProducts={setCountProducts}
-  //             />
-  //             <Routes>
-  //               <Route exact path="/"
-  //                 element={
-  //                   <SellerCar
-  //                     allProducts={allProducts}
-  //                     setAllProducts={setAllProducts}
-  //                     total={total} setTotal={setTotal}
-  //                     countProducts={countProducts}
-  //                     setCountProducts={setCountProducts}
-  //                   />} />
-  //               <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total}/>} />
-  //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails}/>} />
-  //               <Route exact path="/create" element={<CreateProduct />} />
-  //               <Route exact path="/inventory/ko" element={<InventoryTable />} />
-  //               <Route exact path="/inventory/test" element={<EnterProduct />} />
-  //               <Route exact path="/inventory/cash" element={<ExitProduct />} />
-  //               <Route exact path="/inventory/rbexit" element={<RBExitProduct />} />
-  //               <Route exact path="/inventory/table" element={<PendingOrders />} />
-  //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre/>} />
-  //               <Route exact path="/search/ES" element={<SearchES/>} />
-  //             </Routes>
-  //           </div>
-  //         </div>
-  //       </Router>
-  //     </ThemeProvider>
-  //   </ColorModeContext.Provider>
-  // )
+
+  return (
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <div className='flex'>
+            <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
+            <div className='content'>
+              <NavbarNavigation
+                user={user}
+                isAuthenticated={isAuthenticated}
+                allProducts={allProducts}
+                setAllProducts={setAllProducts}
+                total={total}
+                setTotal={setTotal}
+                countProducts={countProducts}
+                setCountProducts={setCountProducts}
+              />
+              <Routes>
+                <Route exact path="/"
+                  element={
+                    <SellerCar
+                      allProducts={allProducts}
+                      setAllProducts={setAllProducts}
+                      total={total} setTotal={setTotal}
+                      countProducts={countProducts}
+                      setCountProducts={setCountProducts}
+                    />} />
+                <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+                <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+                <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total} />} />
+                <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+                <Route exact path="/create" element={<CreateProduct />} />
+                <Route exact path="/inventory/ko" element={<InventoryTable />} />
+                <Route exact path="/inventory/test" element={<EnterProduct />} />
+                <Route exact path="/inventory/cash" element={<ExitProduct />} />
+                <Route exact path="/inventory/rbexit" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems}/>} />
+                <Route exact path="/inventory/table"
+                  element={<PendingOrders
+                    // setCacheData={setCacheData}
+                    // cacheData={cacheData}
+                    rangeItems={rangeItems}
+                    setRangeItems={setRangeItems}
+                  />} />
+                <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre />} />
+                <Route exact path="/search/ES" element={<SearchES />} />
+              </Routes>
+            </div>
+          </div>
+        </Router>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
+  )
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -147,7 +197,7 @@ function App() {
               />
               <Routes>
                 {/* <Route exact path="/" element={<Dashboard />} /> */}
-                <Route exact path="/" element={<SearchES/>} />
+                <Route exact path="/" element={<SearchES />} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
                     <Route exact path="/DeliveryApp" element={<DeliveryApp />} />
@@ -173,20 +223,20 @@ function App() {
                 {isAuthenticated && exitsInventoryEmails.includes(user.email) && (
                   <>
                     <Route exact path="/inventory/exit" element={<ExitProduct />} />
-                    <Route exact path="/inventory/cash" element={<RBExitProduct />} />
-                    <Route exact path="/inventory/pending" element={<PendingOrders />} />
+                    <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems}/>} />
+                    <Route exact path="/inventory/pending" element={<PendingOrders rangeItems={rangeItems} setRangeItems={setRangeItems}/>} />
                   </>
                 )}
                 {isAuthenticated && entriesInventoryEmails.includes(user.email) && (
                   <>
                     <Route exact path="/inventory/enter" element={<EnterProduct />} />
                     <Route exact path="/inventory/create" element={<CreateProduct />} />
-                    <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails}/>} />
+                    <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails} />} />
                   </>
                 )}
                 {isAuthenticated && settingInventoryEmails.includes(user.email) && (
                   <>
-                    <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails}/>} />
+                    <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails} />} />
                   </>
                 )}
               </Routes>

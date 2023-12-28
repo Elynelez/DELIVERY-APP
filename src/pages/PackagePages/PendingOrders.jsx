@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Spin, Menu } from "antd"
+import { Spin, Menu, Button } from "antd"
 import { ConfirmInventoryModal } from "../Controllers/Modals/InventoryModals";
 import DataTableGrid from "../Controllers/DataGridPro";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
 
-const PendingOrders = () => {
+const PendingOrders = ({ rangeItems, setRangeItems }) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true)
     const [reloadData, setReloadData] = useState(false);
-    const [rangeItems, setRangeItems] = useState([]);
+    // const [rangeItems, setRangeItems] = useState([]);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const API_URL = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec";
@@ -29,9 +29,11 @@ const PendingOrders = () => {
 
     const loadRange = async () => {
         setLoading(true);
+        console.log("generación nueva de datos")
         try {
             const parsedData = await fetchData(API_URL);
             setRangeItems(parsedData);
+            localStorage.setItem("cacheRangeItems", JSON.stringify(parsedData));
         } finally {
             setLoading(false);
         }
@@ -40,29 +42,50 @@ const PendingOrders = () => {
     const loadData = async () => {
         setLoading(true);
         try {
-          const parsedData = await fetchData(`${API_URL}?exitsOrders`);
-          setData(parsedData);
+            const parsedData = await fetchData(`${API_URL}?exitsOrders`);
+            setData(parsedData)
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
-      };
+    }
 
-      useEffect(() => {
-        (async () => {
-          await loadRange();
-          await loadData();
-        })();
-      }, []);
-      
-      useEffect(() => {
-        if (reloadData) {
-          (async () => {
-            await loadRange()
-            await loadData();
-            setReloadData(false);
-          })();
+    const loadRangeAndUpdateHourly = async () => {
+       
+        const lastUpdateTimestamp = localStorage.getItem("lastUpdateTimestamp");
+
+        const currentTimestamp = new Date().getTime();
+
+        const oneHourInMilliseconds = 60 * 60 * 1000; 
+        const shouldUpdate = !lastUpdateTimestamp || (currentTimestamp - lastUpdateTimestamp) >= oneHourInMilliseconds;
+
+        if (shouldUpdate) {
+            await loadRange();
+            
+            localStorage.setItem("lastUpdateTimestamp", currentTimestamp);
         }
-      }, [reloadData]);
+
+        setInterval(async () => {
+            await loadRange();
+        }, oneHourInMilliseconds);
+    };
+
+    useEffect(() => {
+        (async () => {
+            await loadRangeAndUpdateHourly();
+            await loadData();
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (reloadData) {
+            (async () => {
+                await loadRange()
+                await loadData();
+                setReloadData(false);
+            })();
+        }
+    }, [reloadData]);
+
 
     const columns = [
         { headerName: 'Fecha', field: "date_generate", flex: 1 },
@@ -107,6 +130,24 @@ const PendingOrders = () => {
                             sx={{ m: "0 0 5px 0" }}
                         >
                             PENDIENTES DE CONFIRMAR
+                            {/* <Button
+                                onClick={() => {
+                                    var test = () => {
+                                        cacheData[0].id = 10000
+                                        cacheData[0].order_number = "TESTMAN"
+                                        return cacheData[0]
+                                    }
+                                    cacheData.push(test())
+                                    setCacheData(cacheData)
+                                }}
+                            >Test
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    console.log(cacheData)
+                                }}
+                            >Teggggg
+                            </Button> */}
                         </Typography>
                         <Typography variant="h5" color={colors.greenAccent[400]}>
                             últimos detalles

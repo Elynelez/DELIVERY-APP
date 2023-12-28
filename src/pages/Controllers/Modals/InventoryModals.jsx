@@ -244,7 +244,7 @@ const ExitElements = ({ rangeItems, setLoading, prev, nameButton, platformStatus
       return false;
     }
 
-    setLoading(true);
+    message.info('cargando...')
     fetch(urlFetch, {
       redirect: "follow",
       method: 'POST',
@@ -255,16 +255,20 @@ const ExitElements = ({ rangeItems, setLoading, prev, nameButton, platformStatus
     })
       .then(response => response.json())
       .then(data => {
-        handleCancel()
         message.success('cargado exitosamente')
-        setLoading(false)
-        setReloadData(true)
+        setTimeout(() => {
+          handleCancel()
+          setReloadData(true)
+          form.resetFields()
+        }, 1000)
+
       })
       .catch(error => {
+        setLoading(false)
         console.error('Error changing row:', error);
-        message.info('no se pudo completar la operación')
+        message.error('no se pudo completar la operación')
       });
-    form.resetFields()
+
   }
 
   const Modalito = (props) => {
