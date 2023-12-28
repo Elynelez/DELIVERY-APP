@@ -128,7 +128,7 @@ function App() {
       socket.off('message', receiveMessage);
       socket.off('loadMessages');
     };
-  }, []);
+  }, [socket]);
 
   const receiveMessage = (message) =>
     setMessages((prevMessages) => [...prevMessages, message]);

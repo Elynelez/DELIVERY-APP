@@ -14,9 +14,7 @@ io.on('connection', (socket) => {
     socket.emit('loadMessages', messages);
 
     socket.on("message", (data) => {
-
         messages.push(data);
-
         io.emit('message', data);
     })
 });
