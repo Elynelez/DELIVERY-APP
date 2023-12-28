@@ -118,6 +118,10 @@ function App() {
   const [messages, setMessages] = useState([])
 
   useEffect(() => {
+    socket.on('error', (error) => {
+      console.error('Error general en el cliente:', error);
+    });
+
     socket.on('loadMessages', (loadedMessages) => {
       setMessages(loadedMessages);
     });

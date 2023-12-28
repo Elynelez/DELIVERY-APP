@@ -14,9 +14,13 @@ io.on('connection', (socket) => {
     socket.emit('loadMessages', messages);
 
     socket.on("message", (data) => {
-        messages.push(data);
-        io.emit('message', data);
-    })
+        try {
+            messages.push(data);
+            io.emit('message', data);
+        } catch (error) {
+            console.error('Error en el servidor:', error);
+        }
+    });
 });
 
 server.listen(8080);
