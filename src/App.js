@@ -4,7 +4,7 @@ import NavbarNavigation from './components/Navbar';
 import Sidebar from './components/Sidebar';
 // import { io } from 'socket.io'
 import './App.css';
-// import { io } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 // auth
 import { useAuth0 } from '@auth0/auth0-react';
@@ -46,7 +46,7 @@ const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com
 const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com", "empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
 const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
 
-// const socket = io('http://181.62.244.139:8080');
+const socket = io('https://delivery-app-one-phi.vercel.app/');
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
@@ -75,37 +75,37 @@ function App() {
   //   return savedCacheData ? JSON.parse(savedCacheData) : [];
   // })  
 
-  // useEffect(() => {
-    
-  //   socket.on('connect', () => {
-  //     console.log('Conexión exitosa:', socket.id);
-  //   });
+  useEffect(() => {
 
-    
-  //   socket.on('connect_error', (error) => {
-  //     console.error('Error en la conexión:', error);
-  //   });
+    socket.on('connect', () => {
+      console.log('Conexión exitosa:', socket.id);
+    });
 
-  //   socket.on('connect_timeout', (timeout) => {
-  //     console.error('Tiempo de conexión agotado:', timeout);
-  //   });
 
-  //   socket.on('error', (error) => {
-  //     console.error('Error general:', error);
-  //   });
+    socket.on('connect_error', (error) => {
+      console.error('Error en la conexión:', error);
+    });
 
-  //   socket.on('disconnect', (reason) => {
-  //     console.log('Desconectado:', reason);
-  //   });
+    socket.on('connect_timeout', (timeout) => {
+      console.error('Tiempo de conexión agotado:', timeout);
+    });
 
-  //   return () => {
-  //     socket.off('connect');
-  //     socket.off('connect_error');
-  //     socket.off('connect_timeout');
-  //     socket.off('error');
-  //     socket.off('disconnect');
-  //   };
-  // }, []);
+    socket.on('error', (error) => {
+      console.error('Error general:', error);
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('Desconectado:', reason);
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('connect_error');
+      socket.off('connect_timeout');
+      socket.off('error');
+      socket.off('disconnect');
+    };
+  }, []);
 
 
   useEffect(() => {
@@ -113,6 +113,28 @@ function App() {
     localStorage.setItem("total", total)
     localStorage.setItem("countProducts", countProducts)
   }, [allProducts]);
+
+  const [message, setMessage] = useState("")
+  const [messages, setMessages] = useState([])
+
+  console.log(messages)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setMessages([...messages, message])
+    socket.emit("message", message)
+  }
+
+  useEffect(() => {
+    socket.on("message", receiveMessage)
+
+    return () => {
+      socket.off("message", receiveMessage);
+    };
+  }, []);
+
+  const receiveMessage = (message) =>
+    setMessages(state => [...state, message]);
 
 
   // return (
@@ -151,7 +173,7 @@ function App() {
   //               <Route exact path="/inventory/ko" element={<InventoryTable />} />
   //               <Route exact path="/inventory/test" element={<EnterProduct />} />
   //               <Route exact path="/inventory/cash" element={<ExitProduct />} />
-  //               <Route exact path="/inventory/rbexit" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems}/>} />
+  //               <Route exact path="/inventory/rbexit" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
   //               <Route exact path="/inventory/table"
   //                 element={<PendingOrders
   //                   // setCacheData={setCacheData}
@@ -161,6 +183,22 @@ function App() {
   //                 />} />
   //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre />} />
   //               <Route exact path="/search/ES" element={<SearchES />} />
+  //               <Route exact path="/test/display" element={<div>
+  //                 <form onSubmit={handleSubmit}>
+  //                   <input
+  //                     type="text"
+  //                     placeholder='write your message...'
+  //                     onChange={(e) => setMessage(e.target.value)} />
+  //                   <button>
+  //                     send
+  //                   </button>
+  //                 </form>
+  //                 <ul>
+  //                   {messages.map((message, index) => (
+  //                     <li key={index}>{message}</li>
+  //                   ))}
+  //                 </ul>
+  //               </div>} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -197,6 +235,22 @@ function App() {
               />
               <Routes>
                 {/* <Route exact path="/" element={<Dashboard />} /> */}
+                <Route exact path="/test/display" element={<div>
+                  <form onSubmit={handleSubmit}>
+                    <input
+                      type="text"
+                      placeholder='write your message...'
+                      onChange={(e) => setMessage(e.target.value)} />
+                    <button>
+                      send
+                    </button>
+                  </form>
+                  <ul>
+                    {messages.map((message, index) => (
+                      <li key={index}>{message}</li>
+                    ))}
+                  </ul>
+                </div>} />
                 <Route exact path="/" element={<SearchES />} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
@@ -223,8 +277,8 @@ function App() {
                 {isAuthenticated && exitsInventoryEmails.includes(user.email) && (
                   <>
                     <Route exact path="/inventory/exit" element={<ExitProduct />} />
-                    <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems}/>} />
-                    <Route exact path="/inventory/pending" element={<PendingOrders rangeItems={rangeItems} setRangeItems={setRangeItems}/>} />
+                    <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
+                    <Route exact path="/inventory/pending" element={<PendingOrders rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
                   </>
                 )}
                 {isAuthenticated && entriesInventoryEmails.includes(user.email) && (
