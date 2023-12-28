@@ -30,6 +30,7 @@ import SearchES from './pages/DefaultPages/SearchES';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
+
 const PORT = process.env.PORT || 8080;
 
 
@@ -51,6 +52,7 @@ const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@g
 const socket = io(process.env.NODE_ENV === 'production' ? '/' : `http://localhost:${PORT}`);
 
 function App() {
+  console.log(process.env.NODE_ENV)
   const { isAuthenticated, user } = useAuth0();
   const [theme, colorMode] = useMode();
 
