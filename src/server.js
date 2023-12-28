@@ -1,9 +1,16 @@
+const express = require("express")
+const app = express()
 const http = require('http');
+const { Server } = require('socket.io')
+const cors = require("cors")
+
+app.use(cors())
 
 const server = http.createServer();
 
-const io = require('socket.io')(server, {
-    cors: { origin: '*' }
+const io = new Server(server, {
+    cors: { origin: '*' },
+    methods: ["GET", "POST"]
 });
 
 let messages = []
