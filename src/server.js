@@ -3,7 +3,7 @@ const http = require('http');
 const server = http.createServer();
 
 const io = require('socket.io')(server, {
-    cors: { origin: 'https://delivery-app-one-phi.vercel.app/' }
+    cors: { origin: 'https://delivery-app-one-phi.vercel.app/test/display' }
 });
 
 io.on('connection', (socket) => {
@@ -14,6 +14,4 @@ io.on('connection', (socket) => {
     })
 });
 
-server.listen(8080, '0.0.0.0', () => {
-    console.log(`Servidor socket.io escuchando en el puerto 8080`);
-});
+server.listen(8080);
