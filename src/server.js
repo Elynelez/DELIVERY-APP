@@ -3,7 +3,7 @@ const http = require('http');
 const server = http.createServer();
 
 const io = require('socket.io')(server, {
-    cors: { origin: '*' }
+    cors: { origin: 'https://delivery-app-one-phi.vercel.app/' }
 });
 
 io.on('connection', (socket) => {
