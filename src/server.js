@@ -3,7 +3,9 @@ const app = express()
 const http = require('http');
 const { Server } = require('socket.io')
 const cors = require("cors")
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 4000;
+
+require(".././setupProxy")(app)
 
 app.use(cors())
 
@@ -31,4 +33,4 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(PORT);
+io.listen(PORT);

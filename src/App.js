@@ -31,9 +31,6 @@ import SearchES from './pages/DefaultPages/SearchES';
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 
-const PORT = process.env.PORT || 8080;
-
-
 // Logistic Shipping
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
 const ExternalServiceEmails = ["atencionalcliente.magicmechas@gmail.com", "klcf.inducor@gmail.com"]
@@ -49,7 +46,8 @@ const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com
 const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com", "empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
 const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
 
-const socket = io('https://delivery-app-one-phi.vercel.app/', { transports: ['websocket'] });
+// const socket = io(process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:'+PORT);
+const socket = io("http://localhost:3000")
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
@@ -72,11 +70,6 @@ function App() {
     const savedRange = localStorage.getItem("cacheRangeItems")
     return savedRange ? JSON.parse(savedRange) : [];
   })
-
-  // const [cacheData, setCacheData] = useState(() => {
-  //   const savedCacheData = localStorage.getItem("cacheDataPendingOrders")
-  //   return savedCacheData ? JSON.parse(savedCacheData) : [];
-  // })  
 
   useEffect(() => {
 
@@ -145,6 +138,19 @@ function App() {
     setMessages((prevMessages) => [...prevMessages, message])
     socket.emit("message", message)
   }
+
+  // const [message, setMessage] = useState("");
+
+  // useEffect(() => {
+  //   getMessage();
+  // }, []);
+
+  // async function getMessage() {
+  //   const result = await fetch("/api/message");
+  //   const json = await result.json();
+
+  //   setMessage(json);
+  // }
 
 
   // return (
