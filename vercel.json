@@ -3,7 +3,12 @@
     "builds": [
         {
             "src": "src/**/*.js",
-            "use": "vercel/react"
+            "use": "vercel/node",
+            "config": {
+                "commands": {
+                    "beforeBuild": ["npm ci"]
+                }
+            }
         }
     ]
 }
