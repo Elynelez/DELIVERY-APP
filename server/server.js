@@ -5,7 +5,7 @@ const { Server } = require('socket.io')
 const cors = require("cors")
 const PORT = process.env.PORT || 4000;
 
-require(".././setupProxy")(app)
+require("../setupProxy")(app)
 
 app.use(cors())
 
