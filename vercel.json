@@ -2,19 +2,11 @@
     "version": 2,
     "builds": [
         {
-            "src": "server/server.js",
-            "use": "@now/node"
-        },
-        {
             "src": "src/**/*.js",
             "use": "vercel/react"
         }
     ],
     "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "server/server.js"
-        },
         {
             "src": "/(.*)",
             "dest": "src/index.js"
