@@ -1,8 +1,8 @@
 {
-    "rewrites": [
+    "builds": [
         {
-            "source": "/(.*)",
-            "destination": "/index.html"
+            "src": "src/**/*.js",
+            "use": "@vercel/react"
         }
     ]
 }
