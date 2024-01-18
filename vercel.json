@@ -6,9 +6,17 @@
             "use": "@vercel/node",
             "config": {
                 "commands": {
-                    "beforeBuild": ["npm ci"]
+                    "beforeBuild": [
+                        "npm ci"
+                    ]
                 }
             }
+        }
+    ],
+    "routes": [
+        {
+            "source": "/(.*)",
+            "dest": "/index.html"
         }
     ]
 }
