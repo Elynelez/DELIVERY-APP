@@ -47,7 +47,7 @@ const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com",
 const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
 
 // const socket = io(process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:'+PORT);
-const socket = io("http://localhost:3000")
+const socket = io("https://server-cloud-mggp.onrender.com")
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
