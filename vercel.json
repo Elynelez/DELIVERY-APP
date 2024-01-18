@@ -11,14 +11,7 @@
     "builds": [
         {
             "src": "src/**/*.js",
-            "use": "@vercel/node",
-            "config": {
-                "commands": {
-                    "beforeBuild": [
-                        "npm ci"
-                    ]
-                }
-            }
+            "use": "@vercel/node"
         }
     ],
     "routes": [
