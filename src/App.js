@@ -127,11 +127,7 @@ function App() {
   }, [pendingData]);
 
   useEffect(() => {
-    (async () => {
-      await loadData(socket, pendingData, setPendingData)
-      await TimeLoad(() => loadRange(socket, rangeItems, setRangeItems));
-      await TimeLoad20Minutes(socket)
-    })();
+    loadRange(socket, rangeItems, setRangeItems)
   }, []);
 
   useEffect(() => {

@@ -4,6 +4,8 @@ export const loadRange = async (socket, rangeItems, setRangeItems) => {
     socket.on('dataInventory', (data) => {
         setRangeItems(data)  
     });
+
+    console.log(rangeItems)
 };
 
 export const loadData = async (socket, pendingData, setPendingData) => {
