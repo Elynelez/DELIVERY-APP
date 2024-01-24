@@ -611,4 +611,120 @@ const ConfirmInventoryModal = (props) => {
   );
 }
 
-export { ConfirmInventoryModal, AddSkuModal, ModifyQuantity, ExitElements };
+const ConfirmInventoryModalServer = (props) => {
+  const [form] = Form.useForm();
+  const [visible, setVisible] = useState(false);
+  const [disabled, setDisabled] = useState(true)
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
+  const onFinish = (values) => {
+    Modal.confirm({
+      title: '¿Seguro que quieres actualizar este contenido?',
+      content: 'Esta acción no se puede deshacer.',
+      onOk: () => {
+        message.info('unos momentos')
+        props.setLoading(true);
+        props.socket.emit('sendConfirmExit', { order_number: props.orderNumber, platform: values.platform })
+        props.socket.on('confirmationValue', (range) => {
+          console.log(range)
+          props.setPendingData(range)
+        })
+        setTimeout(() => {
+          setVisible(false);
+          console.log(props.orderNumber)
+          try {
+            message.success('cargado exitosamente')
+            props.setLoading(false);
+          } catch (err) {
+            console.error('Error changing row:', err);
+            message.info('no se pudo completar la operación')
+            props.setLoading(false);
+          }
+        }, 2000);
+
+      },
+    });
+  }
+
+  return (
+    <div>
+      <Button type='primary' style={{ backgroundColor: "green" }} onClick={showModal}>
+        Confirmar
+      </Button>
+      <Modal
+        visible={visible}
+        title="Actualizar"
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancelar
+          </Button>
+        ]}
+      >
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Sku</TableCell>
+                <TableCell>Nombre del Producto</TableCell>
+                <TableCell align="right">Cantidad</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {props.rows.map((obj) => (
+                <TableRow key={obj.sku}>
+                  <TableCell>{obj.sku}</TableCell>
+                  <TableCell>{obj.name}</TableCell>
+                  <TableCell align="right">{obj.quantity}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <br />
+
+
+        <Form form={form} onFinish={onFinish} initialValues={props.initialValues} layout="vertical">
+          <Form.Item
+            hidden="true"
+            label="Cd"
+            name="cells"
+            labelAlign="left"
+          >
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item
+            label="Plataforma"
+            name="platform"
+            labelAlign="left"
+            required="true"
+
+          >
+            <Select placeholder="selecciona la plataforma" onChange={() => { setDisabled(false) }}>
+              <Select.Option value="Mercadolibre" key={1}>Mercadolibre</Select.Option>
+              <Select.Option value="Shopify" key={2}>Magic Mechas</Select.Option>
+              <Select.Option value="DC Bogotá" key={3}>DC Bogotá</Select.Option>
+              <Select.Option value="Linio" key={4}>Linio</Select.Option>
+              <Select.Option value="Falabella" key={5}>Falabella</Select.Option>
+              <Select.Option value="Rappi" key={6}>Rappi</Select.Option>
+              <Select.Option value="Otro" key={7}>Otro</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <input type="submit" className="btn btn-primary m-2" disabled={disabled} />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+}
+
+export { ConfirmInventoryModal, AddSkuModal, ModifyQuantity, ExitElements, ConfirmInventoryModalServer };

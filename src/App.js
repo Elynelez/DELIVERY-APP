@@ -31,6 +31,9 @@ import SearchES from './pages/DefaultPages/SearchES';
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 
+// middlewares
+import { loadRange, loadData, TimeLoad, TimeLoad20Minutes } from './middlewares';
+
 // Logistic Shipping
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
 const ExternalServiceEmails = ["atencionalcliente.magicmechas@gmail.com", "klcf.inducor@gmail.com"]
@@ -46,7 +49,7 @@ const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com
 const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com", "empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
 const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
 
-// const socket = io(process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:'+PORT);
+// const socket = io('http://localhost:' + 8080);
 const socket = io("https://server-cloud-mggp.onrender.com")
 
 function App() {
@@ -56,19 +59,26 @@ function App() {
   const [allProducts, setAllProducts] = useState(() => {
     const savedProducts = localStorage.getItem("allProducts");
     return savedProducts ? JSON.parse(savedProducts) : [];
-  });
+  })
+
   const [total, setTotal] = useState(() => {
     const savedTotal = localStorage.getItem("total");
     return savedTotal ? Number(savedTotal) : 0;
   })
+
   const [countProducts, setCountProducts] = useState(() => {
     const savedCount = localStorage.getItem("countProducts");
     return savedCount ? Number(savedCount) : 0;
   })
 
   const [rangeItems, setRangeItems] = useState(() => {
-    const savedRange = localStorage.getItem("cacheRangeItems")
-    return savedRange ? JSON.parse(savedRange) : [];
+    const savedRangeItems = localStorage.getItem("rangeItems");
+    return savedRangeItems ? JSON.parse(savedRangeItems) : [];
+  })
+
+  const [pendingData, setPendingData] = useState(() => {
+    const savedPendingData = localStorage.getItem("pendingData");
+    return savedPendingData ? JSON.parse(savedPendingData) : [];
   })
 
   useEffect(() => {
@@ -110,48 +120,19 @@ function App() {
     localStorage.setItem("countProducts", countProducts)
   }, [allProducts]);
 
-  const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState([])
+  useEffect(() => {
+    console.log("ya esta")
+    localStorage.setItem("rangeItems", JSON.stringify(rangeItems))
+    localStorage.setItem("pendingData", JSON.stringify(pendingData))
+  }, [pendingData]);
 
   useEffect(() => {
-    socket.on('error', (error) => {
-      console.error('Error general en el cliente:', error);
-    });
-
-    socket.on('loadMessages', (loadedMessages) => {
-      setMessages(loadedMessages);
-    });
-
-    socket.on('message', receiveMessage);
-
-    return () => {
-      socket.off('message', receiveMessage);
-      socket.off('loadMessages');
-    };
-  }, [socket]);
-
-  const receiveMessage = (message) =>
-    setMessages((prevMessages) => [...prevMessages, message]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setMessages((prevMessages) => [...prevMessages, message])
-    socket.emit("message", message)
-  }
-
-  // const [message, setMessage] = useState("");
-
-  // useEffect(() => {
-  //   getMessage();
-  // }, []);
-
-  // async function getMessage() {
-  //   const result = await fetch("/api/message");
-  //   const json = await result.json();
-
-  //   setMessage(json);
-  // }
-
+    (async () => {
+      await loadData(socket, pendingData, setPendingData)
+      await TimeLoad(() => loadRange(socket, rangeItems, setRangeItems));
+      await TimeLoad20Minutes(socket)
+    })();
+  }, []);
 
   // return (
   //   <ColorModeContext.Provider value={colorMode}>
@@ -187,19 +168,26 @@ function App() {
   //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
   //               <Route exact path="/create" element={<CreateProduct />} />
   //               <Route exact path="/inventory/ko" element={<InventoryTable />} />
-  //               <Route exact path="/inventory/test" element={<EnterProduct />} />
-  //               <Route exact path="/inventory/cash" element={<ExitProduct />} />
-  //               <Route exact path="/inventory/rbexit" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
-  //               <Route exact path="/inventory/table"
-  //                 element={<PendingOrders
-  //                   // setCacheData={setCacheData}
-  //                   // cacheData={cacheData}
+  //               <Route exact path="/inventory/enter" element={<EnterProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
+  //               <Route exact path="/inventory/exit"
+  //                 element={<ExitProduct
   //                   rangeItems={rangeItems}
   //                   setRangeItems={setRangeItems}
+  //                   pendingData={pendingData}
+  //                   setPendingData={setPendingData}
+  //                 />} />
+  //               <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
+  //               <Route exact path="/inventory/pending"
+  //                 element={<PendingOrders
+  //                   socket={socket}
+  //                   rangeItems={rangeItems}
+  //                   setRangeItems={setRangeItems}
+  //                   pendingData={pendingData}
+  //                   setPendingData={setPendingData}
   //                 />} />
   //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre />} />
   //               <Route exact path="/search/ES" element={<SearchES />} />
-  //               <Route exact path="/test/display" element={<div>
+  //               {/* <Route exact path="/test/display" element={<div>
   //                 <form onSubmit={handleSubmit}>
   //                   <input
   //                     type="text"
@@ -214,7 +202,7 @@ function App() {
   //                     <li key={index}>{message}</li>
   //                   ))}
   //                 </ul>
-  //               </div>} />
+  //               </div>} /> */}
   //             </Routes>
   //           </div>
   //         </div>
@@ -251,7 +239,7 @@ function App() {
               />
               <Routes>
                 {/* <Route exact path="/" element={<Dashboard />} /> */}
-                <Route exact path="/test/display" element={<div>
+                {/* <Route exact path="/test/display" element={<div>
                   <form onSubmit={handleSubmit}>
                     <input
                       type="text"
@@ -266,7 +254,7 @@ function App() {
                       <li key={index}>{message}</li>
                     ))}
                   </ul>
-                </div>} />
+                </div>} /> */}
                 <Route exact path="/" element={<SearchES />} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
@@ -292,9 +280,22 @@ function App() {
                 )}
                 {isAuthenticated && exitsInventoryEmails.includes(user.email) && (
                   <>
-                    <Route exact path="/inventory/exit" element={<ExitProduct />} />
+                    <Route exact path="/inventory/exit"
+                      element={<ExitProduct
+                        rangeItems={rangeItems}
+                        setRangeItems={setRangeItems}
+                        pendingData={pendingData}
+                        setPendingData={setPendingData}
+                      />} />
                     <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
-                    <Route exact path="/inventory/pending" element={<PendingOrders rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
+                    <Route exact path="/inventory/pending"
+                      element={<PendingOrders
+                        socket={socket}
+                        rangeItems={rangeItems}
+                        setRangeItems={setRangeItems}
+                        pendingData={pendingData}
+                        setPendingData={setPendingData}
+                      />} />
                   </>
                 )}
                 {isAuthenticated && entriesInventoryEmails.includes(user.email) && (

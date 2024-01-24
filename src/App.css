@@ -315,20 +315,15 @@ body {
 	background-color: #fff;
 }
 
-/* ExitProduct */
-:root {
-	--main: #6870fa;
-	--enter: #055160
-}
-
-.body-exit {
+/* packing forms */
+.body-group-form {
 	background-color: rgba(0, 0, 0, 0);
 	padding: 0 1.5em;
 	display: flex;
 	justify-content: center;
 }
 
-.container-exit {
+.container-group-form {
 	width: 100%;
 	max-width: 800px;
 	padding: 28px;
@@ -336,7 +331,7 @@ body {
 	border-radius: 5px;
 }
 
-.form-title-exit {
+.form-title-group {
 	font-size: 40px;
 	font-weight: 500;
 	text-align: center;
@@ -346,11 +341,7 @@ body {
 	border-bottom: solid 1px white;
 }
 
-.form-title-exit span {
-	color: var(--main);
-}
-
-.main-user-info-exit {
+.main-user-info-group {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
@@ -360,170 +351,64 @@ body {
 	overflow-y: auto;
 }
 
-.user-input-box-exit:nth-child(2n) {
+.user-input-box-group:nth-child(2n) {
 	justify-content: end;
 }
 
-.user-input-box-exit {
+.user-input-box-group {
 	display: flex;
 	flex-wrap: wrap;
 	width: 100%;
 	padding-bottom: 15px;
 }
 
-.form-submit-btn-exit input {
-	cursor: pointer;
-	display: block;
-	width: 100%;
-	margin-top: 10px;
-	font-size: 20px;
-	padding: 10px;
-	border: none;
-	border-radius: 3px;
-	color: #1F2A40;
-	background: var(--main);
-}
-
-.form-submit-btn-exit {
-	margin-top: 40px;
-}
-
-.button-add-exit {
-	display: flex;
-	align-items: center;
-	justify-content: end;
-	color: white;
-	margin: 10px;
-	padding: 10px;
-}
-
-.button-add-exit button {
-	width: 20%;
-	height: 30px;
-	background: var(--main);
-	border: none;
-	cursor: pointer;
-}
-
-.input-info-exit {
-	border: none;
-	height: 40px;
-	width: 90%;
-	max-width: 350px;
-	background: transparent;
-	outline: none;
-	color: rgb(132, 130, 130);
-	border-bottom: 1px solid var(--main);
-	padding: 10px;
-}
-
-.input-info-exit .ant-select-selector{
-	color: rgb(132, 130, 130) !important;
-	border: none !important;
-	background: transparent !important;
-}
-
-.input-group-limit-exit .input-group-exit {
-	width: 500px;
-}
-
-.input-group-limit-exit {
+.end-input-group-form {
 	display: flex;
 	justify-content: space-between;
 	width: 100%;
 }
 
-.limit-group-exit {
+.end-input-group-form .input-group-form {
+	width: 150%;
+}
+
+.button-add-form {
+	color: white;
+	position: relative;
+	top: -50px
+}
+
+.limit-group-form {
 	width: 100%;
 	max-height: 150px;
 	overflow-y: auto;
 }
 
-.icon-info-exit {
-	display: flex;
-	align-items: end;
-	cursor: pointer;
-}
-
-.end-input-group-exit {
-	display: flex;
-	justify-content: space-between;
+.input-info-form {
+	border: none;
+	height: 40px;
 	width: 100%;
+	max-width: 350px;
+	background: transparent;
+	outline: none;
+	color: rgb(132, 130, 130);
+	padding: 10px;
 }
 
-.end-input-group-exit .input-group-exit {
-	width: 150%;
+.input-info-form .ant-select-selector{
+	color: rgb(132, 130, 130) !important;
+	border: none !important;
+	background: transparent !important;
 }
 
-.form-label-exit {
-	color: var(--main);
-}
-
-h4 {
+.h4-bottom-form {
 	width: 100%;
 	color: white;
 	padding: 30px 0px 15px 0px;
 	border-bottom: 1px solid white;
 }
 
-option {
-	background: var(--main);
-	color: #1F2A40
-}
-
-/* end ExitProduct */
-/* EnterProduct */
-.body-enter {
-	background-color: rgba(0, 0, 0, 0);
-	padding: 0 1.5em;
-	display: flex;
-	justify-content: center;
-}
-
-.container-enter {
-	width: 100%;
-	max-width: 800px;
-	padding: 28px;
-	margin: 30px 28px;
-	border-radius: 5px;
-}
-
-.form-title-enter {
-	font-size: 40px;
-	font-weight: 500;
-	text-align: center;
-	padding-bottom: 6px;
-	color: white;
-	text-align: 2px 2px 2px black;
-	border-bottom: solid 1px white;
-}
-
-.form-title-enter span {
-	color: var(--enter);
-}
-
-.main-user-info-enter {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	padding: 20px 0;
-	width: 100%;
-	max-height: 500px;
-	overflow-y: auto;
-}
-
-.user-input-box-enter:nth-child(2n) {
-	justify-content: end;
-}
-
-.user-input-box-enter {
-	display: flex;
-	flex-wrap: wrap;
-	width: 100%;
-	padding-bottom: 15px;
-}
-
-.form-submit-btn-enter input {
+.form-submit-btn {
 	cursor: pointer;
 	display: block;
 	width: 100%;
@@ -533,84 +418,9 @@ option {
 	border: none;
 	border-radius: 3px;
 	color: white;
-	background: var(--enter);
 }
 
-.form-submit-btn-enter {
-	margin-top: 40px;
-}
-
-.button-add-enter {
-	display: flex;
-	align-items: center;
-	justify-content: end;
-	color: white;
-	margin: 10px;
-	padding: 10px;
-}
-
-.button-add-enter button {
-	width: 20%;
-	height: 30px;
-	background: var(--enter);
-	border: none;
-	cursor: pointer;
-}
-
-.input-info-enter {
-	border: none;
-	height: 40px;
-	width: 90%;
-	max-width: 350px;
-	background: transparent;
-	outline: none;
-	border-bottom: 1px solid var(--enter);
-	padding: 10px;
-	color: white;
-}
-
-.input-group-limit-enter .input-group-enter {
-	width: 500px;
-}
-
-.input-group-limit-enter {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-}
-
-.limit-group-enter {
-	width: 100%;
-	max-height: 150px;
-	overflow-y: auto;
-}
-
-.icon-info-enter {
-	display: flex;
-	align-items: end;
-	cursor: pointer;
-}
-
-.end-input-group-enter {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-}
-
-.end-input-group-enter .input-group-enter {
-	width: 150%;
-}
-
-.form-label-enter {
-	position: relative;
-	top: 30px;
-	z-index: 1;
-	color: gray;
-	transition: all 0.4s;
-}
-
-/* end EnterProduct */
-
+/* end packing forms */
 /* CreateProduct */
 .body-create {
 	background-color: rgba(0, 0, 0, 0);

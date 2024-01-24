@@ -39,7 +39,7 @@ const Sidebar = (props) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const { isAuthenticated, user } = useAuth0();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
     const [selected, setSelected] = useState("Dashboard");
 
     return (
@@ -257,7 +257,7 @@ const Sidebar = (props) => {
                                     Salidas
                                 </Typography>
                                 <Item
-                                    title="Formualrio de Salidas"
+                                    title="Formulario de Salidas"
                                     to="/inventory/exit"
                                     icon={<Inventory />}
                                     selected={selected}
