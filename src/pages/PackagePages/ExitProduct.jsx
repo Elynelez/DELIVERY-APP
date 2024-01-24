@@ -7,9 +7,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { io } from "socket.io-client";
 import { loadData } from "../../middlewares";
 // const socket = io('http://localhost:' + 8080);
-const socket = io("https://server-cloud-mggp.onrender.com")
 
-const ExitProduct = ({ rangeItems, setRangeItems, pendingData, setPendingData }) => {
+const ExitProduct = ({ rangeItems, setRangeItems, pendingData, setPendingData, socket }) => {
     const { user } = useAuth0();
     const [loading, setLoading] = useState(false)
     const theme = useTheme();

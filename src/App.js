@@ -4,7 +4,7 @@ import NavbarNavigation from './components/Navbar';
 import Sidebar from './components/Sidebar';
 // import { io } from 'socket.io'
 import './App.css';
-import { io } from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 
 // auth
 import { useAuth0 } from '@auth0/auth0-react';
@@ -52,7 +52,7 @@ const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@g
 // const socket = io('http://localhost:' + 8080);
 const socket = io("https://server-cloud-mggp.onrender.com")
 
-function PPPPP() {
+function App() {
   const { isAuthenticated, user } = useAuth0();
   const [theme, colorMode] = useMode();
 
@@ -134,6 +134,14 @@ function PPPPP() {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      await loadData(socket, pendingData, setPendingData)
+      await TimeLoad(() => loadRange(socket, rangeItems, setRangeItems));
+      await TimeLoad20Minutes(socket)
+    })();
+  }, [socket]);
+
   // return (
   //   <ColorModeContext.Provider value={colorMode}>
   //     <ThemeProvider theme={theme}>
@@ -171,6 +179,7 @@ function PPPPP() {
   //               <Route exact path="/inventory/enter" element={<EnterProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
   //               <Route exact path="/inventory/exit"
   //                 element={<ExitProduct
+  //                   socket={socket}
   //                   rangeItems={rangeItems}
   //                   setRangeItems={setRangeItems}
   //                   pendingData={pendingData}
@@ -282,6 +291,7 @@ function PPPPP() {
                   <>
                     <Route exact path="/inventory/exit"
                       element={<ExitProduct
+                        socket={socket}
                         rangeItems={rangeItems}
                         setRangeItems={setRangeItems}
                         pendingData={pendingData}
