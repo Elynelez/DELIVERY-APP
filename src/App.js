@@ -124,7 +124,7 @@ function App() {
     console.log("ya esta")
     localStorage.setItem("rangeItems", JSON.stringify(rangeItems))
     localStorage.setItem("pendingData", JSON.stringify(pendingData))
-  }, [pendingData]);
+  }, [pendingData, rangeItems]);
 
   useEffect(() => {
     loadRange(socket, rangeItems, setRangeItems)
