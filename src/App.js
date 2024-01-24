@@ -52,7 +52,7 @@ const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@g
 // const socket = io('http://localhost:' + 8080);
 const socket = io("https://server-cloud-mggp.onrender.com")
 
-function App() {
+function PPPPP() {
   const { isAuthenticated, user } = useAuth0();
   const [theme, colorMode] = useMode();
 
