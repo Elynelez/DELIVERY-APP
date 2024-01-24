@@ -13,6 +13,17 @@ const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData,
     const colors = tokens(theme.palette.mode);
     const API_URL = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec";
 
+    useEffect(()=>{
+        if(pendingData > 2){
+            setLoading(false)
+        } else {
+            setLoading(true)
+            setInterval(() => {
+                setLoading(false)
+            }, 5000);
+        }
+    },[])
+
     const columns = [
         { headerName: 'Fecha', field: "date_generate", flex: 1 },
         { headerName: 'Número de orden', field: "order_number", flex: 1 },
