@@ -7,7 +7,7 @@ import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
 
 const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData, socket, receiveOrders }) => {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
@@ -15,6 +15,7 @@ const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData,
 
         socket.on('loadOrders', (loadedOrders) => {
             setPendingData(loadedOrders)
+            setLoading(false);
         });
 
         socket.on('dataOrder', obj => {

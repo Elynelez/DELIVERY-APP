@@ -634,7 +634,6 @@ const ConfirmInventoryModalServer = (props) => {
         props.socket.emit('sendConfirmExit', { order_number: props.orderNumber, platform: values.platform })
         setTimeout(() => {
           setVisible(false);
-          console.log(props.orderNumber)
           try {
             message.success('cargado exitosamente')
             props.setLoading(false);
@@ -643,7 +642,7 @@ const ConfirmInventoryModalServer = (props) => {
             message.info('no se pudo completar la operación')
             props.setLoading(false);
           }
-        }, 300);
+        }, 3000);
 
       },
     });
