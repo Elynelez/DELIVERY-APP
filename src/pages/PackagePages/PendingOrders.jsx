@@ -25,7 +25,7 @@ const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData,
         return () => {
             socket.off('dataOrder')
         }
-    }, [socket])
+    }, [])
 
     const columns = [
         { headerName: 'Fecha', field: "date_generate", flex: 1 },
