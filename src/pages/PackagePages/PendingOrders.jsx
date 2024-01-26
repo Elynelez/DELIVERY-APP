@@ -14,12 +14,22 @@ const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData,
     useEffect(() => {
 
         socket.on('loadOrders', (loadedOrders) => {
-            setPendingData(loadedOrders)
-            setLoading(false);
+            try {
+                console.log('loadOrders event received:', loadedOrders);
+                setPendingData(loadedOrders);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error handling loadOrders event:', error);
+            }
         });
 
         socket.on('dataOrder', obj => {
-            receiveOrders(obj)
+            try {
+                console.log('dataOrder event received:', obj);
+                receiveOrders(obj);
+            } catch (error) {
+                console.error('Error handling dataOrder event:', error);
+            }
         })
 
         return () => {

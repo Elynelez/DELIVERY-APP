@@ -217,6 +217,15 @@ function App() {
               <Routes>
                 {/* <Route exact path="/" element={<Dashboard />} /> */}
                 <Route exact path="/" element={<SearchES />} />
+                <Route exact path="/inventory/pending"
+                  element={<PendingOrders
+                    socket={socket}
+                    rangeItems={rangeItems}
+                    setRangeItems={setRangeItems}
+                    pendingData={pendingData}
+                    setPendingData={setPendingData}
+                    receiveOrders={receiveOrders}
+                  />} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
                     <Route exact path="/DeliveryApp" element={<DeliveryApp />} />
