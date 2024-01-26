@@ -4,19 +4,15 @@ import { useTheme } from "@mui/material";
 import { Button, Spin, message, Form, Input, Col, Row, Select } from "antd"
 import { v4 } from 'uuid';
 import { useAuth0 } from '@auth0/auth0-react';
-import { io } from "socket.io-client";
-import { loadData } from "../../middlewares";
-// const socket = io('http://localhost:' + 8080);
 
-const ExitProduct = ({ rangeItems, setRangeItems, pendingData, setPendingData, socket }) => {
+const ExitProduct = ({ rangeItems, socket, receiveOrders }) => {
     const { user } = useAuth0();
     const [loading, setLoading] = useState(false)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [form] = Form.useForm();
-    const API_URL = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec";
 
-    const onFinish = async (e) => {
+    const onFinish = (e) => {
         var date = new Date()
         const idExit = v4()
 
@@ -31,11 +27,7 @@ const ExitProduct = ({ rangeItems, setRangeItems, pendingData, setPendingData, s
             return null;
         }).filter(obj => obj !== null);
 
-        // const allValues = e.projects.map(obj => {
-        //     return [e.facture_number, e.platform, obj.code, obj.sku, obj.name, obj.quantity_currently, obj.brand, user ? user.email : "test", idExit]
-        // })
-
-        var objectValues = {
+        var data = {
             id: idExit,
             cells: [],
             date_generate_ISO: date.toISOString(),
@@ -48,7 +40,7 @@ const ExitProduct = ({ rangeItems, setRangeItems, pendingData, setPendingData, s
         }
 
         const allValues = e.projects.map((obj, index) => {
-            objectValues.cells.push(index)
+            data.cells.push(index)
             return {
                 code: obj.code,
                 sku: obj.sku,
@@ -58,11 +50,11 @@ const ExitProduct = ({ rangeItems, setRangeItems, pendingData, setPendingData, s
             }
         })
 
-        objectValues.items = allValues
+        data.items = allValues
 
-        setPendingData((prevInfo) => [objectValues, ...prevInfo])
+        receiveOrders(data)
 
-        socket.emit('sendExitsData', objectValues)
+        socket.emit('objectValues', data)
 
         setLoading(true)
 
@@ -75,27 +67,6 @@ const ExitProduct = ({ rangeItems, setRangeItems, pendingData, setPendingData, s
             message.info('no se pudo completar la operación')
             setLoading(false);
         }
-
-        // fetch(API_URL + "?exit", {
-        //     redirect: "follow",
-        //     method: 'POST',
-        //     headers: {
-        //         "Content-Type": "text/plain;charset=utf-8",
-        //     },
-        //     body: JSON.stringify(allValues)
-        // })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         message.success('cargado exitosamente')
-        //         form.resetFields()
-        //         setLoading(false)
-        //     })
-        //     .catch(error => {
-        //         console.error('Error changing row:', error);
-        //         message.info('no se pudo completar la operación')
-        //         setLoading(false);
-        //     });
-
     };
 
     return (

@@ -4,17 +4,7 @@ export const loadRange = async (socket, rangeItems, setRangeItems) => {
     socket.on('dataInventory', (data) => {
         setRangeItems(data)  
     });
-
-    console.log(rangeItems)
 };
-
-export const loadData = async (socket, pendingData, setPendingData) => {
-    socket.emit('getExitsData')
-
-    socket.on('dataExits', (data) => {
-        setPendingData(data)
-    })
-}
 
 export const TimeLoad = async (loadRange) => {
 
@@ -32,24 +22,5 @@ export const TimeLoad = async (loadRange) => {
 
     setInterval(async () => {
         await loadRange();
-    }, oneHourInMilliseconds);
-};
-
-export const TimeLoad20Minutes = async (socket) => {
-
-    const lastUpdateTimestamp = localStorage.getItem("lastUpdateTimestamp");
-
-    const currentTimestamp = new Date().getTime();
-
-    const oneHourInMilliseconds = 1200000;
-    const shouldUpdate = !lastUpdateTimestamp || (currentTimestamp - lastUpdateTimestamp) >= oneHourInMilliseconds;
-
-    if (shouldUpdate) {
-        await socket.emit('updateDB');
-        localStorage.setItem("lastUpdateTimestamp", currentTimestamp);
-    }
-
-    setInterval(async () => {
-        await socket.emit('updateDB');
     }, oneHourInMilliseconds);
 };

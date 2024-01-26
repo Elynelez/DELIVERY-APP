@@ -5,24 +5,26 @@ import DataTableGrid from "../Controllers/DataGridPro";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
-import { loadData } from "../../middlewares";
 
-const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData, socket }) => {
-    const [loading, setLoading] = useState(false) // true
+const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData, socket, receiveOrders }) => {
+    const [loading, setLoading] = useState(false)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const API_URL = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec";
 
-    useEffect(()=>{
-        if(pendingData > 2){
-            setLoading(false)
-        } else {
-            setLoading(true)
-            setInterval(() => {
-                setLoading(false)
-            }, 5000);
+    useEffect(() => {
+
+        socket.on('loadOrders', (loadedOrders) => {
+            setPendingData(loadedOrders)
+        });
+
+        socket.on('dataOrder', obj => {
+            receiveOrders(obj)
+        })
+
+        return () => {
+            socket.off('dataOrder')
         }
-    },[])
+    }, [socket])
 
     const columns = [
         { headerName: 'Fecha', field: "date_generate", flex: 1 },
@@ -38,7 +40,6 @@ const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData,
                                 orderNumber={params.row.order_number}
                                 initialValues={{ cells: params.row.cells }}
                                 rows={params.row.items}
-                                loadData={loadData}
                                 setLoading={setLoading}
                                 socket={socket}
                                 setPendingData={setPendingData}
@@ -67,6 +68,11 @@ const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData,
                     <Spin tip="Cargando datos..." />
                 </div>
             ) : (
+                // <ul>
+                //     {pendingData.map((obj, index) => (
+                //         <li key={index}>{obj.order_number}</li>
+                //     ))}
+                // </ul>
                 <Box m="20px">
                     <Box mb="30px">
                         <Typography
@@ -82,8 +88,10 @@ const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData,
                         </Typography>
                     </Box>
                     <DataTableGrid
+                        key={pendingData.length}
                         columns={columns}
-                        data={pendingData}
+                        data={pendingData.map((obj, index) => {obj.id = index 
+                            return obj})}
                         setReloadData={setPendingData}
                         // setReloadData={setReloadData}
                         setLoading={setLoading}

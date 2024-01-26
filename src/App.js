@@ -2,9 +2,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import NavbarNavigation from './components/Navbar';
 import Sidebar from './components/Sidebar';
-// import { io } from 'socket.io'
 import './App.css';
-import { Socket, io } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 // auth
 import { useAuth0 } from '@auth0/auth0-react';
@@ -32,7 +31,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 
 // middlewares
-import { loadRange, loadData, TimeLoad, TimeLoad20Minutes } from './middlewares';
+import { loadRange, TimeLoad } from './middlewares';
 
 // Logistic Shipping
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
@@ -76,10 +75,7 @@ function App() {
     return savedRangeItems ? JSON.parse(savedRangeItems) : [];
   })
 
-  const [pendingData, setPendingData] = useState(() => {
-    const savedPendingData = localStorage.getItem("pendingData");
-    return savedPendingData ? JSON.parse(savedPendingData) : [];
-  })
+  const [pendingData, setPendingData] = useState([])
 
   useEffect(() => {
 
@@ -113,7 +109,6 @@ function App() {
     };
   }, []);
 
-
   useEffect(() => {
     localStorage.setItem("allProducts", JSON.stringify(allProducts));
     localStorage.setItem("total", total)
@@ -121,22 +116,16 @@ function App() {
   }, [allProducts]);
 
   useEffect(() => {
-    console.log("ya esta")
     localStorage.setItem("rangeItems", JSON.stringify(rangeItems))
-    localStorage.setItem("pendingData", JSON.stringify(pendingData))
-  }, [pendingData, rangeItems]);
-
-  useEffect(() => {
-    loadRange(socket, rangeItems, setRangeItems)
-  }, []);
+  }, [rangeItems]);
 
   useEffect(() => {
     (async () => {
-      await loadData(socket, pendingData, setPendingData)
       await TimeLoad(() => loadRange(socket, rangeItems, setRangeItems));
-      await TimeLoad20Minutes(socket)
     })();
   }, [socket]);
+
+  const receiveOrders = order => setPendingData(state => [order, ...state])
 
   // return (
   //   <ColorModeContext.Provider value={colorMode}>
@@ -177,9 +166,7 @@ function App() {
   //                 element={<ExitProduct
   //                   socket={socket}
   //                   rangeItems={rangeItems}
-  //                   setRangeItems={setRangeItems}
-  //                   pendingData={pendingData}
-  //                   setPendingData={setPendingData}
+  //                   receiveOrders={receiveOrders}
   //                 />} />
   //               <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
   //               <Route exact path="/inventory/pending"
@@ -189,25 +176,10 @@ function App() {
   //                   setRangeItems={setRangeItems}
   //                   pendingData={pendingData}
   //                   setPendingData={setPendingData}
+  //                   receiveOrders={receiveOrders}
   //                 />} />
   //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre />} />
   //               <Route exact path="/search/ES" element={<SearchES />} />
-  //               {/* <Route exact path="/test/display" element={<div>
-  //                 <form onSubmit={handleSubmit}>
-  //                   <input
-  //                     type="text"
-  //                     placeholder='write your message...'
-  //                     onChange={(e) => setMessage(e.target.value)} />
-  //                   <button>
-  //                     send
-  //                   </button>
-  //                 </form>
-  //                 <ul>
-  //                   {messages.map((message, index) => (
-  //                     <li key={index}>{message}</li>
-  //                   ))}
-  //                 </ul>
-  //               </div>} /> */}
   //             </Routes>
   //           </div>
   //         </div>
@@ -244,22 +216,6 @@ function App() {
               />
               <Routes>
                 {/* <Route exact path="/" element={<Dashboard />} /> */}
-                {/* <Route exact path="/test/display" element={<div>
-                  <form onSubmit={handleSubmit}>
-                    <input
-                      type="text"
-                      placeholder='write your message...'
-                      onChange={(e) => setMessage(e.target.value)} />
-                    <button>
-                      send
-                    </button>
-                  </form>
-                  <ul>
-                    {messages.map((message, index) => (
-                      <li key={index}>{message}</li>
-                    ))}
-                  </ul>
-                </div>} /> */}
                 <Route exact path="/" element={<SearchES />} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
@@ -289,9 +245,7 @@ function App() {
                       element={<ExitProduct
                         socket={socket}
                         rangeItems={rangeItems}
-                        setRangeItems={setRangeItems}
-                        pendingData={pendingData}
-                        setPendingData={setPendingData}
+                        receiveOrders={receiveOrders}
                       />} />
                     <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
                     <Route exact path="/inventory/pending"
@@ -301,12 +255,13 @@ function App() {
                         setRangeItems={setRangeItems}
                         pendingData={pendingData}
                         setPendingData={setPendingData}
+                        receiveOrders={receiveOrders}
                       />} />
                   </>
                 )}
                 {isAuthenticated && entriesInventoryEmails.includes(user.email) && (
                   <>
-                    <Route exact path="/inventory/enter" element={<EnterProduct rangeItems={rangeItems} setRangeItems={setRangeItems}/>} />
+                    <Route exact path="/inventory/enter" element={<EnterProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
                     <Route exact path="/inventory/create" element={<CreateProduct />} />
                     <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails} />} />
                   </>
@@ -326,7 +281,6 @@ function App() {
 }
 
 export default App;
-
 
 
 
