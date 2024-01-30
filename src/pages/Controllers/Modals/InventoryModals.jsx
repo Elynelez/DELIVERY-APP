@@ -642,7 +642,7 @@ const ConfirmInventoryModalServer = (props) => {
             message.info('no se pudo completar la operación')
             props.setLoading(false);
           }
-        }, 3000);
+        }, 5000);
 
       },
     });

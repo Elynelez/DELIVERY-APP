@@ -104,7 +104,7 @@ const PendingOrders = ({ pendingData, setPendingData, socket, receiveOrders, use
                         data={pendingData.map((obj, index) => {
                             obj.id = index
                             return obj
-                        })}
+                        }).filter(obj => obj.platform == "POR CONFIRMAR")}
                         setReloadData={setPendingData}
                         // setReloadData={setReloadData}
                         setLoading={setLoading}
