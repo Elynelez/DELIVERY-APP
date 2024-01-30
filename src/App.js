@@ -171,9 +171,8 @@ function App() {
   //               <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
   //               <Route exact path="/inventory/pending"
   //                 element={<PendingOrders
+  //                   user={user}
   //                   socket={socket}
-  //                   rangeItems={rangeItems}
-  //                   setRangeItems={setRangeItems}
   //                   pendingData={pendingData}
   //                   setPendingData={setPendingData}
   //                   receiveOrders={receiveOrders}
@@ -219,9 +218,8 @@ function App() {
                 <Route exact path="/" element={<SearchES />} />
                 <Route exact path="/inventory/pending"
                   element={<PendingOrders
+                    user={user}
                     socket={socket}
-                    rangeItems={rangeItems}
-                    setRangeItems={setRangeItems}
                     pendingData={pendingData}
                     setPendingData={setPendingData}
                     receiveOrders={receiveOrders}
@@ -259,9 +257,8 @@ function App() {
                     <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
                     <Route exact path="/inventory/pending"
                       element={<PendingOrders
+                        user={user}
                         socket={socket}
-                        rangeItems={rangeItems}
-                        setRangeItems={setRangeItems}
                         pendingData={pendingData}
                         setPendingData={setPendingData}
                         receiveOrders={receiveOrders}

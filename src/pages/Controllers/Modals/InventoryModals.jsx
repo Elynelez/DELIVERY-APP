@@ -631,7 +631,7 @@ const ConfirmInventoryModalServer = (props) => {
       onOk: () => {
         message.info('unos momentos')
         props.setLoading(true);
-        props.socket.emit('sendConfirmExit', { order_number: props.orderNumber, platform: values.platform })
+        props.socket.emit('sendConfirmExit', { order_number: props.orderNumber, platform: values.platform, user: props.user ? props.user.email : "test" })
         setTimeout(() => {
           setVisible(false);
           try {
@@ -689,19 +689,10 @@ const ConfirmInventoryModalServer = (props) => {
 
         <Form form={form} onFinish={onFinish} initialValues={props.initialValues} layout="vertical">
           <Form.Item
-            hidden="true"
-            label="Cd"
-            name="cells"
-            labelAlign="left"
-          >
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item
             label="Plataforma"
             name="platform"
             labelAlign="left"
             required="true"
-
           >
             <Select placeholder="selecciona la plataforma" onChange={() => { setDisabled(false) }}>
               <Select.Option value="Mercadolibre" key={1}>Mercadolibre</Select.Option>

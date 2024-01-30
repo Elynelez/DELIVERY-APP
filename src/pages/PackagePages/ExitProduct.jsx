@@ -29,18 +29,18 @@ const ExitProduct = ({ rangeItems, socket, receiveOrders }) => {
 
         var data = {
             id: idExit,
-            cells: [],
             date_generate_ISO: date.toISOString(),
             date_generate: date.toLocaleString('sv', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 3 }).replace(',', '.').replace(' ', 'T') + "Z",
             order_number: e.facture_number,
             platform: e.platform,
             items: [],
-            user: user ? user.email : "test",
-            new: true
+            picking: {
+                user: user ? user.email : "test",
+            },
+            packing: {}
         }
 
-        const allValues = e.projects.map((obj, index) => {
-            data.cells.push(index)
+        const allValues = e.projects.map(obj => {
             return {
                 code: obj.code,
                 sku: obj.sku,

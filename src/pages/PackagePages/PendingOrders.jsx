@@ -6,7 +6,7 @@ import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
 
-const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData, socket, receiveOrders }) => {
+const PendingOrders = ({ pendingData, setPendingData, socket, receiveOrders, user }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -41,32 +41,32 @@ const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData,
         { headerName: 'Fecha', field: "date_generate", flex: 1 },
         { headerName: 'Número de orden', field: "order_number", flex: 1 },
         { headerName: 'Plataforma', field: "platform", flex: 1 },
-        { headerName: 'Usuario', field: "user", flex: 1 },
+        {
+            headerName: 'Usuario', field: "picking", renderCell: params => (
+                <>
+                    {params.row.picking ?  params.row.picking.user : params.row.user}
+                </>
+            )
+        },
         {
             headerName: 'Acciones', renderCell: params => (
-                <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
-                    <Menu.SubMenu title="Acciones">
-                        <Menu.Item key="0">
-                            <ConfirmInventoryModalServer
-                                orderNumber={params.row.order_number}
-                                initialValues={{ cells: params.row.cells }}
-                                rows={params.row.items}
-                                setLoading={setLoading}
-                                socket={socket}
-                                setPendingData={setPendingData}
-                            />
-                            {/* <ConfirmInventoryModal
-                                rangeItems={rangeItems}
-                                orderNumber={params.row.order_number}
-                                initialValues={{ cells: params.row.cells }}
-                                rows={params.row.items}
-                                setReloadData={setReloadData}
-                                loadData={loadData}
-                                setLoading={setLoading}
-                            /> */}
-                        </Menu.Item>
-                    </Menu.SubMenu>
-                </Menu>
+                <div>
+                    <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
+                        <Menu.SubMenu title="Acciones">
+                            <Menu.Item key="0">
+                                <ConfirmInventoryModalServer
+                                    orderNumber={params.row.order_number}
+                                    initialValues={{ cells: params.row.cells }}
+                                    rows={params.row.items}
+                                    setLoading={setLoading}
+                                    socket={socket}
+                                    setPendingData={setPendingData}
+                                    user={user}
+                                />
+                            </Menu.Item>
+                        </Menu.SubMenu>
+                    </Menu>
+                </div>
             )
         }
     ]
@@ -101,8 +101,10 @@ const PendingOrders = ({ rangeItems, setRangeItems, pendingData, setPendingData,
                     <DataTableGrid
                         key={pendingData.length}
                         columns={columns}
-                        data={pendingData.map((obj, index) => {obj.id = index 
-                            return obj})}
+                        data={pendingData.map((obj, index) => {
+                            obj.id = index
+                            return obj
+                        })}
                         setReloadData={setPendingData}
                         // setReloadData={setReloadData}
                         setLoading={setLoading}
