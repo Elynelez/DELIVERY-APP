@@ -101,10 +101,7 @@ const PendingOrders = ({ pendingData, setPendingData, socket, receiveOrders, use
                     <DataTableGrid
                         key={pendingData.length}
                         columns={columns}
-                        data={pendingData.map((obj, index) => {
-                            obj.id = index
-                            return obj
-                        }).filter(obj => obj.platform == "POR CONFIRMAR")}
+                        data={pendingData.filter(obj => obj.platform == "POR CONFIRMAR")}
                         setReloadData={setPendingData}
                         // setReloadData={setReloadData}
                         setLoading={setLoading}
