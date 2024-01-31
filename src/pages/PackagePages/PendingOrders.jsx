@@ -56,7 +56,7 @@ const PendingOrders = ({ pendingData, setPendingData, socket, receiveOrders, use
                             <Menu.Item key="0">
                                 <ConfirmInventoryModalServer
                                     orderNumber={params.row.order_number}
-                                    initialValues={{ cells: params.row.cells }}
+                                    id={params.row.id}
                                     rows={params.row.items}
                                     setLoading={setLoading}
                                     socket={socket}

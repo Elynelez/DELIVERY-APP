@@ -624,6 +624,20 @@ const ConfirmInventoryModalServer = (props) => {
     setVisible(false);
   };
 
+  const deleteRowById = () => {
+    Modal.confirm({
+      title: '¿Seguro que quieres eliminar este contenido?',
+      content: 'Esta acción no se puede deshacer.',
+      onOk: () => {
+        message.info('unos momentos')
+        props.setLoading(true);
+        props.socket.emit('deleteOrder', {id: props.id});
+        props.setLoading(false)
+      },
+    });
+
+  }
+
   const onFinish = (values) => {
     Modal.confirm({
       title: '¿Seguro que quieres actualizar este contenido?',
@@ -706,6 +720,7 @@ const ConfirmInventoryModalServer = (props) => {
           </Form.Item>
           <Form.Item>
             <input type="submit" className="btn btn-primary m-2" disabled={disabled} />
+            <input className="btn btn-danger w-25 m-2" onClick={()=>{deleteRowById()}} value="Eliminar" />
           </Form.Item>
         </Form>
       </Modal>
