@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Input, Spin, message, Select, Row, Col, Typography } from 'antd';
+import { Modal, Button, Form, Input, Spin, message, Select, Row, Col, Typography, notification } from 'antd';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { v4 } from 'uuid';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -611,10 +611,23 @@ const ConfirmInventoryModal = (props) => {
   );
 }
 
-const ConfirmInventoryModalServer = (props) => {
+const ConfirmInventoryModalServer = ({ pendingData, orderNumber, id, rows, setLoading, socket, user, rangeItems, receiveOrders }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(true)
+  const [allValues, setAllValues] = useState([]);
+
+  useEffect(() => {
+    const objectGroup = {}
+    for (const obj of rows) {
+      const sku = obj.sku;
+      objectGroup[sku] = obj.quantity;
+    }
+
+    const resultArray = Array.from(Object.entries(objectGroup).flatMap(([key, value]) => Array(value).fill(key))).filter(function (i) { return i !== "undefined" })
+
+    setAllValues(resultArray)
+  }, []);
 
   const showModal = () => {
     setVisible(true);
@@ -630,9 +643,9 @@ const ConfirmInventoryModalServer = (props) => {
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
         message.info('unos momentos')
-        props.setLoading(true);
-        props.socket.emit('deleteOrder', {id: props.id});
-        props.setLoading(false)
+        setLoading(true);
+        socket.emit('deleteOrder', { id: id });
+        setLoading(false)
       },
     });
 
@@ -644,17 +657,17 @@ const ConfirmInventoryModalServer = (props) => {
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
         message.info('unos momentos')
-        props.setLoading(true);
-        props.socket.emit('sendConfirmExit', { order_number: props.orderNumber, platform: values.platform, user: props.user ? props.user.email : "test" })
+        setLoading(true);
+        socket.emit('sendConfirmExit', { order_number: orderNumber, platform: values.platform, user: user ? user.email : "test" })
         setTimeout(() => {
           setVisible(false);
           try {
             message.success('cargado exitosamente')
-            props.setLoading(false);
+            setLoading(false);
           } catch (err) {
             console.error('Error changing row:', err);
             message.info('no se pudo completar la operación')
-            props.setLoading(false);
+            setLoading(false);
           }
         }, 5000);
 
@@ -664,7 +677,7 @@ const ConfirmInventoryModalServer = (props) => {
 
   return (
     <div>
-      <Button type='primary' style={{ backgroundColor: "green" }} onClick={showModal}>
+      <Button type='primary' style={{ backgroundColor: "gray" }} onClick={showModal}>
         Confirmar
       </Button>
       <Modal
@@ -687,7 +700,7 @@ const ConfirmInventoryModalServer = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {props.rows.map((obj) => (
+              {rows.map((obj) => (
                 <TableRow key={obj.sku}>
                   <TableCell>{obj.sku}</TableCell>
                   <TableCell>{obj.name}</TableCell>
@@ -701,7 +714,7 @@ const ConfirmInventoryModalServer = (props) => {
         <br />
 
 
-        <Form form={form} onFinish={onFinish} initialValues={props.initialValues} layout="vertical">
+        <Form form={form} onFinish={onFinish} layout="vertical">
           <Form.Item
             label="Plataforma"
             name="platform"
@@ -719,8 +732,21 @@ const ConfirmInventoryModalServer = (props) => {
             </Select>
           </Form.Item>
           <Form.Item>
-            <input type="submit" className="btn btn-primary m-2" disabled={disabled} />
-            <input className="btn btn-danger w-25 m-2" onClick={()=>{deleteRowById()}} value="Eliminar" />
+            <input type="submit" className="btn btn-primary w-25" disabled={disabled} />
+            <input className="btn btn-danger w-25 m-2" onClick={() => { deleteRowById() }} value="Eliminar" />
+            <ExitElementsServer
+              pendingData={pendingData}
+              id={id}
+              prev={allValues}
+              rangeItems={rangeItems}
+              setLoading={setLoading}
+              nameButton={"Editar"}
+              platformStatus={true}
+              valueOrder={orderNumber}
+              cash={false}
+              socket={socket}
+              receiveOrders={receiveOrders}
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -728,4 +754,278 @@ const ConfirmInventoryModalServer = (props) => {
   );
 }
 
-export { ConfirmInventoryModal, AddSkuModal, ModifyQuantity, ExitElements, ConfirmInventoryModalServer };
+const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nameButton, platformStatus, valueOrder, cash, socket, receiveOrders }) => {
+  const { user } = useAuth0();
+  const [allValues, setAllValues] = useState(prev);
+  const [visible, setVisible] = useState(false);
+  const [key, setKey] = useState(0);
+  const [skuProduct, setSkuProduct] = useState('')
+  const packers = ["ANYELO", "TATIANA", "KILIAN", "INDUCOR", "NICOLAS", "PILAR", "tatiana", "pilar"];
+  const [status, setStatus] = useState(false)
+  const [objectValues, setObjectValues] = useState({})
+  const [form] = Form.useForm();
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  useEffect(() => {
+    setKey(key => key + 1);
+  }, [visible])
+
+  const handleCancel = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setVisible(false);
+      setAllValues([]);
+      setSkuProduct("");
+      setStatus(false);
+      setObjectValues({});
+      form.resetFields();
+      setLoading(false);
+    }, 2000);
+  };
+
+  const onFinish = (e) => {
+    let notExistentSkus = []
+    var date = new Date()
+    const idExit = v4()
+
+    if (cash) {
+      let rangeOrderNumbers = pendingData.map(obj => { return obj.order_number }).filter(orderNumber => !/^[A-Za-z]+$/.test(orderNumber))
+
+      e.facture_number = e.facture_number.toUpperCase()
+
+      let blockExecution = rangeOrderNumbers.some(number => {
+        number = number.toUpperCase()
+        return (
+          number.includes(e.facture_number) || e.facture_number.includes(number)
+        );
+      });
+
+      if (blockExecution) {
+        notification.error({
+          message: 'Número de factura bloqueado',
+          description: 'Por favor, cambia el valor antes de continuar.',
+          duration: 5,
+        });
+        return;
+      }
+    }
+
+    e.projects = e.projects.map(obj => {
+      const matchingRangeItem = rangeItems.find(rangeItem => rangeItem.sku === obj.sku);
+
+      if (matchingRangeItem) {
+
+        return { ...matchingRangeItem, quantity_currently: obj.quantity };
+      } else {
+        notExistentSkus.push(obj.sku)
+      }
+
+      return null;
+    }).filter(obj => obj !== null);
+
+    var data = {
+      id: cash ? idExit : id,
+      date_generate_ISO: date.toISOString(),
+      date_generate: date.toLocaleString('sv', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 3 }).replace(',', '.').replace(' ', 'T') + "Z",
+      order_number: e.facture_number,
+      platform: e.platform == undefined ? "POR CONFIRMAR" : e.platform,
+      items: [],
+      picking: {
+        user: user ? user.email : "test",
+      },
+      packing: {}
+    }
+
+    const allValues = e.projects.map(obj => {
+      return {
+        code: obj.code,
+        sku: obj.sku,
+        name: obj.name,
+        quantity: obj.quantity_currently,
+        brand: obj.brand
+      }
+    })
+
+    data.items = allValues
+
+    switch (true) {
+      case notExistentSkus.length > 0:
+        alert("Estos códigos no existen: " + notExistentSkus.toString());
+        break;
+      case data.items.length < 1:
+        alert("no seas tonto bro, ¿Cómo vas a enviar algo vacío 🙄?");
+        break;
+      default:
+        setLoading(true)
+        if (cash) {
+          receiveOrders(data)
+
+          socket.emit('objectValues', data)
+
+          try {
+            message.success('cargado exitosamente')
+            handleCancel()
+          } catch (err) {
+            console.error('Error changing row:', err);
+            message.info('no se pudo completar la operación')
+            setLoading(false);
+          }
+        } else {
+          socket.emit('exitOrder', data)
+        }
+    }
+  }
+
+  const Modalito = (props) => {
+    const values = Object.entries(props.oValues).map(([sku, quantity]) => { return { sku, quantity } })
+    return (
+      <Modal
+        title="RESUMEN DE LA OPERACIÓN"
+        open={visible}
+        onCancel={handleCancel}
+        onOk={undefined}
+      >
+        <Form form={form} onFinish={onFinish} layout="vertical">
+          <Form.Item
+            label="número de pedido"
+            name="facture_number"
+            rules={[{ required: true }]}
+            initialValue={valueOrder}
+          >
+            <Input placeholder="field name" />
+          </Form.Item>
+          <Form.Item
+            label="Plataforma"
+            name="platform"
+            rules={[{ required: platformStatus, message: 'Por favor, selecciona un número de pedido' }]}
+            style={{ display: platformStatus ? 'block' : 'none' }}
+          >
+            <Select
+              id="platform_order"
+              placeholder="Selecciona la plataforma"
+              allowClear
+            >
+              <Select.Option value="Mercadolibre">Mercadolibre</Select.Option>
+              <Select.Option value="Shopify">Magic Mechas</Select.Option>
+              <Select.Option value="DC Bogotá">DC Bogotá</Select.Option>
+              <Select.Option value="Linio">Linio</Select.Option>
+              <Select.Option value="Falabella">Falabella</Select.Option>
+              <Select.Option value="Rappi">Rappi</Select.Option>
+              <Select.Option value="Otro">Otro</Select.Option>
+            </Select>
+          </Form.Item>
+          <Row gutter={[16, 16]}>
+            <Col span={8}>
+              <Typography.Text strong>SKU</Typography.Text>
+            </Col>
+            <Col span={8}>
+              <Typography.Text strong>Cantidad</Typography.Text>
+            </Col>
+            <Col span={8}>
+              <Typography.Text strong>Acciones</Typography.Text>
+            </Col>
+          </Row>
+          <Form.List name="projects" initialValue={values}>
+            {(fields, { add, remove }) => (
+              <>
+                <Form.Item>
+                  <Button type="dashed" onClick={add} >
+                    Add
+                  </Button>
+                </Form.Item>
+
+                {fields.map((field, index, ...fields) => (
+
+                  <Row gutter={[16, 16]} key={index}>
+                    <Col span={8}>
+                      <Form.Item
+                        {...fields}
+                        name={[index, "sku"]}
+                        rules={[{ required: true }]}
+                      >
+                        <Input placeholder="field name" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        {...fields}
+                        name={[index, "quantity"]}
+                        rules={[{ required: true }]}
+                      >
+                        <Input placeholder="field name" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Button danger onClick={() => remove(index)}>
+                        Eliminar
+                      </Button>
+                    </Col>
+                  </Row>
+                ))}
+              </>
+            )}
+          </Form.List>
+          <Form.Item>
+            <input type="submit" className="btn btn-primary" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    )
+  }
+
+  const Sequence = (e) => {
+
+    const objVal = {};
+    for (const sku of allValues) {
+      if (objVal[sku]) {
+        objVal[sku]++;
+      } else {
+        objVal[sku] = 1;
+      }
+    }
+
+    if (!skuProduct.trim()) {
+      message.error("Ingresa un valor correcto");
+    } else if (packers.includes(skuProduct)) {
+      setStatus(true);
+      setObjectValues(objVal);
+    } else {
+      setAllValues((values) => [...values, skuProduct]);
+      setSkuProduct('');
+      e.target.focus();
+    }
+
+  }
+
+  return (
+    <>
+      <Button className="btn btn-secondary w-25 h-25" onClick={showModal}>
+        {nameButton}
+      </Button>
+      {status ? <Modalito key={key} oValues={objectValues} /> : <Modal
+        title={`Ya van ${allValues.length} elementos`}
+        open={visible}
+        onCancel={handleCancel}
+        onOk={undefined}
+      >
+        <Input
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              e.target.blur()
+            }
+          }}
+          onBlur={Sequence}
+          onChange={(e) => { setSkuProduct(e.target.value) }}
+          value={skuProduct}
+        />
+      </Modal>}
+
+    </>
+  )
+}
+
+export { ConfirmInventoryModal, AddSkuModal, ModifyQuantity, ExitElements, ConfirmInventoryModalServer, ExitElementsServer };

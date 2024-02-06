@@ -6,7 +6,7 @@ import { Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useTheme } from "@mui/material";
 
-const PendingOrders = ({ pendingData, setPendingData, socket, receiveOrders, user }) => {
+const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiveOrders, user }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -55,13 +55,15 @@ const PendingOrders = ({ pendingData, setPendingData, socket, receiveOrders, use
                         <Menu.SubMenu title="Acciones">
                             <Menu.Item key="0">
                                 <ConfirmInventoryModalServer
+                                    pendingData={pendingData}
                                     orderNumber={params.row.order_number}
                                     id={params.row.id}
                                     rows={params.row.items}
                                     setLoading={setLoading}
                                     socket={socket}
-                                    setPendingData={setPendingData}
                                     user={user}
+                                    rangeItems={rangeItems}
+                                    receiveOrders={receiveOrders}
                                 />
                             </Menu.Item>
                         </Menu.SubMenu>
@@ -79,11 +81,6 @@ const PendingOrders = ({ pendingData, setPendingData, socket, receiveOrders, use
                     <Spin tip="Cargando datos..." />
                 </div>
             ) : (
-                // <ul>
-                //     {pendingData.map((obj, index) => (
-                //         <li key={index}>{obj.order_number}</li>
-                //     ))}
-                // </ul>
                 <Box m="20px">
                     <Box mb="30px">
                         <Typography

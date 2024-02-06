@@ -164,13 +164,23 @@ function App() {
   //               <Route exact path="/inventory/enter" element={<EnterProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
   //               <Route exact path="/inventory/exit"
   //                 element={<ExitProduct
+  //                   pendingData={pendingData}
+  //                   setPendingData={setPendingData}
   //                   socket={socket}
   //                   rangeItems={rangeItems}
   //                   receiveOrders={receiveOrders}
   //                 />} />
-  //               <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
+  //               <Route exact path="/inventory/cash"
+  //                 element={<RBExitProduct
+  //                   pendingData={pendingData}
+  //                   setPendingData={setPendingData}
+  //                   socket={socket}
+  //                   rangeItems={rangeItems}
+  //                   receiveOrders={receiveOrders}
+  //                 />} />
   //               <Route exact path="/inventory/pending"
   //                 element={<PendingOrders
+  //                   rangeItems={rangeItems}
   //                   user={user}
   //                   socket={socket}
   //                   pendingData={pendingData}
@@ -216,14 +226,15 @@ function App() {
               <Routes>
                 {/* <Route exact path="/" element={<Dashboard />} /> */}
                 <Route exact path="/" element={<SearchES />} />
-                <Route exact path="/inventory/pending"
+                {/* <Route exact path="/inventory/pending"
                   element={<PendingOrders
+                    rangeItems={rangeItems}
                     user={user}
                     socket={socket}
                     pendingData={pendingData}
                     setPendingData={setPendingData}
                     receiveOrders={receiveOrders}
-                  />} />
+                  />} /> */}
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
                     <Route exact path="/DeliveryApp" element={<DeliveryApp />} />
@@ -250,13 +261,23 @@ function App() {
                   <>
                     <Route exact path="/inventory/exit"
                       element={<ExitProduct
+                        pendingData={pendingData}
+                        setPendingData={setPendingData}
                         socket={socket}
                         rangeItems={rangeItems}
                         receiveOrders={receiveOrders}
                       />} />
-                    <Route exact path="/inventory/cash" element={<RBExitProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
+                    <Route exact path="/inventory/cash"
+                      element={<RBExitProduct
+                        pendingData={pendingData}
+                        setPendingData={setPendingData}
+                        socket={socket}
+                        rangeItems={rangeItems}
+                        receiveOrders={receiveOrders}
+                      />} />
                     <Route exact path="/inventory/pending"
                       element={<PendingOrders
+                        rangeItems={rangeItems}
                         user={user}
                         socket={socket}
                         pendingData={pendingData}
