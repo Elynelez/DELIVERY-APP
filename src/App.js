@@ -35,7 +35,7 @@ import { loadRange, TimeLoad } from './middlewares';
 
 // Logistic Shipping
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
-const ExternalServiceEmails = ["atencionalcliente.magicmechas@gmail.com", "klcf.inducor@gmail.com"]
+const ExternalServiceEmails = ["xSharick08@gmail.com", "klcf.inducor@gmail.com"]
 
 // Boss Functions
 const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]
