@@ -168,6 +168,7 @@ function App() {
   //                   setPendingData={setPendingData}
   //                   socket={socket}
   //                   rangeItems={rangeItems}
+  //                   setRangeItems={setRangeItems}
   //                   receiveOrders={receiveOrders}
   //                 />} />
   //               <Route exact path="/inventory/cash"
@@ -265,6 +266,7 @@ function App() {
                         setPendingData={setPendingData}
                         socket={socket}
                         rangeItems={rangeItems}
+                        setRangeItems={setRangeItems}
                         receiveOrders={receiveOrders}
                       />} />
                     <Route exact path="/inventory/cash"

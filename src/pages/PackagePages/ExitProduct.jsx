@@ -4,13 +4,18 @@ import { useTheme } from "@mui/material";
 import { Button, Spin, message, Form, Input, Col, Row, Select, notification } from "antd"
 import { v4 } from 'uuid';
 import { useAuth0 } from '@auth0/auth0-react';
+import { loadRange } from "../../middlewares";
 
-const ExitProduct = ({ pendingData, setPendingData, rangeItems, socket, receiveOrders }) => {
+const ExitProduct = ({ pendingData, setPendingData, rangeItems, setRangeItems, socket, receiveOrders }) => {
     const { user } = useAuth0();
     const [loading, setLoading] = useState(false)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [form] = Form.useForm();
+
+    const handleClick = async () => {
+        await loadRange(socket, rangeItems, setRangeItems);
+    };
 
     useEffect(() => {
 
@@ -122,6 +127,9 @@ const ExitProduct = ({ pendingData, setPendingData, rangeItems, socket, receiveO
                 </div>
             ) : (
                 <div className="body-group-form">
+                    <div className="test-button">
+                        <button onClick={handleClick} style={{display: 'none'}}>Cargar Rango</button>
+                    </div>
                     <div className="container-group-form" style={{ backgroundColor: colors.primary[400] }}>
                         <h1 className="form-title-group" style={{ color: "#6870fa" }}><span>SALIDA DE PRODUCTOS</span></h1>
                         <Form form={form} onFinish={onFinish} layout="vertical">
