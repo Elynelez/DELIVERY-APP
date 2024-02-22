@@ -50,7 +50,7 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {pendingData.slice(0, 3000).map((order) => (
+                        {pendingData.reverse().slice(0, 3000).map((order) => (
                             <tr key={order.id}>
                                 <td>{order.date_generate}</td>
                                 <td>{order.packing.hour}</td>

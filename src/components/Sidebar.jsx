@@ -146,6 +146,13 @@ const Sidebar = (props) => {
                             selected={selected}
                             setSelected={setSelected}
                         />
+                        <Item
+                            title="Inventario"
+                            to="/inventory/setting/table"
+                            icon={<CalendarToday />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
                         {isAuthenticated && props.logisticEmails.includes(user.email) && (
                             <>
                                 <Typography

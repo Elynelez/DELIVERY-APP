@@ -438,6 +438,10 @@ function App() {
                         socket={socket}
                         URL_SERVER={URL_SERVER}
                       />} />
+                    <Route exact path="/inventory/setting/table"
+                      element={<SettingTable
+                        URL_SERVER={URL_SERVER}
+                      />} />
                     <Route exact path="/inventory/edit/:id"
                       element={<EditProduct
                         rangeItems={rangeItems}
