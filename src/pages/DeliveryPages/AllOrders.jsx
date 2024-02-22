@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Button, Spin, Menu } from "antd"
+import { Button, Spin, Menu, Modal, message } from "antd"
 import DataTableGrid from "../Controllers/DataGridPro";
 import { ModalData, EditModal, ReviewModal } from "../Controllers/Modals/DeliveryModals";
-import { Box, Typography } from "@mui/material";
+import { useTheme, Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
-import { useTheme } from "@mui/material";
-// auth
-import { useAuth0 } from '@auth0/auth0-react';
-import { Modal, message } from 'antd';
 
-const AllOrders = (props) => {
-  const { user } = useAuth0();
-  const [data, setData] = useState([]);
+const AllOrders = ({ user, bossEmails, logisticEmails, deliveryData, setDeliveryData, API_URL }) => {
   const [loading, setLoading] = useState(true)
   const [deleteRow, setDeleteRow] = useState(null)
   const [cancelledOrder, setCancelledOrder] = useState(null)
@@ -21,14 +15,14 @@ const AllOrders = (props) => {
 
   const loadData = () => {
     setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec")
+    fetch(API_URL)
       .then(response => response.json())
       .then(parsedData => {
-        let dataO = parsedData.map(element => {
+        let data = parsedData.map(element => {
           element.id = element.order_id
           return element
         });
-        setData(dataO);
+        setDeliveryData(data);
         setLoading(false);
       })
       .catch(error => {
@@ -37,32 +31,6 @@ const AllOrders = (props) => {
       });
   };
 
-  useEffect(() => {
-    if (reloadData) {
-      loadData();
-      setReloadData(false);
-    }
-  }, [reloadData]);
-
-
-  useEffect(() => {
-    setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec")
-      .then(response => response.json())
-      .then(parsedData => {
-        let dataO = parsedData.map(element => {
-          element.id = element.order_id
-          return element
-        });
-        setData(dataO);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  }, []);
-
   const deleteRowById = (order_Id) => {
     Modal.confirm({
       title: '¿Seguro que quieres eliminar este contenido?',
@@ -70,7 +38,7 @@ const AllOrders = (props) => {
       onOk: () => {
         message.info('unos momentos')
         setLoading(true);
-        fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?delete", {
+        fetch(API_URL+"?delete", {
           redirect: "follow",
           method: 'POST',
           headers: {
@@ -99,7 +67,7 @@ const AllOrders = (props) => {
       onOk: () => {
         message.info('unos momentos')
         setLoading(true);
-        fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?canceled", {
+        fetch(API_URL+"?canceled", {
           redirect: "follow",
           method: 'POST',
           headers: {
@@ -118,42 +86,30 @@ const AllOrders = (props) => {
           });
       },
     });
-
   }
 
   useEffect(() => {
+    if (deliveryData.length == 0) {
+      loadData()
+    } else {
+      setLoading(false)
+    }
+  }, []);
+
+  useEffect(() => {
     if (deleteRow !== null) {
-      fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec")
-        .then(response => response.json())
-        .then(parsedData => {
-          let dataO = parsedData.map(element => {
-            element.id = element.order_id
-            return element
-          });
-          setData(dataO);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error('Error fetching data:', error);
-          setLoading(false);
-        });
+      loadData()
     } else if (cancelledOrder !== null) {
-      fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec" )
-        .then(response => response.json())
-        .then(parsedData => {
-          let dataO = parsedData.map(element => {
-            element.id = element.order_id
-            return element
-          });
-          setData(dataO);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error('Error fetching data:', error);
-          setLoading(false);
-        });
+      loadData()
     }
   }, [deleteRow, cancelledOrder]);
+
+  useEffect(() => {
+    if (reloadData) {
+      loadData();
+      setReloadData(false);
+    }
+  }, [reloadData]);
 
   const statusColorMap = {
     'EN RUTA': '#A48BF4',
@@ -194,8 +150,7 @@ const AllOrders = (props) => {
       headerName: 'Acciones', renderCell: params => (
         <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
           <Menu.SubMenu title="Acciones">
-
-            {user && props.logisticEmails.includes(user.email) && (
+            {user && logisticEmails.includes(user.email) && (
               <>
                 <Menu.Item key="0">
                   <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.order_id)}>Anular</Button>
@@ -211,7 +166,7 @@ const AllOrders = (props) => {
             <Menu.Item key="3">
               <ModalData arrayData={[{ title: "fecha de entrega", value: params.row.date_delivery }, { title: "Zona", value: params.row.zone }, { title: "Medio de pago", value: params.row.method }, { title: "Observaciones", value: JSON.parse(params.row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: params.row.money_delivered }]} />
             </Menu.Item>
-            {user && props.bossEmails.includes(user.email) && (
+            {user && bossEmails.includes(user.email) && (
               <Menu.Item key="4">
                 <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, platform: "Coursiers", user: user.email, status: params.row.status, disabled: (params.row.status.includes("EN RUTA") || params.row.status.includes("ENTREGADO") || params.row.status.includes("INCOMPLETO") || params.row.status.includes("COMPLETO (FR)")) ? false : true }} />
               </Menu.Item>
@@ -244,7 +199,13 @@ const AllOrders = (props) => {
               últimos detalles
             </Typography>
           </Box>
-          <DataTableGrid columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading} typeSheet={"Delivery"} />
+          <DataTableGrid
+            columns={columns}
+            data={deliveryData}
+            setReloadData={setReloadData}
+            setLoading={setLoading}
+            typeSheet={"Delivery"}
+          />
         </Box>
       )}
     </div>

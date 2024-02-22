@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Spin } from "antd"
-import { ExitElements, ExitElementsServer } from "../Controllers/Modals/InventoryModals";
+import { ExitElementsServer } from "../../Controllers/Modals/InventoryModals";
 
-const RBExitProduct = ({ pendingData, setPendingData, rangeItems, socket, receiveOrders }) => {
+const CashProduct = ({ pendingData, setPendingData, rangeItems, socket, receiveOrders, URL_SERVER }) => {
     const [loading, setLoading] = useState(false)
+    const [allValues, setAllValues] = useState(() => {
+        const savedData = JSON.parse(localStorage.getItem("exitData"))
+
+        return savedData && savedData.projects? 
+        savedData.projects.flatMap(obj => {
+            return Array.from({ length: obj.quantity_currently }, () => obj.sku);
+        }) : []
+    });
 
     useEffect(() => {
 
-        socket.on('loadOrders', (loadedOrders) => {
+        socket.on('loadOrdersExits', (loadedOrders) => {
             try {
                 console.log('loadOrders event received:', loadedOrders);
                 setPendingData(loadedOrders);
@@ -17,7 +25,7 @@ const RBExitProduct = ({ pendingData, setPendingData, rangeItems, socket, receiv
             }
         });
 
-        socket.on('dataOrder', obj => {
+        socket.on('dataOrderExit', obj => {
             try {
                 console.log('dataOrder event received:', obj);
                 receiveOrders(obj);
@@ -27,7 +35,7 @@ const RBExitProduct = ({ pendingData, setPendingData, rangeItems, socket, receiv
         })
 
         return () => {
-            socket.off('dataOrder')
+            socket.off('dataOrderExit')
         }
     }, [])
 
@@ -41,22 +49,10 @@ const RBExitProduct = ({ pendingData, setPendingData, rangeItems, socket, receiv
                 <div className="container-main-RB">
                     <div className="container-RBTable">
                     </div>
-                    {/* <ExitElements
-                        prev={[]}
-                        rangeItems={rangeItems}
-                        setLoading={setLoading}
-                        nameButton={"Repetir Operación"}
-                        platformStatus={false}
-                        urlFetch={"https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?exit"}
-                        valueOrder={""}
-                        cells={[]}
-                        cash={true}
-                        setReloadData={setReloadData}
-                    /> */}
                     <ExitElementsServer
                         pendingData={pendingData}
                         setPendingData={setPendingData}
-                        prev={[]}
+                        prev={allValues}
                         rangeItems={rangeItems}
                         setLoading={setLoading}
                         nameButton={"Repetir Operación"}
@@ -65,6 +61,7 @@ const RBExitProduct = ({ pendingData, setPendingData, rangeItems, socket, receiv
                         cash={true}
                         socket={socket}
                         receiveOrders={receiveOrders}
+                        URL_SERVER={URL_SERVER}
                     />
                 </div>
             )}
@@ -72,4 +69,4 @@ const RBExitProduct = ({ pendingData, setPendingData, rangeItems, socket, receiv
     );
 }
 
-export default RBExitProduct
+export default CashProduct

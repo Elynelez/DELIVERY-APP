@@ -1,106 +1,103 @@
 import React, { useState, useEffect } from "react";
-import { tokens } from "./../../theme";
+import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";
-import { Button, Spin, message, Form, Input, Col, Row, Select } from "antd"
+import { Button, Spin, message, Form, Input, Col, Row, Select, notification } from "antd"
 import { v4 } from 'uuid';
-import { useAuth0 } from '@auth0/auth0-react';
+import axios from "axios";
 
-const EnterProduct = ({ rangeItems, setRangeItems }) => {
-    const { user } = useAuth0();
-    const [loading, setLoading] = useState(false)
+const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
+    const [enterData, setEnterData] = useState({})
+    const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [form] = Form.useForm();
-    const API_URL = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec";
-
-    const fetchData = async (url) => {
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            throw error;
-        }
-    };
-
-    const loadRange = async () => {
-        setLoading(true);
-        console.log("generación nueva de datos")
-        try {
-            const parsedData = await fetchData(API_URL);
-            setRangeItems(parsedData);
-            localStorage.setItem("cacheRangeItems", JSON.stringify(parsedData));
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const loadRangeAndUpdateHourly = async () => {
-
-        const lastUpdateTimestamp = localStorage.getItem("lastUpdateTimestamp");
-
-        const currentTimestamp = new Date().getTime();
-
-        const oneHourInMilliseconds = 60 * 60 * 1000;
-        const shouldUpdate = !lastUpdateTimestamp || (currentTimestamp - lastUpdateTimestamp) >= oneHourInMilliseconds;
-
-        if (shouldUpdate) {
-            await loadRange();
-
-            localStorage.setItem("lastUpdateTimestamp", currentTimestamp);
-        }
-
-        setInterval(async () => {
-            await loadRange();
-        }, oneHourInMilliseconds);
-    };
 
     useEffect(() => {
-        console.log(rangeItems);
-        (async () => {
-            await loadRangeAndUpdateHourly();
-        })();
-    }, []);
+
+        if (enterData) {
+            const savedEnterData = localStorage.getItem("enterData")
+            savedEnterData ? setEnterData(JSON.parse(savedEnterData)) : setEnterData({ facture_number: "", provider: "", projects: [] })
+        }
+
+        setLoading(false)
+
+    }, [socket])
 
     const onFinish = async (e) => {
-        e.projects = e.projects.map(obj => {
-            const matchingRangeItem = rangeItems.find(rangeItem => rangeItem.sku === obj.sku);
+        axios.get(URL_SERVER+"/inventory")
+            .then(resp => {
+                rangeItems = resp.data
 
-            if (matchingRangeItem) {
+                var date = new Date()
+                const idEnter = v4()
+                let foundError = [];
 
-                return { ...matchingRangeItem, quantity_currently: obj.quantity };
-            }
+                e.projects = e.projects.map(obj => {
+                    const matchingRangeItem = rangeItems.find(rangeItem => rangeItem.sku === obj.sku);
 
-            return null;
-        }).filter(obj => obj !== null);
+                    if (matchingRangeItem) {
 
-        const idEnter = v4()
+                        return { ...matchingRangeItem, quantity_currently: obj.quantity_currently };
+                    }
 
-        const allValues = e.projects.map(obj => {
-            return [e.facture_number, e.provider, obj.code, obj.sku, obj.name, obj.quantity_currently, obj.brand, user.email, idEnter]
-        })
+                    return null;
+                }).filter(obj => obj !== null);
 
-        setLoading(true);
-        fetch(API_URL + "?enter", {
-            redirect: "follow",
-            method: 'POST',
-            headers: {
-                "Content-Type": "text/plain;charset=utf-8",
-            },
-            body: JSON.stringify(allValues)
-        })
-            .then(response => response.json())
-            .then(data => {
-                message.success('cargado exitosamente')
-                form.resetFields()
-                setLoading(false);
+                e.projects.forEach(obj => {
+                    if (Number(obj.quantity) < 0) {
+                        foundError.push(obj.name);
+                        return;
+                    }
+                });
+
+                if (foundError.length) {
+                    localStorage.setItem("enterData", JSON.stringify(e))
+                    notification.error({
+                        message: 'Estás intentando ingresar productos pero hay negativos en ' + foundError,
+                        description: 'Por favor, cambia los valores antes de continuar.',
+                        duration: 5,
+                    });
+                    return;
+                }
+
+                var data = {
+                    id: idEnter,
+                    date_generate_ISO: date.toISOString(),
+                    date_generate: date.toLocaleString('sv', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 3 }).replace(',', '.').replace(' ', 'T') + "Z",
+                    facture_number: e.facture_number.toString().toUpperCase(),
+                    provider: e.provider,
+                    items: [],
+                    review: {
+                        user: user ? user.email : "test",
+                    }
+                }
+
+                const allValues = e.projects.map(obj => {
+                    return {
+                        code: obj.code,
+                        sku: obj.sku,
+                        name: obj.name,
+                        quantity: obj.quantity_currently,
+                        brand: obj.brand
+                    }
+                })
+
+                data.items = allValues
+
+                setLoading(true);
+
+                try {
+                    socket.emit('objectValuesEntries', data)
+                    message.success('Cargado exitosamente')
+                    localStorage.setItem("enterData", JSON.stringify({}))
+                } catch (err) {
+                    console.error('Error changing row:', err);
+                    message.error('No se pudo completar la operación')
+                } finally {
+                    form.setFieldsValue({ projects: [], facture_number: "", provider: "" })
+                    setLoading(false)
+                }
             })
-            .catch(error => {
-                console.error('Error changing row:', error);
-                message.info('no se pudo completar la operación')
-                setLoading(false);
-            });
     };
 
     return (
@@ -112,39 +109,40 @@ const EnterProduct = ({ rangeItems, setRangeItems }) => {
             ) : (
                 <div className="body-group-form">
                     <div className="container-group-form" style={{ backgroundColor: colors.primary[400] }}>
-                        <h1 className="form-title-group" style={{color: "#055160"}}><span>ENTRADA DE PRODUCTOS</span></h1>
-                        <Form form={form} onFinish={onFinish} layout="vertical">
+                        <h1 className="form-title-group" style={{ color: "#055160" }}><span>ENTRADA DE PRODUCTOS</span></h1>
+                        <Form form={form} onFinish={onFinish} initialValues={enterData} layout="vertical">
                             <div className="main-user-info-group">
                                 <div className="user-input-box-group">
                                     <div className="end-input-group-form">
                                         <div className="input-group-form">
                                             <Form.Item
-                                                label={<label style={{color: "#055160"}}>Número del pedido</label>}
+                                                label={<label style={{ color: "#055160" }}>Número del pedido</label>}
                                                 name="facture_number"
                                                 labelAlign="left"
                                                 rules={[{ required: true }]}
                                             >
-                                                <Input className="input-info-form" style={{borderBottom: "1px solid #055160"}}/>
+                                                <Input className="input-info-form" style={{ borderBottom: "1px solid #055160" }} />
                                             </Form.Item>
                                         </div>
                                         <div className="input-group-form">
                                             <Form.Item
-                                                label={<label style={{color: "#055160"}}>Proveedor</label>}
+                                                label={<label style={{ color: "#055160" }}>Proveedor</label>}
                                                 name="provider"
                                                 labelAlign="left"
                                                 rules={[{ required: true }]}
+
                                             >
-                                                <Input className="input-info-form" style={{borderBottom: "1px solid #055160"}}/>
+                                                <Input className="input-info-form" style={{ borderBottom: "1px solid #055160" }} />
                                             </Form.Item>
                                         </div>
                                     </div>
-                                    <h4 className="h4-bottom-form" style={{color: "#055160"}}></h4>
+                                    <h4 className="h4-bottom-form" style={{ color: "#055160" }}></h4>
 
                                     <Form.List name="projects">
                                         {(fields, { add, remove }) => (
                                             <>
                                                 <Form.Item>
-                                                    <Button className="button-add-form" style={{backgroundColor: "#055160"}} onClick={add} >
+                                                    <Button className="button-add-form" style={{ backgroundColor: "#055160" }} onClick={add} >
                                                         Agregar
                                                     </Button>
                                                 </Form.Item>
@@ -159,7 +157,7 @@ const EnterProduct = ({ rangeItems, setRangeItems }) => {
                                                                 >
                                                                     <Select
                                                                         className="input-info-form"
-                                                                        style={{borderBottom: "1px solid #055160"}}
+                                                                        style={{ borderBottom: "1px solid #055160" }}
                                                                         showSearch={true}
                                                                         placeholder="Select a product"
                                                                     >
@@ -172,10 +170,10 @@ const EnterProduct = ({ rangeItems, setRangeItems }) => {
                                                             <Col span={6}>
                                                                 <Form.Item
                                                                     {...fields}
-                                                                    name={[index, "quantity"]}
+                                                                    name={[index, "quantity_currently"]}
                                                                     rules={[{ required: true }]}
                                                                 >
-                                                                    <Input className="input-info-form" style={{borderBottom: "1px solid #055160"}} placeholder="Quantity" type="number" min="1" max="999" />
+                                                                    <Input className="input-info-form" style={{ borderBottom: "1px solid #055160" }} placeholder="Quantity" type="number" min="1" max="999" />
                                                                 </Form.Item>
                                                             </Col>
                                                             <Col span={8}>
@@ -192,7 +190,7 @@ const EnterProduct = ({ rangeItems, setRangeItems }) => {
                                 </div>
                             </div>
                             <Form.Item>
-                                <input type="submit" className="form-submit-btn" style={{ backgroundColor: "#055160" }}/>
+                                <input type="submit" className="form-submit-btn" style={{ backgroundColor: "#055160" }} />
                             </Form.Item>
                         </Form>
                     </div>
@@ -203,4 +201,4 @@ const EnterProduct = ({ rangeItems, setRangeItems }) => {
     )
 }
 
-export default EnterProduct
+export default EnterForm

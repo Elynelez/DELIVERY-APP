@@ -18,20 +18,28 @@ import SellerTable from './pages/SellerPages/SellerTable';
 import ESTable from './pages/DeliveryPages/ESTable';
 import SellerCar from './pages/SellerPages/SellerCar';
 import SellerForm from './pages/SellerPages/SellerForm';
-import CreateProduct from './pages/PackagePages/CreateProduct';
-import EnterProduct from './pages/PackagePages/EnterProduct';
-import ExitProduct from './pages/PackagePages/ExitProduct';
-import RBExitProduct from './pages/PackagePages/RBExitProduct';
-import PendingOrders from './pages/PackagePages/PendingOrders';
+import CreateProduct from './pages/PackagePages/InventoryPages/CreateProduct';
+import EditProduct from './pages/PackagePages/InventoryPages/EditProduct';
+import EnterForm from './pages/PackagePages/EnterPages/EnterForm';
+import EnterTable from './pages/PackagePages/EnterPages/EnterTable';
+import ExitForm from './pages/PackagePages/ExitPages/ExitForm';
+import ExitTable from './pages/PackagePages/ExitPages/ExitTable';
+import CashForm from './pages/PackagePages/ExitPages/CashForm';
+import PendingOrders from './pages/PackagePages/ExitPages/PendingOrders';
 import TableMercadoLibre from './pages/AccountingPages/Mercadolibre';
-import InventoryTable from './pages/PackagePages/InventoryTable';
+import InventoryTable from './pages/PackagePages/InventoryPages/InventoryTable';
 import SearchES from './pages/DefaultPages/SearchES';
+import SettingTable from './pages/PackagePages/SettingPages/SettingTable';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 
 // middlewares
-import { loadRange, TimeLoad } from './middlewares';
+
+// API URL'S
+const API_URL_DELIVERY = "https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec"
+// const URL_SERVER = 'http://localhost:' + 8080
+const URL_SERVER = "https://server-cloud-mggp.onrender.com"
 
 // Logistic Shipping
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
@@ -48,8 +56,7 @@ const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com
 const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com", "empaque.inducor@gmail.com", "londono.ducor89@gmail.com", "pbello.inducor@gmail.com"]
 const settingInventoryEmails = ["aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
 
-// const socket = io('http://localhost:' + 8080);
-const socket = io("https://server-cloud-mggp.onrender.com")
+const socket = io(URL_SERVER);
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
@@ -70,12 +77,14 @@ function App() {
     return savedCount ? Number(savedCount) : 0;
   })
 
-  const [rangeItems, setRangeItems] = useState(() => {
-    const savedRangeItems = localStorage.getItem("rangeItems");
-    return savedRangeItems ? JSON.parse(savedRangeItems) : [];
-  })
+  const [rangeItems, setRangeItems] = useState([])
 
   const [pendingData, setPendingData] = useState([])
+
+  const [deliveryData, setDeliveryData] = useState(() => {
+    const savedDeliveryData = localStorage.getItem("deliveryData");
+    return savedDeliveryData ? JSON.parse(savedDeliveryData) : [];
+  });
 
   useEffect(() => {
 
@@ -110,20 +119,26 @@ function App() {
   }, []);
 
   useEffect(() => {
+    socket.on('dataInventory', (loadedData) => {
+      try {
+        console.log('dataInventory event received:', loadedData);
+        setRangeItems(loadedData);
+      } catch (error) {
+        console.error('Error handling dataInventory event:', error);
+      }
+    });
+  }, [socket, rangeItems])
+
+  useEffect(() => {
     localStorage.setItem("allProducts", JSON.stringify(allProducts));
     localStorage.setItem("total", total)
     localStorage.setItem("countProducts", countProducts)
   }, [allProducts]);
 
   useEffect(() => {
-    localStorage.setItem("rangeItems", JSON.stringify(rangeItems))
-  }, [rangeItems]);
-
-  useEffect(() => {
-    (async () => {
-      await TimeLoad(() => loadRange(socket, rangeItems, setRangeItems));
-    })();
-  }, [socket]);
+    localStorage.setItem("coursierData", JSON.stringify([]));
+    localStorage.setItem("deliveryData", JSON.stringify(deliveryData));
+  }, [deliveryData]);
 
   const receiveOrders = order => setPendingData(state => [order, ...state])
 
@@ -156,30 +171,88 @@ function App() {
   //                     setCountProducts={setCountProducts}
   //                   />} />
   //               <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+  //               <Route exact path="/AllOrders"
+  //                 element={<AllOrders
+  //                   user={user}
+  //                   bossEmails={bossEmails}
+  //                   logisticEmails={logisticEmails}
+  //                   deliveryData={deliveryData}
+  //                   setDeliveryData={setDeliveryData}
+  //                   API_URL={API_URL_DELIVERY}
+  //                 />} />
   //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total} />} />
-  //               <Route exact path="/mensajeros/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/create" element={<CreateProduct />} />
-  //               <Route exact path="/inventory/ko" element={<InventoryTable />} />
-  //               <Route exact path="/inventory/enter" element={<EnterProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
-  //               <Route exact path="/inventory/exit"
-  //                 element={<ExitProduct
-  //                   pendingData={pendingData}
-  //                   setPendingData={setPendingData}
+  //               <Route exact path="/coursiers/:id"
+  //                 element={<CoursiersTable
+  //                   user={user}
+  //                   bossEmails={bossEmails}
+  //                   logisticEmails={logisticEmails}
+  //                   deliveryData={deliveryData}
+  //                   setDeliveryData={setDeliveryData}
+  //                   API_URL={API_URL_DELIVERY}
+  //                 />} />
+  //               <Route exact path="/inventory/create/form"
+  //                 element={<CreateProduct
+  //                   URL_SERVER={URL_SERVER}
+  //                   rangeItems={rangeItems}
   //                   socket={socket}
+  //                 />} />
+  //               <Route exact path="/inventory/edit/:id"
+  //                 element={<EditProduct
+  //                   rangeItems={rangeItems}
+  //                   socket={socket}
+  //                 />} />
+  //               <Route exact path="/inventory/table"
+  //                 element={<InventoryTable
+  //                   settingInventoryEmails={settingInventoryEmails}
   //                   rangeItems={rangeItems}
   //                   setRangeItems={setRangeItems}
+  //                   user={user}
+  //                   socket={socket}
+  //                   URL_SERVER={URL_SERVER}
+  //                 />} />
+  //               <Route exact path="/inventory/enter/form"
+  //                 element={<EnterForm
+  //                   user={user}
+  //                   socket={socket}
+  //                   rangeItems={rangeItems}
+  //                   URL_SERVER={URL_SERVER}
+  //                 />} />
+  //               <Route exact path="/inventory/enter/table"
+  //                 element={<EnterTable
+  //                   URL_SERVER={URL_SERVER}
+  //                   socket={socket}
+  //                 />} />
+  //               <Route exact path="/inventory/setting/table"
+  //                 element={<SettingTable
+  //                   URL_SERVER={URL_SERVER}
+  //                 />} />
+  //               <Route exact path="/inventory/exit/table"
+  //                 element={<ExitTable
+  //                   pendingData={pendingData}
+  //                   setPendingData={setPendingData}
+  //                   socket={socket}
   //                   receiveOrders={receiveOrders}
   //                 />} />
-  //               <Route exact path="/inventory/cash"
-  //                 element={<RBExitProduct
+  //               <Route exact path="/inventory/exit/form"
+  //                 element={<ExitForm
+  //                   user={user}
   //                   pendingData={pendingData}
   //                   setPendingData={setPendingData}
   //                   socket={socket}
   //                   rangeItems={rangeItems}
   //                   receiveOrders={receiveOrders}
+  //                   URL_SERVER={URL_SERVER}
   //                 />} />
-  //               <Route exact path="/inventory/pending"
+  //               <Route exact path="/inventory/exit/cash"
+  //                 element={<CashForm
+  //                   pendingData={pendingData}
+  //                   setPendingData={setPendingData}
+  //                   socket={socket}
+  //                   rangeItems={rangeItems}
+  //                   receiveOrders={receiveOrders}
+  //                   URL_SERVER={URL_SERVER}
+  //                 />} />
+  //               <Route exact path="/inventory/exit/pending"
   //                 element={<PendingOrders
   //                   rangeItems={rangeItems}
   //                   user={user}
@@ -187,6 +260,7 @@ function App() {
   //                   pendingData={pendingData}
   //                   setPendingData={setPendingData}
   //                   receiveOrders={receiveOrders}
+  //                   URL_SERVER={URL_SERVER}
   //                 />} />
   //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre />} />
   //               <Route exact path="/search/ES" element={<SearchES />} />
@@ -227,7 +301,7 @@ function App() {
               <Routes>
                 {/* <Route exact path="/" element={<Dashboard />} /> */}
                 <Route exact path="/" element={<SearchES />} />
-                <Route exact path="/inventory/pending"
+                <Route exact path="/inventory/exit/pending"
                   element={<PendingOrders
                     rangeItems={rangeItems}
                     user={user}
@@ -235,6 +309,7 @@ function App() {
                     pendingData={pendingData}
                     setPendingData={setPendingData}
                     receiveOrders={receiveOrders}
+                    URL_SERVER={URL_SERVER}
                   />} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
@@ -244,8 +319,24 @@ function App() {
                 )}
                 {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
                   <>
-                    <Route exact path="/coursiers/:id" element={<CoursiersTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-                    <Route exact path="/AllOrders" element={<AllOrders bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
+                    <Route exact path="/coursiers/:id"
+                      element={<CoursiersTable
+                        user={user}
+                        bossEmails={bossEmails}
+                        logisticEmails={logisticEmails}
+                        deliveryData={deliveryData}
+                        setDeliveryData={setDeliveryData}
+                        API_URL={API_URL_DELIVERY}
+                      />} />
+                    <Route exact path="/AllOrders"
+                      element={<AllOrders
+                        user={user}
+                        bossEmails={bossEmails}
+                        logisticEmails={logisticEmails}
+                        deliveryData={deliveryData}
+                        setDeliveryData={setDeliveryData}
+                        API_URL={API_URL_DELIVERY}
+                      />} />
                   </>
                 )}
                 {isAuthenticated && sellerEmails.includes(user.email) && (
@@ -260,24 +351,26 @@ function App() {
                 )}
                 {isAuthenticated && exitsInventoryEmails.includes(user.email) && (
                   <>
-                    <Route exact path="/inventory/exit"
-                      element={<ExitProduct
-                        pendingData={pendingData}
-                        setPendingData={setPendingData}
-                        socket={socket}
-                        rangeItems={rangeItems}
-                        setRangeItems={setRangeItems}
-                        receiveOrders={receiveOrders}
-                      />} />
-                    <Route exact path="/inventory/cash"
-                      element={<RBExitProduct
+                    <Route exact path="/inventory/exit/form"
+                      element={<ExitForm
+                        user={user}
                         pendingData={pendingData}
                         setPendingData={setPendingData}
                         socket={socket}
                         rangeItems={rangeItems}
                         receiveOrders={receiveOrders}
+                        URL_SERVER={URL_SERVER}
                       />} />
-                    <Route exact path="/inventory/pending"
+                    <Route exact path="/inventory/exit/cash"
+                      element={<CashForm
+                        pendingData={pendingData}
+                        setPendingData={setPendingData}
+                        socket={socket}
+                        rangeItems={rangeItems}
+                        receiveOrders={receiveOrders}
+                        URL_SERVER={URL_SERVER}
+                      />} />
+                    <Route exact path="/inventory/exit/pending"
                       element={<PendingOrders
                         rangeItems={rangeItems}
                         user={user}
@@ -285,19 +378,71 @@ function App() {
                         pendingData={pendingData}
                         setPendingData={setPendingData}
                         receiveOrders={receiveOrders}
+                        URL_SERVER={URL_SERVER}
+                      />} />
+                    <Route exact path="/inventory/exit/table"
+                      element={<ExitTable
+                        pendingData={pendingData}
+                        setPendingData={setPendingData}
+                        socket={socket}
+                        receiveOrders={receiveOrders}
                       />} />
                   </>
                 )}
                 {isAuthenticated && entriesInventoryEmails.includes(user.email) && (
                   <>
-                    <Route exact path="/inventory/enter" element={<EnterProduct rangeItems={rangeItems} setRangeItems={setRangeItems} />} />
-                    <Route exact path="/inventory/create" element={<CreateProduct />} />
-                    <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails} />} />
+                    <Route exact path="/inventory/enter/form"
+                      element={<EnterForm
+                        user={user}
+                        socket={socket}
+                        rangeItems={rangeItems}
+                        URL_SERVER={URL_SERVER}
+                      />} />
+                    <Route exact path="/inventory/create/form"
+                      element={<CreateProduct
+                        URL_SERVER={URL_SERVER}
+                        rangeItems={rangeItems}
+                        socket={socket}
+                      />} />
+
+                    <Route exact path="/inventory/table"
+                      element={<InventoryTable
+                        settingInventoryEmails={settingInventoryEmails}
+                        rangeItems={rangeItems}
+                        setRangeItems={setRangeItems}
+                        user={user}
+                        socket={socket}
+                        URL_SERVER={URL_SERVER}
+                      />} />
+
+                    <Route exact path="/inventory/enter/table"
+                      element={<EnterTable
+                        URL_SERVER={URL_SERVER}
+                        socket={socket}
+                      />} />
+                    <Route exact path="/inventory/edit/:id"
+                      element={<EditProduct
+                        rangeItems={rangeItems}
+                        socket={socket}
+                      />} />
                   </>
                 )}
                 {isAuthenticated && settingInventoryEmails.includes(user.email) && (
                   <>
-                    <Route exact path="/inventory/table" element={<InventoryTable settingInventoryEmails={settingInventoryEmails} />} />
+                    <Route exact path="/inventory/table"
+                      element={<InventoryTable
+                        settingInventoryEmails={settingInventoryEmails}
+                        rangeItems={rangeItems}
+                        setRangeItems={setRangeItems}
+                        user={user}
+                        socket={socket}
+                        URL_SERVER={URL_SERVER}
+                      />} />
+                    <Route exact path="/inventory/edit/:id"
+                      element={<EditProduct
+                        rangeItems={rangeItems}
+                        socket={socket}
+                      />} />
                   </>
                 )}
               </Routes>

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Spin, Menu, Button } from "antd"
-import { ConfirmInventoryModal, ConfirmInventoryModalServer } from "../Controllers/Modals/InventoryModals";
-import DataTableGrid from "../Controllers/DataGridPro";
+import { Spin, Menu } from "antd"
+import { ConfirmInventoryModalServer } from "../../Controllers/Modals/InventoryModals";
+import DataTableGrid from "../../Controllers/DataGridPro";
 import { Box, Typography } from "@mui/material";
-import { tokens } from "./../../theme";
+import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";
 
-const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiveOrders, user }) => {
+const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiveOrders, user, URL_SERVER }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
     useEffect(() => {
 
-        socket.on('loadOrders', (loadedOrders) => {
+        socket.on('loadOrdersExits', (loadedOrders) => {
             try {
                 console.log('loadOrders event received:', loadedOrders);
                 setPendingData(loadedOrders);
@@ -23,7 +23,7 @@ const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiv
             }
         });
 
-        socket.on('dataOrder', obj => {
+        socket.on('dataOrderExit', obj => {
             try {
                 console.log('dataOrder event received:', obj);
                 receiveOrders(obj);
@@ -33,7 +33,7 @@ const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiv
         })
 
         return () => {
-            socket.off('dataOrder')
+            socket.off('dataOrderExit')
         }
     }, [])
 
@@ -56,14 +56,13 @@ const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiv
                             <Menu.Item key="0">
                                 <ConfirmInventoryModalServer
                                     pendingData={pendingData}
-                                    orderNumber={params.row.order_number}
-                                    id={params.row.id}
-                                    rows={params.row.items}
+                                    data={params.row}
                                     setLoading={setLoading}
                                     socket={socket}
                                     user={user}
                                     rangeItems={rangeItems}
                                     receiveOrders={receiveOrders}
+                                    URL_SERVER={URL_SERVER}
                                 />
                             </Menu.Item>
                         </Menu.SubMenu>

@@ -258,21 +258,28 @@ const Sidebar = (props) => {
                                 </Typography>
                                 <Item
                                     title="Formulario de Salidas"
-                                    to="/inventory/exit"
+                                    to="/inventory/exit/form"
                                     icon={<Inventory />}
                                     selected={selected}
                                     setSelected={setSelected}
                                 />
                                 <Item
                                     title="Formulario RB"
-                                    to="/inventory/cash"
+                                    to="/inventory/exit/cash"
                                     icon={<Games />}
                                     selected={selected}
                                     setSelected={setSelected}
                                 />
                                 <Item
                                     title="Pendientes"
-                                    to="/inventory/pending"
+                                    to="/inventory/exit/pending"
+                                    icon={<CalendarToday />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                                <Item
+                                    title="Salidas"
+                                    to="/inventory/exit/table"
                                     icon={<CalendarToday />}
                                     selected={selected}
                                     setSelected={setSelected}
@@ -291,14 +298,14 @@ const Sidebar = (props) => {
                                 </Typography>
                                 <Item
                                     title="Formualrio de Entradas"
-                                    to="/inventory/enter"
+                                    to="/inventory/enter/form"
                                     icon={<Inventory />}
                                     selected={selected}
                                     setSelected={setSelected}
                                 />
                                 <Item
                                     title="Creación"
-                                    to="/inventory/create"
+                                    to="/inventory/create/form"
                                     icon={<Games />}
                                     selected={selected}
                                     setSelected={setSelected}
@@ -306,6 +313,13 @@ const Sidebar = (props) => {
                                 <Item
                                     title="Inventario"
                                     to="/inventory/table"
+                                    icon={<CalendarToday />}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                />
+                                <Item
+                                    title="Entradas"
+                                    to="/inventory/enter/table"
                                     icon={<CalendarToday />}
                                     selected={selected}
                                     setSelected={setSelected}

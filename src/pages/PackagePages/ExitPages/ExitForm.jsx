@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { tokens } from "./../../theme";
+import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";
 import { Button, Spin, message, Form, Input, Col, Row, Select, notification } from "antd"
 import { v4 } from 'uuid';
-import { useAuth0 } from '@auth0/auth0-react';
-import { loadRange } from "../../middlewares";
+import axios from "axios";
 
-const ExitProduct = ({ pendingData, setPendingData, rangeItems, setRangeItems, socket, receiveOrders }) => {
-    const { user } = useAuth0();
-    const [loading, setLoading] = useState(false)
+const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, receiveOrders, URL_SERVER }) => {
+    const [exitData, setExitData] = useState({})
+    const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [form] = Form.useForm();
 
-    const handleClick = async () => {
-        await loadRange(socket, rangeItems, setRangeItems);
-    };
-
     useEffect(() => {
 
-        socket.on('loadOrders', (loadedOrders) => {
+        if (exitData) {
+            const savedExitData = localStorage.getItem("exitData")
+            savedExitData ? setExitData(JSON.parse(savedExitData)) : setExitData({ facture_number: "", platform: "POR CONFIRMAR", projects: [] })
+        }
+
+        socket.on('loadOrdersExits', (loadedOrders) => {
             try {
                 console.log('loadOrders event received:', loadedOrders);
                 setPendingData(loadedOrders);
@@ -29,7 +29,7 @@ const ExitProduct = ({ pendingData, setPendingData, rangeItems, setRangeItems, s
             }
         });
 
-        socket.on('dataOrder', obj => {
+        socket.on('dataOrderExit', obj => {
             try {
                 console.log('dataOrder event received:', obj);
                 receiveOrders(obj);
@@ -39,84 +39,106 @@ const ExitProduct = ({ pendingData, setPendingData, rangeItems, setRangeItems, s
         })
 
         return () => {
-            socket.off('dataOrder')
+            socket.off('dataOrderExit')
         }
-    }, [])
+    }, [socket])
 
     const onFinish = (e) => {
-        let rangeOrderNumbers = pendingData.map(obj => { return obj.order_number }).filter(orderNumber => !/^[A-Za-z]+$/.test(orderNumber))
-        var date = new Date()
-        const idExit = v4()
+        axios.get(URL_SERVER+"/inventory")
+            .then(resp => {
+                rangeItems = resp.data
 
-        e.facture_number = e.facture_number.toString().toUpperCase()
+                let rangeOrderNumbers = pendingData.map(obj => { return obj.order_number }).filter(orderNumber => !/^[A-Za-z]+$/.test(orderNumber))
+                var date = new Date()
+                const idExit = v4()
+                let foundError = [];
 
-        let blockExecution = rangeOrderNumbers.some(number => {
-            number = number.toString().toUpperCase()
-            return (
-                number.includes(e.facture_number) || e.facture_number.includes(number)
-            );
-        });
+                let blockExecution = rangeOrderNumbers.some(number => {
+                    number = number.toString().toUpperCase()
+                    e.facture_number = e.facture_number.toString().toUpperCase()
+                    return (
+                        number.includes(e.facture_number) || e.facture_number.includes(number)
+                    );
+                });
 
-        if (blockExecution) {
-            notification.error({
-                message: 'Número de factura bloqueado',
-                description: 'Por favor, cambia el valor antes de continuar.',
-                duration: 5,
-            });
-            return;
-        }
+                if (blockExecution) {
+                    notification.error({
+                        message: 'Número de factura bloqueado',
+                        description: 'Por favor, cambia el valor antes de continuar.',
+                        duration: 5,
+                    });
+                    return;
+                }
 
-        e.projects = e.projects.map(obj => {
-            const matchingRangeItem = rangeItems.find(rangeItem => rangeItem.sku === obj.sku);
+                e.projects = e.projects.map(obj => {
+                    const matchingRangeItem = rangeItems.find(rangeItem => rangeItem.sku === obj.sku);
 
-            if (matchingRangeItem) {
+                    if (matchingRangeItem) {
 
-                return { ...matchingRangeItem, quantity_currently: obj.quantity };
-            }
+                        return { ...matchingRangeItem, quantity_currently: obj.quantity_currently };
+                    }
 
-            return null;
-        }).filter(obj => obj !== null);
+                    return null;
+                }).filter(obj => obj !== null);
 
-        var data = {
-            id: idExit,
-            date_generate_ISO: date.toISOString(),
-            date_generate: date.toLocaleString('sv', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 3 }).replace(',', '.').replace(' ', 'T') + "Z",
-            order_number: e.facture_number.toUpperCase(),
-            platform: e.platform,
-            items: [],
-            picking: {
-                user: user ? user.email : "test",
-            },
-            packing: {}
-        }
+                e.projects.forEach(obj => {
+                    if (Number(obj.quantity_currently) > Number(obj.quantity)) {
+                        foundError.push(JSON.stringify([obj.name, obj.quantity]));
+                        return;
+                    }
+                });
 
-        const allValues = e.projects.map(obj => {
-            return {
-                code: obj.code,
-                sku: obj.sku,
-                name: obj.name,
-                quantity: obj.quantity_currently,
-                brand: obj.brand
-            }
-        })
+                if (foundError.length) {
+                    localStorage.setItem("exitData", JSON.stringify(e))
+                    notification.error({
+                        message: 'Estás intentando sacar más productos de los disponibles en ' + foundError,
+                        description: 'Por favor, cambia los valores antes de continuar.',
+                        duration: 5,
+                    });
+                    return;
+                }
 
-        data.items = allValues
+                var data = {
+                    id: idExit,
+                    date_generate_ISO: date.toISOString(),
+                    date_generate: date.toLocaleString('sv', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 3 }).replace(',', '.').replace(' ', 'T') + "Z",
+                    order_number: e.facture_number.toString().toUpperCase(),
+                    platform: e.platform,
+                    items: [],
+                    picking: {
+                        user: user ? user.email : "test",
+                    },
+                    packing: {}
+                }
 
-        receiveOrders(data)
+                const allValues = e.projects.map(obj => {
+                    return {
+                        code: obj.code,
+                        sku: obj.sku,
+                        name: obj.name,
+                        quantity: obj.quantity_currently,
+                        brand: obj.brand
+                    }
+                })
 
-        socket.emit('objectValues', data)
+                data.items = allValues
 
-        setLoading(true)
+                setLoading(true);
 
-        try {
-            message.success('cargado exitosamente')
-            form.resetFields()
-            setLoading(false)
-        } catch (err) {
-            console.error('Error changing row:', err);
-            message.info('no se pudo completar la operación')
-            setLoading(false);
-        }
+                try {
+                    socket.emit('objectValuesExits', data)
+                    receiveOrders(data)
+                    message.success('Cargado exitosamente')
+                    localStorage.setItem("exitData", JSON.stringify({}))
+                } catch (err) {
+                    console.error('Error changing row:', err);
+                    message.error('No se pudo completar la operación')
+                } finally {
+                    form.setFieldsValue({ projects: [], facture_number: "" })
+                    setLoading(false)
+                }
+            })
+
     };
 
     return (
@@ -127,12 +149,9 @@ const ExitProduct = ({ pendingData, setPendingData, rangeItems, setRangeItems, s
                 </div>
             ) : (
                 <div className="body-group-form">
-                    <div className="test-button">
-                        <button onClick={handleClick} style={{display: 'none'}}>Cargar Rango</button>
-                    </div>
                     <div className="container-group-form" style={{ backgroundColor: colors.primary[400] }}>
                         <h1 className="form-title-group" style={{ color: "#6870fa" }}><span>SALIDA DE PRODUCTOS</span></h1>
-                        <Form form={form} onFinish={onFinish} layout="vertical">
+                        <Form form={form} onFinish={onFinish} initialValues={exitData} layout="vertical">
                             <div className="main-user-info-group">
                                 <div className="user-input-box-group">
                                     <div className="end-input-group-form">
@@ -198,8 +217,10 @@ const ExitProduct = ({ pendingData, setPendingData, rangeItems, setRangeItems, s
                                                             <Col span={6}>
                                                                 <Form.Item
                                                                     {...fields}
-                                                                    name={[index, "quantity"]}
-                                                                    rules={[{ required: true }]}
+                                                                    name={[index, "quantity_currently"]}
+                                                                    rules={[
+                                                                        { required: true }
+                                                                    ]}
                                                                 >
                                                                     <Input className="input-info-form" style={{ borderBottom: "1px solid #6870fa" }} placeholder="Quantity" type="number" min="1" max="999" />
                                                                 </Form.Item>
@@ -222,11 +243,11 @@ const ExitProduct = ({ pendingData, setPendingData, rangeItems, setRangeItems, s
                             </Form.Item>
                         </Form>
                     </div>
-                </div >
+                </div>
             )}
         </div >
 
     )
 }
 
-export default ExitProduct
+export default ExitForm
