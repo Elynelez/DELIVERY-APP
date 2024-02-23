@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd"
+import DataTableGrid from "../../Controllers/DataGridPro";
+import { Box, Typography } from "@mui/material";
+import { tokens } from "../../../theme";
+import { useTheme } from "@mui/material";
 
 const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
     const [loading, setLoading] = useState(true)
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
 
     useEffect(() => {
 
@@ -28,7 +34,45 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
         return () => {
             socket.off('dataOrderExit')
         }
-    }, [socket])
+    }, [])
+
+    const columns = [
+        { headerName: 'Fecha de picking', field: "date_generate", flex: 1 },
+        {
+            headerName: 'Fecha de packing', field: "date_packing", flex: 1, renderCell: params => (
+                <>
+                    {params.row.packing.hour}
+                </>
+            )
+        },
+        { headerName: 'Número de orden', field: "order_number", flex: 1 },
+        { headerName: 'Plataforma', field: "platform", flex: 1 },
+        {
+            headerName: 'Artículos', field: "items", renderCell: params => (
+                <ul>
+                    {params.row.items.map((item, index) => (
+                        <li key={index}>
+                            {item.sku} - {item.name} - {item.quantity}
+                        </li>
+                    ))}
+                </ul>
+            )
+        },
+        {
+            headerName: 'Usuario Picking', field: "picking", flex: 1, renderCell: params => (
+                <>
+                    {`Usuario: ${params.row.picking.user}, IP: ${params.row.picking.IP}`}
+                </>
+            )
+        },
+        {
+            headerName: 'Usuario Packing', field: "packing", flex: 1, renderCell: params => (
+                <>
+                    {`Usuario: ${params.row.packing.user}, IP: ${params.row.packing.IP}`}
+                </>
+            )
+        }
+    ]
 
     return (
         <div className="container py-5">
@@ -37,44 +81,29 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
                     <Spin tip="Cargando datos..." />
                 </div>
             ) : (
-                <table style={{ minWidth: '100%' }}>
-                    <thead>
-                        <tr>
-                            <th>Fecha de Picking</th>
-                            <th>Fecha de Packing</th>
-                            <th>Número de orden</th>
-                            <th>Plataforma</th>
-                            <th>Artículos</th>
-                            <th>Usuario Picking</th>
-                            <th>Usuario Packing</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {pendingData.reverse().slice(0, 3000).map((order) => (
-                            <tr key={order.id}>
-                                <td>{order.date_generate}</td>
-                                <td>{order.packing.hour}</td>
-                                <td>{order.order_number}</td>
-                                <td>{order.platform}</td>
-                                <td style={{ width: '100px', overflowX: 'auto' }}>
-                                    <ul>
-                                        {order.items.map((item, index) => (
-                                            <li key={index}>
-                                                {item.sku} - {item.name} - {item.quantity}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </td>
-                                <td>
-                                    {`Usuario: ${order.picking.user}, IP: ${order.picking.IP}`}
-                                </td>
-                                <td>
-                                    {`Usuario: ${order.packing.user}, IP: ${order.packing.IP}`}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <Box m="20px">
+                    <Box mb="30px">
+                        <Typography
+                            variant="h2"
+                            color={colors.grey[100]}
+                            fontWeight="bold"
+                            sx={{ m: "0 0 5px 0" }}
+                        >
+                            TABLA DE SALIDAS
+                        </Typography>
+                        <Typography variant="h5" color={colors.greenAccent[400]}>
+                            últimos detalles
+                        </Typography>
+                    </Box>
+                    <DataTableGrid
+                        key={pendingData.length}
+                        columns={columns}
+                        data={pendingData}
+                        setReloadData={setPendingData}
+                        setLoading={setLoading}
+                        typeSheet={"Inventory"}
+                    />
+                </Box>
             )}
         </div>
 

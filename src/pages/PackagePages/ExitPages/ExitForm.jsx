@@ -44,7 +44,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
     }, [socket])
 
     const onFinish = (e) => {
-        axios.get(URL_SERVER+"/inventory")
+        axios.get(URL_SERVER + "/inventory")
             .then(resp => {
                 rangeItems = resp.data
 
@@ -163,8 +163,8 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                                                 rules={[{
                                                     required: true,
                                                     type: "regexp",
-                                                    pattern: new RegExp(/^[a-zA-Z0-9]+$/),
-                                                    message: 'Solo se permiten letras y números',
+                                                    pattern: new RegExp(/^[a-zA-Z]$/),
+                                                    message: 'El número del pedido debe comenzar con una letra y puede contener letras y números.'
                                                 }]}
                                             >
                                                 <Input className="input-info-form" style={{ borderBottom: "1px solid #6870fa" }} />

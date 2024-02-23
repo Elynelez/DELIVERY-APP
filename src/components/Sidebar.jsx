@@ -147,7 +147,7 @@ const Sidebar = (props) => {
                             setSelected={setSelected}
                         />
                         <Item
-                            title="Inventario"
+                            title="Ajustes"
                             to="/inventory/setting/table"
                             icon={<CalendarToday />}
                             selected={selected}
