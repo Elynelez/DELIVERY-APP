@@ -41,36 +41,26 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
         {
             headerName: 'Fecha de packing', field: "date_packing", flex: 1, renderCell: params => (
                 <>
-                    {params.row.packing.hour}
+                    {params.row.date_packing}
                 </>
             )
         },
         { headerName: 'Número de orden', field: "order_number", flex: 1 },
         { headerName: 'Plataforma', field: "platform", flex: 1 },
         {
-            headerName: 'Artículos', field: "items", renderCell: params => (
-                <ul>
-                    {params.row.items.map((item, index) => (
-                        <li key={index}>
-                            {item.sku} - {item.name} - {item.quantity}
-                        </li>
-                    ))}
-                </ul>
-            )
+            headerName: 'Artículos', field: "items", valueFormatter: (params) => {
+                return params.value.map(item => `${item.sku} - ${item.name} - ${item.quantity}`).join('. ');
+            }
         },
         {
-            headerName: 'Usuario Picking', field: "picking", flex: 1, renderCell: params => (
-                <>
-                    {`Usuario: ${params.row.picking.user}, IP: ${params.row.picking.IP}`}
-                </>
-            )
+            headerName: 'Usuario Picking', field: "picking", flex: 1, valueFormatter: (params) => {
+                return `Usuario: ${params.value.user} - IP: ${params.value.IP}`;
+            },
         },
         {
-            headerName: 'Usuario Packing', field: "packing", flex: 1, renderCell: params => (
-                <>
-                    {`Usuario: ${params.row.packing.user}, IP: ${params.row.packing.IP}`}
-                </>
-            )
+            headerName: 'Usuario Packing', field: "packing", flex: 1, valueFormatter: (params) => {
+                return `Usuario: ${params.value.user} - IP: ${params.value.IP}`;
+            },
         }
     ]
 
@@ -98,7 +88,7 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
                     <DataTableGrid
                         key={pendingData.length}
                         columns={columns}
-                        data={pendingData}
+                        data={pendingData.map(obj =>{return {...obj, date_packing: obj.packing.hour}})}
                         setReloadData={setPendingData}
                         setLoading={setLoading}
                         typeSheet={"Inventory"}
