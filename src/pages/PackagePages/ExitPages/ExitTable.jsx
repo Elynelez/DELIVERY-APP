@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Spin } from "antd"
+import { Button, Spin, Menu } from "antd"
 import DataTableGrid from "../../Controllers/DataGridPro";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "../../../theme";
@@ -9,6 +9,12 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+
+    const returnToPicking = (data) => {
+        
+        socket.emit("returnToPicking", data)
+        window.location.reload()
+    }
 
     useEffect(() => {
 
@@ -61,6 +67,19 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
             headerName: 'Usuario Packing', field: "packing", flex: 1, valueFormatter: (params) => {
                 return `Usuario: ${params.value.user} - IP: ${params.value.IP}`;
             },
+        },
+        {
+            headerName: 'Acciones', renderCell: params => (
+                <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
+                    <Menu.SubMenu title="Acciones" key="sub-menu">
+                        <Menu.Item key="0">
+                            <Button onClick={()=>{returnToPicking(params.row)}}>
+                                retornar
+                            </Button>
+                        </Menu.Item>
+                    </Menu.SubMenu>
+                </Menu>
+            )
         }
     ]
 
@@ -88,7 +107,7 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
                     <DataTableGrid
                         key={pendingData.length}
                         columns={columns}
-                        data={pendingData.map(obj =>{return {...obj, date_packing: obj.packing.hour}})}
+                        data={pendingData.map(obj => { return { ...obj, date_packing: obj.packing.hour } })}
                         setReloadData={setPendingData}
                         setLoading={setLoading}
                         typeSheet={"Inventory"}

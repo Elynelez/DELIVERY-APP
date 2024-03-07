@@ -12,7 +12,7 @@ const CreateProduct = ({ URL_SERVER, rangeItems, socket }) => {
 
     const onFinish = (e) => {
         setLoading(true)
-        axios.get(URL_SERVER + "/inventory")
+        axios.get(URL_SERVER + "/inventory/products")
             .then(resp => {
                 rangeItems = resp.data
 

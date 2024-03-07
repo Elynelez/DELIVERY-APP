@@ -11,6 +11,7 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [form] = Form.useForm();
+    const [disabled, setDisabled] = useState(false)
 
     useEffect(() => {
 
@@ -23,8 +24,19 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
 
     }, [socket])
 
-    const onFinish = async (e) => {
-        axios.get(URL_SERVER+"/inventory")
+    const onFinish = (e) => {
+        setDisabled(true)
+        if (!e.projects || e.projects.length === 0) {
+            notification.error({
+                message: 'No puedes enviar una salida vacía',
+                description: 'Cámbialo antes de continuar.',
+                duration: 5,
+            });
+            setDisabled(false);
+            return;
+        }
+
+        axios.get(URL_SERVER + "/inventory/products")
             .then(resp => {
                 rangeItems = resp.data
 
@@ -57,6 +69,7 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
                         description: 'Por favor, cambia los valores antes de continuar.',
                         duration: 5,
                     });
+                    setDisabled(false)
                     return;
                 }
 
@@ -90,6 +103,7 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
                     socket.emit('objectValuesEntries', data)
                     message.success('Cargado exitosamente')
                     localStorage.setItem("enterData", JSON.stringify({}))
+                    setDisabled(false)
                 } catch (err) {
                     console.error('Error changing row:', err);
                     message.error('No se pudo completar la operación')
@@ -190,7 +204,7 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
                                 </div>
                             </div>
                             <Form.Item>
-                                <input type="submit" className="form-submit-btn" style={{ backgroundColor: "#055160" }} />
+                                <input type="submit" className="form-submit-btn" style={{ backgroundColor: "#055160" }} disabled={disabled} />
                             </Form.Item>
                         </Form>
                     </div>

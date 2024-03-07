@@ -320,7 +320,8 @@ body {
 	background-color: rgba(0, 0, 0, 0);
 	padding: 0 1.5em;
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
+	align-items: center;
 }
 
 .container-group-form {
@@ -395,7 +396,7 @@ body {
 	padding: 10px;
 }
 
-.input-info-form .ant-select-selector{
+.input-info-form .ant-select-selector {
 	color: rgb(132, 130, 130) !important;
 	border: none !important;
 	background: transparent !important;

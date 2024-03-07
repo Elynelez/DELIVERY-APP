@@ -4,6 +4,7 @@ import { useTheme } from "@mui/material";
 import { Button, Spin, message, Form, Input, Col, Row, Select, notification } from "antd"
 import { v4 } from 'uuid';
 import axios from "axios";
+import { PlatformAutoComplete } from "../../Controllers/Modals/InventoryModals";
 
 const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, receiveOrders, URL_SERVER }) => {
     const [exitData, setExitData] = useState({})
@@ -11,6 +12,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [form] = Form.useForm();
+    const [disabled, setDisabled] = useState(false)
 
     useEffect(() => {
 
@@ -44,7 +46,18 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
     }, [socket])
 
     const onFinish = (e) => {
-        axios.get(URL_SERVER + "/inventory")
+        setDisabled(true)
+        if (!e.projects || e.projects.length === 0) {
+            notification.error({
+                message: 'No puedes enviar una salida vacía',
+                description: 'Cámbialo antes de continuar.',
+                duration: 5,
+            });
+            setDisabled(false);
+            return;
+        }
+
+        axios.get(URL_SERVER + "/inventory/products")
             .then(resp => {
                 rangeItems = resp.data
 
@@ -67,6 +80,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                         description: 'Por favor, cambia el valor antes de continuar.',
                         duration: 5,
                     });
+                    setDisabled(false)
                     return;
                 }
 
@@ -95,6 +109,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                         description: 'Por favor, cambia los valores antes de continuar.',
                         duration: 5,
                     });
+                    setDisabled(false)
                     return;
                 }
 
@@ -130,6 +145,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                     receiveOrders(data)
                     message.success('Cargado exitosamente')
                     localStorage.setItem("exitData", JSON.stringify({}))
+                    setDisabled(false)
                 } catch (err) {
                     console.error('Error changing row:', err);
                     message.error('No se pudo completar la operación')
@@ -149,6 +165,11 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                 </div>
             ) : (
                 <div className="body-group-form">
+                    <PlatformAutoComplete
+                        socket={socket}
+                        mainForm={form}
+                        colors={colors}
+                    />
                     <div className="container-group-form" style={{ backgroundColor: colors.primary[400] }}>
                         <h1 className="form-title-group" style={{ color: "#6870fa" }}><span>SALIDA DE PRODUCTOS</span></h1>
                         <Form form={form} onFinish={onFinish} initialValues={exitData} layout="vertical">
@@ -208,8 +229,8 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                                                                         showSearch={true}
                                                                         placeholder="Select a product"
                                                                     >
-                                                                        {rangeItems.map(obj => (
-                                                                            <Select.Option value={obj.sku} code={obj.code}>{obj.name}</Select.Option>
+                                                                        {rangeItems.map((obj, index) => (
+                                                                            <Select.Option value={obj.sku} code={obj.code} key={index}>{obj.name}</Select.Option>
                                                                         ))}
                                                                     </Select>
                                                                 </Form.Item>
@@ -239,7 +260,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                                 </div>
                             </div>
                             <Form.Item>
-                                <input type="submit" className="form-submit-btn" style={{ backgroundColor: "#6870fa" }} />
+                                <input type="submit" className="form-submit-btn" style={{ backgroundColor: "#6870fa" }} disabled={disabled} />
                             </Form.Item>
                         </Form>
                     </div>

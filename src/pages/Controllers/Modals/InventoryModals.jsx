@@ -19,7 +19,7 @@ const AddSkuModalServer = ({ rangeItems, socket, data, loading, setLoading, URL_
   };
 
   const onFinish = (values) => {
-    axios.get(URL_SERVER+"/inventory")
+    axios.get(URL_SERVER + "/inventory/products")
       .then(resp => {
         rangeItems = resp.data
 
@@ -53,7 +53,7 @@ const AddSkuModalServer = ({ rangeItems, socket, data, loading, setLoading, URL_
     <div>
       <Button onClick={showModal}>Agregar Sku</Button>
       <Modal
-        visible={visible}
+        open={visible}
         title="Actualizar"
         onCancel={handleCancel}
         footer={[
@@ -124,7 +124,7 @@ const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
     <div>
       <Button onClick={showModal}>Ajustar cantidad</Button>
       <Modal
-        visible={visible}
+        open={visible}
         title="Actualizar"
         onCancel={handleCancel}
         footer={[
@@ -223,7 +223,7 @@ const ConfirmInventoryModalServer = ({ pendingData, data, setLoading, socket, us
         Confirmar
       </Button>
       <Modal
-        visible={visible}
+        open={visible}
         title="Actualizar"
         onCancel={handleCancel}
         footer={[
@@ -331,7 +331,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
   };
 
   const onFinish = (e) => {
-    axios.get(URL_SERVER + "/inventory")
+    axios.get(URL_SERVER + "/inventory/products")
       .then(resp => {
         rangeItems = resp.data
 
@@ -629,4 +629,190 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
   )
 }
 
-export { AddSkuModalServer, ModifyQuantityServer, ConfirmInventoryModalServer, ExitElementsServer };
+const PlatformAutoComplete = ({ socket, mainForm, colors }) => {
+  const [form] = Form.useForm();
+  const [visibleSH, setVisibleSH] = useState(false);
+  const [visibleML, setVisibleML] = useState(false);
+
+  const showModalSH = () => {
+    setVisibleSH(true);
+  };
+
+  const showModalML = () => {
+    setVisibleML(true);
+  };
+
+  const handleCancelSH = () => {
+    setVisibleSH(false);
+  };
+
+  const handleCancelML = () => {
+    setVisibleML(false);
+  };
+
+  const onFinishSH = (e) => {
+    handleCancelSH()
+    const parts = e.qr.replace("^", "{").replace("*", "}").replace(/\?/g, "_").replace(/Ñ/g, ":").replace(/¨/g, '"')
+    const data = JSON.parse(parts)
+    console.log(data)
+    socket.emit("preloadOrderSH", data)
+
+    socket.on('preloadOrderSH', (data) => {
+      try {
+        console.log(data);
+        mainForm.setFieldsValue(data)
+        form.resetFields()
+      } catch (error) {
+        console.error('Error handling loadOrders event:', error);
+      }
+    });
+  }
+
+  const onFinishML = (e) => {
+    handleCancelML()
+    const parts = e.qr.replace("^", "{").replace("*", "}").replace(/\?/g, "_").replace(/Ñ/g, ":").replace(/¨/g, '"')
+    const data = JSON.parse(parts)
+    console.log(data)
+    socket.emit("preloadOrderML", data)
+
+    socket.on('preloadOrderML', (data) => {
+      try {
+        console.log(data);
+        mainForm.setFieldsValue(data)
+        form.resetFields()
+      } catch (error) {
+        console.error('Error handling loadOrders event:', error);
+      }
+    });
+  }
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Button onClick={showModalML} style={{ padding: 0, margin: "10px", height: "80px", border: "none", backgroundColor: colors.primary[400] }}>
+          <img src="https://seeklogo.com/images/M/mercado-livre-logo-49FAC6E19B-seeklogo.com.png" width={"80px"} height={"60px"} style={{ display: "block", filter: colors.black[200] }} />
+        </Button>
+        <Button onClick={showModalSH} style={{ padding: 0, margin: "10px", height: "80px", border: "none", backgroundColor: colors.primary[400] }}>
+          <img src="https://freelogopng.com/images/all_img/1655873659shopify-black-logo.png" width={"80px"} height={"30px"} style={{ display: "block", filter: colors.black[200] }} />
+        </Button>
+      </div>
+      <Modal
+        open={visibleSH}
+        title="Precaragr"
+        onCancel={handleCancelSH}
+        footer={[
+          <Button key="cancel" onClick={handleCancelSH}>
+            Cancelar
+          </Button>
+        ]}
+      >
+        <Form form={form} onFinish={onFinishSH} layout="vertical">
+          <Form.Item
+            label="QR Shopify"
+            name="qr"
+            labelAlign="left"
+            required="true"
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <input type="submit" className="btn btn-primary m-2" />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        open={visibleML}
+        title="Precaragr"
+        onCancel={handleCancelML}
+        footer={[
+          <Button key="cancel" onClick={handleCancelML}>
+            Cancelar
+          </Button>
+        ]}
+      >
+        <Form form={form} onFinish={onFinishML} layout="vertical">
+          <Form.Item
+            label="QR Mercadolibre"
+            name="qr"
+            labelAlign="left"
+            required="true"
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <input type="submit" className="btn btn-primary m-2" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  )
+}
+
+const EditCodeProduct = ({ socket, code, loading, setLoading }) => {
+  const [form] = Form.useForm();
+  const [visible, setVisible] = useState(false);
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
+  const onFinish = (data) => {
+    data.code = code
+    Modal.confirm({
+      title: '¿Seguro que quieres cambiar el código?',
+      content: 'Esta acción no se puede deshacer.',
+      onOk: () => {
+        try {
+          message.success('Cargado exitosamente')
+          setLoading(true);
+          socket.emit("editCodeProduct", data)
+        } catch (err) {
+          console.error('Error changing row:', err);
+          message.error('No se pudo completar la operación')
+        } finally {
+          setVisible(false)
+          window.location.reload()
+        }
+      },
+    });
+  };
+
+  return (
+    <div>
+      <Button onClick={showModal}>Modificar Código</Button>
+      <Modal
+        open={visible}
+        title="Actualizar"
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancelar
+          </Button>
+        ]}
+      >
+        <Spin spinning={loading}>
+          <Form form={form} onFinish={onFinish} layout="vertical">
+            <Form.Item
+              label="CODE"
+              name="newCode"
+              labelAlign="left"
+              required="true"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item>
+              <input type="submit" className="btn btn-primary m-2" />
+            </Form.Item>
+          </Form>
+        </Spin>
+      </Modal>
+    </div>
+  )
+}
+
+export { AddSkuModalServer, ModifyQuantityServer, ConfirmInventoryModalServer, ExitElementsServer, PlatformAutoComplete, EditCodeProduct };

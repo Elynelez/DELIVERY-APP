@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Spin, Menu } from "antd"
 import DataTableGrid from "../../Controllers/DataGridPro";
-import { AddSkuModalServer, ModifyQuantityServer } from "../../Controllers/Modals/InventoryModals";
+import { AddSkuModalServer, ModifyQuantityServer, EditCodeProduct } from "../../Controllers/Modals/InventoryModals";
 import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
 import { Link } from 'react-router-dom';
@@ -10,6 +10,16 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
     const [loading, setLoading] = useState(false)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+
+    const deleteSku = (data) => {
+        socket.emit("deleteSku", data)
+        window.location.reload()
+    }
+
+    const deleteProduct = (data) => {
+        socket.emit("deleteProduct", data)
+        window.location.reload()
+    }
 
     const columns = [
         { headerName: 'Sku', field: "sku", flex: 1 },
@@ -20,7 +30,7 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
         {
             headerName: 'Acciones', renderCell: params => (
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
-                    <Menu.SubMenu title="Acciones">
+                    <Menu.SubMenu title="Acciones" key="sub-menu">
                         {user && settingInventoryEmails.includes(user.email) && (
                             <>
                                 <Menu.Item key="0">
@@ -31,9 +41,7 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
                                         loading={loading}
                                         setLoading={setLoading}
                                         URL_SERVER={URL_SERVER}
-                                    >
-                                        Agregar Sku
-                                    </AddSkuModalServer>
+                                    />
                                 </Menu.Item>
                                 <Menu.Item key="1">
                                     <ModifyQuantityServer
@@ -41,9 +49,7 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
                                         data={params.row}
                                         loading={loading}
                                         setLoading={setLoading}
-                                    >
-                                        Ajustar Cantidad
-                                    </ModifyQuantityServer >
+                                    />
                                 </Menu.Item>
                                 <Menu.Item key="2">
                                     <Link to={`/inventory/edit/${params.row.code}`}>
@@ -52,12 +58,28 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
                                         </Button>
                                     </Link>
                                 </Menu.Item>
+                            </>
+                        )}
+                        {user && user.email == "pedidos.ducor@gmail.com" && (
+                            <>
                                 <Menu.Item key="3">
-                                    <Button>
-                                        Eliminar
-                                    </Button >
+                                    <EditCodeProduct
+                                        socket={socket}
+                                        code={params.row.code}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                    />
                                 </Menu.Item>
-                                {/* <button>Enlazar Mco</button> */}
+                                <Menu.Item key="4">
+                                    <Button onClick={() => { deleteSku(params.row) }}>
+                                        Eliminar sku
+                                    </Button>
+                                </Menu.Item>
+                                <Menu.Item key="5">
+                                    <Button onClick={() => { deleteProduct(params.row) }}>
+                                        Eliminar item
+                                    </Button>
+                                </Menu.Item>
                             </>
                         )}
                     </Menu.SubMenu>
