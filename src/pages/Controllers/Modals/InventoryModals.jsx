@@ -307,6 +307,8 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
   const [status, setStatus] = useState(false)
   const [objectValues, setObjectValues] = useState({})
   const [form] = Form.useForm();
+  const [disabled, setDisabled] = useState(false)
+
 
   const showModal = () => {
     setVisible(true);
@@ -331,6 +333,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
   };
 
   const onFinish = (e) => {
+    setDisabled(true)
     axios.get(URL_SERVER + "/inventory/products")
       .then(resp => {
         rangeItems = resp.data
@@ -358,6 +361,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
               description: 'Por favor, cambia el valor antes de continuar.',
               duration: 5,
             });
+            setDisabled(false)
             return;
           }
         }
@@ -422,6 +426,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
             description: 'Por favor, cambia los valores antes de continuar.',
             duration: 5,
           });
+          setDisabled(false)
           return;
         }
 
@@ -454,9 +459,11 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
         switch (true) {
           case notExistentSkus.length > 0:
             alert("Estos códigos no existen: " + notExistentSkus.toString());
+            setDisabled(false)
             break;
           case data.items.length < 1:
             alert("no seas tonto bro, ¿Cómo vas a enviar algo vacío 🙄?");
+            setDisabled(false)
             break;
           default:
             setLoading(true)
@@ -467,6 +474,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
                 message.success('cargado exitosamente')
                 localStorage.setItem("exitData", JSON.stringify({ projects: [] }))
                 handleCancel()
+                setDisabled(false)
               } catch (err) {
                 console.error('Error changing row:', err);
                 message.info('no se pudo completar la operación')
@@ -571,7 +579,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
             )}
           </Form.List>
           <Form.Item>
-            <input type="submit" className="btn btn-primary" />
+            <input type="submit" className="btn btn-primary" disabled={disabled}/>
           </Form.Item>
         </Form>
       </Modal>

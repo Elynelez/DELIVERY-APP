@@ -299,8 +299,14 @@ function App() {
                 setCountProducts={setCountProducts}
               />
               <Routes>
-                {/* <Route exact path="/" element={<Dashboard />} /> */}
                 <Route exact path="/" element={<SearchES />} />
+                <Route exact path="/dashboard"
+                  element={<Dashboard
+                    pendingData={pendingData}
+                    setPendingData={setPendingData}
+                    socket={socket}
+                    receiveOrders={receiveOrders}
+                  />} />
                 <Route exact path="/inventory/exit/pending"
                   element={<PendingOrders
                     rangeItems={rangeItems}
