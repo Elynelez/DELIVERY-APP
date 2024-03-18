@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Spin, Menu } from "antd"
 import { ConfirmInventoryModalServer } from "../../../controllers/Modals/InventoryModals";
-import DataTableGrid from "../../../controllers/DataGridPro";
+import DataTableGrid from "../../../controllers/Tables/DataGridPro";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";

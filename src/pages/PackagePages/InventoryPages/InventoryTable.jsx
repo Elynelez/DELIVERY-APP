@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Spin, Menu } from "antd"
-import DataTableGrid from "../../../controllers/DataGridPro";
+import DataTableGrid from "../../../controllers/Tables/DataGridPro";
 import { AddSkuModalServer, ModifyQuantityServer, EditCodeProduct } from "../../../controllers/Modals/InventoryModals";
 import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../theme";

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Spin, Menu } from "antd"
-import DataTableGrid from "../../controllers/DataGridPro";
+import DataTableGrid from "../../controllers/Tables/DataGridPro";
 import {
     Box,
     Typography,
