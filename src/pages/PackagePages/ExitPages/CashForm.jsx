@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Spin } from "antd"
-import { ExitElementsServer } from "../../Controllers/Modals/InventoryModals";
+import { ExitElementsServer } from "../../../controllers/Modals/InventoryModals";
 
 const CashProduct = ({ pendingData, setPendingData, rangeItems, socket, receiveOrders, URL_SERVER }) => {
     const [loading, setLoading] = useState(false)

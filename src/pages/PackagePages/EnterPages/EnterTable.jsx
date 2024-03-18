@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd"
-import DataTableGrid from "../../Controllers/DataGridPro";
+import DataTableGrid from "../../../controllers/DataGridPro";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";

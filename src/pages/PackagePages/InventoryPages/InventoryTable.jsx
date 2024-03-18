@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Spin, Menu } from "antd"
-import DataTableGrid from "../../Controllers/DataGridPro";
-import { AddSkuModalServer, ModifyQuantityServer, EditCodeProduct } from "../../Controllers/Modals/InventoryModals";
+import DataTableGrid from "../../../controllers/DataGridPro";
+import { AddSkuModalServer, ModifyQuantityServer, EditCodeProduct } from "../../../controllers/Modals/InventoryModals";
 import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
 import { Link } from 'react-router-dom';

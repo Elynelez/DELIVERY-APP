@@ -4,7 +4,7 @@ import { useTheme } from "@mui/material";
 import { Button, Spin, message, Form, Input, Col, Row, Select, notification } from "antd"
 import { v4 } from 'uuid';
 import axios from "axios";
-import { PlatformAutoComplete } from "../../Controllers/Modals/InventoryModals";
+import { PlatformAutoComplete } from "../../../controllers/Modals/InventoryModals";
 
 const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, receiveOrders, URL_SERVER }) => {
     const [exitData, setExitData] = useState({})

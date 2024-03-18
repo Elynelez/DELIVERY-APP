@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { DataGridPro, GridToolbar, GridToolbarContainer } from '@mui/x-data-grid-pro';
-import { tokens } from "./../../theme";
+import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
 import { useLocation } from 'react-router-dom';
 import { React, useState } from "react";

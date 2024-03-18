@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Spin, Menu, Modal, message } from "antd"
 import { useParams } from 'react-router-dom';
-import DataTableGrid from "../Controllers/DataGridPro";
-import { ModalData, EditModal, ReviewModal } from "../Controllers/Modals/DeliveryModals";
+import DataTableGrid from "../../controllers/DataGridPro";
+import { ModalData, EditModal, ReviewModal } from "../../controllers/Modals/DeliveryModals";
 import { useTheme, Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 

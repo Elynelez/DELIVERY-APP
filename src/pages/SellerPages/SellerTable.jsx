@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Menu, Spin } from "antd"
-import TableData from "../Controllers/DataTable/TableData";
+import TableData from "../../controllers/DataTable/TableData";
 import { useAuth0 } from '@auth0/auth0-react';
 
 const SellerTable = () => {
