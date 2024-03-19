@@ -5,11 +5,9 @@ import { ModalData, EditModal, ReviewModal } from "../../controllers/Modals/Deli
 import { useTheme, Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 
-const AllOrders = ({ user, bossEmails, logisticEmails, deliveryData, setDeliveryData, API_URL }) => {
+const AllOrders = ({ user, emails, deliveryData, setDeliveryData, API_URL }) => {
   const [loading, setLoading] = useState(true)
-  const [deleteRow, setDeleteRow] = useState(null)
-  const [cancelledOrder, setCancelledOrder] = useState(null)
-  const [reloadData, setReloadData] = useState(false);
+  const [reloadData, setReloadData] = useState(true);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -18,11 +16,11 @@ const AllOrders = ({ user, bossEmails, logisticEmails, deliveryData, setDelivery
     fetch(API_URL)
       .then(response => response.json())
       .then(parsedData => {
-        let data = parsedData.map(element => {
+        let dataO = parsedData.map(element => {
           element.id = element.order_id
           return element
         });
-        setDeliveryData(data);
+        setDeliveryData(dataO);
         setLoading(false);
       })
       .catch(error => {
@@ -36,9 +34,9 @@ const AllOrders = ({ user, bossEmails, logisticEmails, deliveryData, setDelivery
       title: '¿Seguro que quieres eliminar este contenido?',
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
-        message.info('unos momentos')
+        message.info('unos momentos');
         setLoading(true);
-        fetch(API_URL+"?delete", {
+        fetch(API_URL + "?delete", {
           redirect: "follow",
           method: 'POST',
           headers: {
@@ -49,7 +47,7 @@ const AllOrders = ({ user, bossEmails, logisticEmails, deliveryData, setDelivery
           .then(response => response.json())
           .then(data => {
             message.success('Contenido borrado exitosamente');
-            setDeleteRow(data.data.id)
+            setReloadData(true)
           })
           .catch(error => {
             console.error('Error deleting row:', error);
@@ -58,16 +56,16 @@ const AllOrders = ({ user, bossEmails, logisticEmails, deliveryData, setDelivery
       },
     });
 
-  }
+  };
 
   const canceledOrderById = (order_Id) => {
     Modal.confirm({
-      title: '¿Seguro que quieres anular este padido?',
+      title: '¿Seguro que quieres anular este pedido?',
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
-        message.info('unos momentos')
+        message.info('unos momentos');
         setLoading(true);
-        fetch(API_URL+"?canceled", {
+        fetch(API_URL + "?canceled", {
           redirect: "follow",
           method: 'POST',
           headers: {
@@ -78,7 +76,7 @@ const AllOrders = ({ user, bossEmails, logisticEmails, deliveryData, setDelivery
           .then(response => response.json())
           .then(data => {
             message.success('Pedido cancelado exitosamente');
-            setCancelledOrder(data.data.id)
+            setReloadData(true)
           })
           .catch(error => {
             console.error('Error cancelling order:', error);
@@ -86,23 +84,7 @@ const AllOrders = ({ user, bossEmails, logisticEmails, deliveryData, setDelivery
           });
       },
     });
-  }
-
-  useEffect(() => {
-    if (deliveryData.length == 0) {
-      loadData()
-    } else {
-      setLoading(false)
-    }
-  }, []);
-
-  useEffect(() => {
-    if (deleteRow !== null) {
-      loadData()
-    } else if (cancelledOrder !== null) {
-      loadData()
-    }
-  }, [deleteRow, cancelledOrder]);
+  };
 
   useEffect(() => {
     if (reloadData) {
@@ -150,26 +132,30 @@ const AllOrders = ({ user, bossEmails, logisticEmails, deliveryData, setDelivery
       headerName: 'Acciones', renderCell: params => (
         <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
           <Menu.SubMenu title="Acciones">
-            {user && logisticEmails.includes(user.email) && (
-              <>
-                <Menu.Item key="0">
-                  <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.order_id)}>Anular</Button>
-                </Menu.Item>
-                <Menu.Item key="1">
-                  <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(params.row.order_id)}>Borrar</Button>
-                </Menu.Item>
-                <Menu.Item key="2">
-                  <EditModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, date_delivery: (params.row.status === "REPROGRAMADO" || params.row.status === "COMPLETADO" || params.row.status === "COMPLETO (FR)") ? true : false, zone: params.row.zone, code: params.row.code, coursier: params.row.coursier, method: params.row.method, money_delivered: params.row.money_delivered }} />
-                </Menu.Item>
-              </>
-            )}
-            <Menu.Item key="3">
+            <Menu.Item key="0">
               <ModalData arrayData={[{ title: "fecha de entrega", value: params.row.date_delivery }, { title: "Zona", value: params.row.zone }, { title: "Medio de pago", value: params.row.method }, { title: "Observaciones", value: JSON.parse(params.row.notation).map(obj => obj.notation).join(', ') }, { title: "Dinero entregado", value: params.row.money_delivered }]} />
             </Menu.Item>
-            {user && bossEmails.includes(user.email) && (
-              <Menu.Item key="4">
-                <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, platform: "Coursiers", user: user.email, status: params.row.status, disabled: (params.row.status.includes("EN RUTA") || params.row.status.includes("ENTREGADO") || params.row.status.includes("INCOMPLETO") || params.row.status.includes("COMPLETO (FR)")) ? false : true }} />
-              </Menu.Item>
+            {user && (
+              <>
+                {emails.includes(user.email) && (
+                  <>
+                    <Menu.Item key="0">
+                      <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.order_id)}>Anular</Button>
+                    </Menu.Item>
+                    <Menu.Item key="1">
+                      <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(params.row.order_id)}>Borrar</Button>
+                    </Menu.Item>
+                    <Menu.Item key="2">
+                      <EditModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, date_delivery: (params.row.status === "REPROGRAMADO" || params.row.status === "COMPLETADO" || params.row.status === "COMPLETO (FR)") ? true : false, zone: params.row.zone, code: params.row.code, coursier: params.row.coursier, method: params.row.method, money_delivered: params.row.money_delivered }} />
+                    </Menu.Item>
+                  </>
+                )}
+                {emails.includes(user.email) && (
+                  <Menu.Item key="4">
+                    <ReviewModal setReloadData={setReloadData} initialValues={{ order_id: params.row.order_id, total: params.row.total, money_delivered: params.row.money_delivered, platform: "Coursiers", user: user.email, status: params.row.status, disabled: (params.row.status.includes("EN RUTA") || params.row.status.includes("ENTREGADO") || params.row.status.includes("INCOMPLETO") || params.row.status.includes("COMPLETO (FR)")) ? false : true }} />
+                  </Menu.Item>
+                )}
+              </>
             )}
           </Menu.SubMenu>
         </Menu>

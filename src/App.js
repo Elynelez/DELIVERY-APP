@@ -81,10 +81,7 @@ function App() {
 
   const [pendingData, setPendingData] = useState([])
 
-  const [deliveryData, setDeliveryData] = useState(() => {
-    const savedDeliveryData = localStorage.getItem("deliveryData");
-    return savedDeliveryData ? JSON.parse(savedDeliveryData) : [];
-  });
+  const [deliveryData, setDeliveryData] = useState([])
 
   useEffect(() => {
 
@@ -328,8 +325,7 @@ function App() {
                     <Route exact path="/coursiers/:id"
                       element={<CoursiersTable
                         user={user}
-                        bossEmails={bossEmails}
-                        logisticEmails={logisticEmails}
+                        emails={logisticEmails.concat(bossEmails)}
                         deliveryData={deliveryData}
                         setDeliveryData={setDeliveryData}
                         API_URL={API_URL_DELIVERY}
@@ -337,8 +333,7 @@ function App() {
                     <Route exact path="/AllOrders"
                       element={<AllOrders
                         user={user}
-                        bossEmails={bossEmails}
-                        logisticEmails={logisticEmails}
+                        emails={logisticEmails.concat(bossEmails)}
                         deliveryData={deliveryData}
                         setDeliveryData={setDeliveryData}
                         API_URL={API_URL_DELIVERY}
@@ -352,7 +347,14 @@ function App() {
                 )}
                 {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email) || ExternalServiceEmails.includes(user.email)) && (
                   <>
-                    <Route exact path="/coursiers/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} ExternalServiceEmails={ExternalServiceEmails} />} />
+                    <Route exact path="/coursiers/ExternalService"
+                      element={<ESTable
+                        user={user}
+                        emails={logisticEmails.concat(bossEmails, ExternalServiceEmails)}
+                        deliveryData={deliveryData}
+                        setDeliveryData={setDeliveryData}
+                        API_URL={API_URL_DELIVERY}
+                      />} />
                   </>
                 )}
                 {isAuthenticated && exitsInventoryEmails.includes(user.email) && (
