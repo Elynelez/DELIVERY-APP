@@ -13,7 +13,7 @@ const EnterTable = ({ URL_SERVER }) => {
     const colors = tokens(theme.palette.mode);
 
     useEffect(() => {
-        axios.get(URL_SERVER + "/entries")
+        axios.get(URL_SERVER + "/inventory/entries")
             .then((resp) => {
                 setOrders(resp.data)
                 setLoading(false)

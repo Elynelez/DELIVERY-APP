@@ -7,7 +7,7 @@ const SettingTable = ({ URL_SERVER }) => {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        axios.get(URL_SERVER + "/settings")
+        axios.get(URL_SERVER + "/inventory/settings")
             .then((resp) => {
                 setOrdersSetting(resp.data)
                 setLoading(false)

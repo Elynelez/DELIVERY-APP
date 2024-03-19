@@ -55,7 +55,7 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
         { headerName: 'Plataforma', field: "platform", flex: 1 },
         {
             headerName: 'Artículos', field: "items", valueFormatter: (params) => {
-                return params.value.map(item => `${item.sku} - ${item.name} - ${item.quantity}`).join('. ');
+                return params.value.map(item => `${item.sku} - ${item.name} - ${item.quantity}`).join('; ');
             }
         },
         {
