@@ -132,11 +132,6 @@ function App() {
     localStorage.setItem("countProducts", countProducts)
   }, [allProducts]);
 
-  useEffect(() => {
-    localStorage.setItem("coursierData", JSON.stringify([]));
-    localStorage.setItem("deliveryData", JSON.stringify(deliveryData));
-  }, [deliveryData]);
-
   const receiveOrders = order => setPendingData(state => [order, ...state])
 
   // return (
