@@ -93,12 +93,16 @@ const CoursiersTable = ({ user, emails, deliveryData, setDeliveryData, API_URL }
     });
   }
 
+  useEffect(()=>{
+    loadData();
+  }, [id])
+
   useEffect(() => {
     if (reloadData) {
       loadData();
       setReloadData(false);
     }
-  }, [id, reloadData]);
+  }, [reloadData]);
 
   const statusColorMap = {
     'EN RUTA': '#A48BF4',
