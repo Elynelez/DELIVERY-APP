@@ -27,7 +27,7 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
                         date_generate: obj.date_generate,
                         coursier: obj.order.shipping_data.coursier.toLowerCase(),
                         client: obj.order.customer.name,
-                        seller: obj.order.customer.seller,
+                        seller: obj.order.seller.name,
                         address: obj.order.customer.address,
                         condition: obj.order.transactions.condition,
                         method: obj.order.transactions.method,

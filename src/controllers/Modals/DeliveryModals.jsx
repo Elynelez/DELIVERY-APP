@@ -50,7 +50,7 @@ const ModalData = ({ data }) => {
             { title: 'Zona', value: data.order.shipping_data.zone },
             { title: 'Nombre del Cliente', value: data.order.customer.name },
             { title: 'Dirección de Entrega', value: data.order.customer.address },
-            { title: 'Vendedor', value: data.order.customer.seller },
+            { title: 'Vendedor', value: data.order.seller.name },
             { title: 'Condición de la Transacción', value: data.order.transactions.condition },
             { title: 'Total', value: data.order.transactions.total },
             { title: 'Dinero Entregado', value: data.order.money_delivered || "No especificado" },
