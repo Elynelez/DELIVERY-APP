@@ -164,18 +164,12 @@ const Sidebar = (props) => {
                                 </Typography>
                                 <Item
                                     title="Delivery"
-                                    to="/DeliveryApp"
+                                    to="/delivery/form"
                                     icon={<ContactsOutlinedIcon />}
                                     selected={selected}
                                     setSelected={setSelected}
                                 />
-                                <Item
-                                    title="External Service"
-                                    to="/ExternalServiceApp"
-                                    icon={<ContactsOutlinedIcon />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
+
                             </>
                         )}
 
