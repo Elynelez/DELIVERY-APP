@@ -41,7 +41,7 @@ const URL_SERVER = "https://server-cloud-mggp.onrender.com"
 
 // Logistic Shipping
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
-const ExternalServiceEmails = ["xsharick08@gmail.com", "klcf.inducor@gmail.com"]
+const ExternalServiceEmails = ["xsharick08@gmail.com"]
 
 // Boss Functions
 const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]

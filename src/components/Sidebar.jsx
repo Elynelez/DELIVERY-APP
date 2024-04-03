@@ -214,7 +214,7 @@ const Sidebar = (props) => {
                                 </Typography>
                                 <Item
                                     title="Servicio Externo"
-                                    to="/coursiers/ExternalService"
+                                    to="/delivery/servicio externo"
                                     icon={<PersonOutlinedIcon />}
                                     selected={selected}
                                     setSelected={setSelected}

@@ -163,7 +163,7 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
                                 {emails.includes(user.email) && (
                                     <>
                                         <Menu.Item key="2">
-                                            <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.order_id)}>Anular</Button>
+                                            <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.id)}>Anular</Button>
                                         </Menu.Item>
                                         <Menu.Item key="3">
                                             <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(params.row.id)}>Borrar</Button>
