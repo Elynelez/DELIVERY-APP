@@ -301,7 +301,7 @@ function App() {
                     receiveOrders={receiveOrders}
                     URL_SERVER={URL_SERVER}
                   />} />
-                {isAuthenticated && logisticEmails.includes(user.email) && (
+                {isAuthenticated && logisticEmails.concat(ExternalServiceEmails, bossEmails).includes(user.email) && (
                   <>
                     <Route exact path="/delivery/:id"
                       element={<DeliveryTable
