@@ -192,23 +192,16 @@ const Sidebar = (props) => {
                                     {props.couriers.map((coursier) => (
                                         <Item
                                             title={coursier}
-                                            to={`/coursiers/${coursier}`}
+                                            to={`/delivery/${coursier}`}
                                             icon={<PersonOutlinedIcon />}
                                             selected={selected}
                                             setSelected={setSelected}
                                         />
                                     ))}
-                                    <Item
-                                        title="Servicio Externo"
-                                        to={`/coursiers/ExternalService`}
-                                        icon={<PersonOutlinedIcon />}
-                                        selected={selected}
-                                        setSelected={setSelected}
-                                    />
                                 </SubMenu>
                                 <Item
                                     title="Todos"
-                                    to="/AllOrders"
+                                    to="delivery/all"
                                     icon={<ReceiptOutlinedIcon />}
                                     selected={selected}
                                     setSelected={setSelected}

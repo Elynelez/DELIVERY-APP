@@ -9,13 +9,8 @@ import { io } from 'socket.io-client';
 import { useAuth0 } from '@auth0/auth0-react';
 
 // pages
-import CoursiersTable from './pages/DeliveryPages/CoursiersTable';
-import ExternalServiceApp from './pages/DeliveryPages/ExternalServiceApp';
-import DeliveryApp from './pages/DeliveryPages/DeliveryApp';
-import AllOrders from './pages/DeliveryPages/AllOrders';
 import Dashboard from './pages/DefaultPages/Dashboard';
 import SellerTable from './pages/SellerPages/SellerTable';
-import ESTable from './pages/DeliveryPages/ESTable';
 import SellerCar from './pages/SellerPages/SellerCar';
 import SellerForm from './pages/SellerPages/SellerForm';
 import CreateProduct from './pages/PackagePages/InventoryPages/CreateProduct';
@@ -30,6 +25,8 @@ import TableMercadoLibre from './pages/AccountingPages/Mercadolibre';
 import InventoryTable from './pages/PackagePages/InventoryPages/InventoryTable';
 import SearchES from './pages/DefaultPages/SearchES';
 import SettingTable from './pages/PackagePages/SettingPages/SettingTable';
+import DeliveryTable from './pages/DeliveryPages/DeliveryTable';
+import DeliveryForm from './pages/DeliveryPages/DeliveryForm';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -38,8 +35,9 @@ import { ColorModeContext, useMode } from "./theme";
 
 // API URL'S
 const API_URL_DELIVERY = "https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec"
-// const URL_SERVER = 'http://localhost:' + 8080
-const URL_SERVER = "https://server-cloud-mggp.onrender.com"
+const API_DUCOR = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?path="
+const URL_SERVER = 'http://localhost:' + 8080
+// const URL_SERVER = "https://server-cloud-mggp.onrender.com"
 
 // Logistic Shipping
 const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
@@ -162,25 +160,19 @@ function App() {
   //                     countProducts={countProducts}
   //                     setCountProducts={setCountProducts}
   //                   />} />
-  //               <Route exact path="/mensajeros/ExternalService" element={<ESTable bossEmails={bossEmails} logisticEmails={logisticEmails} />} />
-  //               <Route exact path="/AllOrders"
-  //                 element={<AllOrders
-  //                   user={user}
-  //                   bossEmails={bossEmails}
-  //                   logisticEmails={logisticEmails}
-  //                   deliveryData={deliveryData}
-  //                   setDeliveryData={setDeliveryData}
-  //                   API_URL={API_URL_DELIVERY}
-  //                 />} />
   //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total} />} />
-  //               <Route exact path="/coursiers/:id"
-  //                 element={<CoursiersTable
+  //               <Route exact path="/travels/:id"
+  //                 element={<DeliveryTable
   //                   user={user}
-  //                   bossEmails={bossEmails}
-  //                   logisticEmails={logisticEmails}
+  //                   emails={logisticEmails.concat(bossEmails)}
   //                   deliveryData={deliveryData}
   //                   setDeliveryData={setDeliveryData}
-  //                   API_URL={API_URL_DELIVERY}
+  //                   API_URL={API_DUCOR}
+  //                 />} />
+  //               <Route exact path="/travels/form"
+  //                 element={<DeliveryForm
+  //                   socket={socket}
+  //                   API_URL={API_DUCOR}
   //                 />} />
   //               <Route exact path="/inventory/create/form"
   //                 element={<CreateProduct
@@ -271,7 +263,7 @@ function App() {
         <Router>
           <div className='flex'>
             <Sidebar
-              couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]}
+              couriers={["brayan", "raul", "richard", "estiven", "Hernando", "Juano", "Servicio Externo"]}
               logisticEmails={logisticEmails}
               bossEmails={bossEmails}
               sellerEmails={sellerEmails}
@@ -311,45 +303,24 @@ function App() {
                   />} />
                 {isAuthenticated && logisticEmails.includes(user.email) && (
                   <>
-                    <Route exact path="/DeliveryApp" element={<DeliveryApp />} />
-                    <Route exact path="/ExternalServiceApp" element={<ExternalServiceApp />} />
-                  </>
-                )}
-                {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email)) && (
-                  <>
-                    <Route exact path="/coursiers/:id"
-                      element={<CoursiersTable
+                    <Route exact path="/delivery/:id"
+                      element={<DeliveryTable
                         user={user}
                         emails={logisticEmails.concat(bossEmails)}
                         deliveryData={deliveryData}
                         setDeliveryData={setDeliveryData}
-                        API_URL={API_URL_DELIVERY}
+                        API_URL={API_DUCOR}
                       />} />
-                    <Route exact path="/AllOrders"
-                      element={<AllOrders
-                        user={user}
-                        emails={logisticEmails.concat(bossEmails)}
-                        deliveryData={deliveryData}
-                        setDeliveryData={setDeliveryData}
-                        API_URL={API_URL_DELIVERY}
+                    <Route exact path="/delivery/form"
+                      element={<DeliveryForm
+                        socket={socket}
+                        API_URL={API_DUCOR}
                       />} />
                   </>
                 )}
                 {isAuthenticated && sellerEmails.includes(user.email) && (
                   <>
                     <Route exact path="/Sales" element={<SellerTable />} />
-                  </>
-                )}
-                {isAuthenticated && (bossEmails.includes(user.email) || logisticEmails.includes(user.email) || ExternalServiceEmails.includes(user.email)) && (
-                  <>
-                    <Route exact path="/coursiers/ExternalService"
-                      element={<ESTable
-                        user={user}
-                        emails={logisticEmails.concat(bossEmails, ExternalServiceEmails)}
-                        deliveryData={deliveryData}
-                        setDeliveryData={setDeliveryData}
-                        API_URL={API_URL_DELIVERY}
-                      />} />
                   </>
                 )}
                 {isAuthenticated && exitsInventoryEmails.includes(user.email) && (
