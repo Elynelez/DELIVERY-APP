@@ -168,7 +168,7 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
                                         <Menu.Item key="3">
                                             <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(params.row.id)}>Borrar</Button>
                                         </Menu.Item>
-                                        {params.row.status == "EN RUTA" || ["contableducor@gmail.com", "inducorsas@gmail.com"].includes(user.email) && (
+                                        {(params.row.status == "EN RUTA" || ["contableducor@gmail.com", "inducorsas@gmail.com"].includes(user.email)) && (
                                             <>
                                                 <Menu.Item key="4">
                                                     <EditModal setReloadData={setReloadData} data={params.row.complete} API_URL={API_URL} />
