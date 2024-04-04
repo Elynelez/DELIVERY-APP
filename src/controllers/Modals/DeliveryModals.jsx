@@ -310,7 +310,7 @@ const ConfirmModal = ({ setReloadData, data, API_URL, user }) => {
                           <Select.Option value={"REPROGRAMADO"} key={0}>REPROGRAMADO</Select.Option>
                         </>
                       )}
-                      {user.email == "contableducor@gmail.com" && (
+                      {user.email == "contableducor@gmail.com" || user.email == "inducorsas@gmail.com" && (
                         <>
                           <Select.Option value={"COMPLETO"} key={0}>COMPLETO</Select.Option>
                         </>

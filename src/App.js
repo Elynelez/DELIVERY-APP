@@ -21,7 +21,6 @@ import ExitForm from './pages/PackagePages/ExitPages/ExitForm';
 import ExitTable from './pages/PackagePages/ExitPages/ExitTable';
 import CashForm from './pages/PackagePages/ExitPages/CashForm';
 import PendingOrders from './pages/PackagePages/ExitPages/PendingOrders';
-import TableMercadoLibre from './pages/AccountingPages/Mercadolibre';
 import InventoryTable from './pages/PackagePages/InventoryPages/InventoryTable';
 import SearchES from './pages/DefaultPages/SearchES';
 import SettingTable from './pages/PackagePages/SettingPages/SettingTable';
@@ -246,7 +245,6 @@ function App() {
   //                   receiveOrders={receiveOrders}
   //                   URL_SERVER={URL_SERVER}
   //                 />} />
-  //               <Route exact path="/platform/mercadolibre" element={<TableMercadoLibre />} />
   //               <Route exact path="/search/ES" element={<SearchES />} />
   //             </Routes>
   //           </div>
