@@ -304,7 +304,7 @@ function App() {
                     <Route exact path="/delivery/:id"
                       element={<DeliveryTable
                         user={user}
-                        emails={logisticEmails.concat(bossEmails)}
+                        emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
                         deliveryData={deliveryData}
                         setDeliveryData={setDeliveryData}
                         API_URL={API_DUCOR}

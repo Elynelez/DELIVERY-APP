@@ -70,7 +70,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                     number = number.toString().toUpperCase()
                     e.facture_number = e.facture_number.toString().toUpperCase()
                     return (
-                        number.includes(e.facture_number) || e.facture_number.includes(number)
+                        number.includes(e.facture_number) || e.facture_number.includes(number) || e.facture_number != "REENVASAR" || e.facture_number != "PORCIONAR"
                     );
                 });
 
