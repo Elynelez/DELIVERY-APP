@@ -26,6 +26,7 @@ import SearchES from './pages/DefaultPages/SearchES';
 import SettingTable from './pages/PackagePages/SettingPages/SettingTable';
 import DeliveryTable from './pages/DeliveryPages/DeliveryTable';
 import DeliveryForm from './pages/DeliveryPages/DeliveryForm';
+import TableSHOPIFY from './pages/AccountingPages/Shopify';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -246,6 +247,7 @@ function App() {
   //                   URL_SERVER={URL_SERVER}
   //                 />} />
   //               <Route exact path="/search/ES" element={<SearchES />} />
+  //               <Route exact path="/platforms/shopify" element={<TableSHOPIFY API_URL={API_DUCOR} />} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -282,6 +284,7 @@ function App() {
               />
               <Routes>
                 <Route exact path="/" element={<SearchES />} />
+                <Route exact path="/platforms/shopify" element={<TableSHOPIFY API_URL={API_DUCOR} />} />
                 <Route exact path="/dashboard"
                   element={<Dashboard
                     pendingData={pendingData}

@@ -118,16 +118,23 @@ const Sidebar = (props) => {
                     )}
 
                     <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-                        {/* <Item
+                        <Item
                             title="Dashboard"
+                            to="/dashboard"
+                            icon={<HomeOutlinedIcon />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                        <Item
+                            title="Consultar inter"
                             to="/"
                             icon={<HomeOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
-                        /> */}
+                        />
                         <Item
-                            title="Consultar inter"
-                            to="/"
+                            title="DC Shopify"
+                            to="/platforms/shopify"
                             icon={<HomeOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
