@@ -204,7 +204,7 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
                             fontWeight="bold"
                             sx={{ m: "0 0 5px 0" }}
                         >
-                            RUTA DE <>{id == "all" ? "TODOS" : id.toLocaleUpperCase()}</>
+                            RUTA DE {id == "all" ? "TODOS" : id.toLocaleUpperCase()}
                         </Typography>
                         <Typography variant="h5" color={colors.greenAccent[400]}>
                             últimos detalles
@@ -215,7 +215,6 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
                         data={"user.email" == "contableducor@gmail.com" ? deliveryData.filter(obj => obj.method != "EFECTIVO") : deliveryData}
                         setReloadData={setReloadData}
                         setLoading={setLoading}
-                        typeSheet={"Delivery"}
                     />
                 </Box>
             )}

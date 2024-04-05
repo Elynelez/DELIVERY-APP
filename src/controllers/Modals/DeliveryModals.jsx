@@ -332,4 +332,113 @@ const ConfirmModal = ({ setReloadData, data, API_URL, user }) => {
 
 }
 
-export { ModalData, EditModal, ConfirmModal };
+const MultipleStatusModal = ({ setReloadData, colors, data}) => {
+  const [form] = Form.useForm();
+  const [visible, setVisible] = useState(false);
+  const Methods = ["SIN CAMBIO", "EFECTIVO", "NEQUI ANDREA", "NEQUI NICOLAS", "DAVIPLATA ANDREA", "BANCOLOMBIA NICOLAS", "BANCOLOMBIA ANDREA", "MERCADOPAGO", "CRÉDITO"]
+
+  const onFinish = (e) => {
+    const obj = {
+      method: e.method,
+      status: e.status,
+      data
+    }
+    Modal.confirm({
+      title: '¿Seguro que quieres actualizar masivamente este contenido?',
+      content: 'Esta acción no se puede deshacer.',
+      onOk: () => {
+        message.info('unos momentos')
+        setVisible(false)
+        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?path=" + "delivery/massive", {
+          redirect: "follow",
+          method: 'POST',
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(obj)
+        })
+          .then(response => response.json())
+          .then(data => {
+            message.success('Contenido editado exitosamente');
+            setReloadData(true);
+          })
+          .catch(error => {
+            console.error('Error changing row:', error);
+            message.info('no se pudo completar la operación')
+          });
+      },
+    });
+  }
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
+  return (
+    <div>
+      <Button
+        type="primary"
+        style={{ backgroundColor: colors.blueAccent[1000] }}
+        onClick={showModal}
+      >
+        Cambiar Estado
+      </Button>
+      <Modal
+        visible={visible}
+        title="Actualización masiva"
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancelar
+          </Button>
+        ]}
+      >
+        <Form form={form} onFinish={onFinish} layout="vertical">
+          <div className="main-user-info-group">
+            <div className="user-input-box-group">
+              <div className="end-input-group-form">
+                <div className="input-group-form">
+                  <Form.Item
+                    name="method"
+                    label="Método"
+                    rules={[{ required: true, message: 'Por favor reingresa la zona' }]}
+                  >
+                    <Select placeholder="selecciona un método">
+                      {Methods.map((method, index) => (
+                        <Select.Option value={method} key={index}>{method}</Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+                <div className="input-group-form">
+                  <Form.Item
+                    name="status"
+                    label="Estado"
+                    rules={[{ required: true, message: 'Por favor reingresa el estado' }]}
+                  >
+                    <Select placeholder="selecciona un estado">
+                      <Select.Option value="EN RUTA">En ruta</Select.Option>
+                      <Select.Option value="COMPLETO">Completo</Select.Option>
+                      <Select.Option value="ENTREGADO">Entregado</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+              </div>
+            </div>
+            <Form.Item>
+              <input type="submit" className="form-submit-btn" style={{ backgroundColor: "gray" }} />
+            </Form.Item>
+          </div>
+        </Form>
+      </Modal>
+    </div>
+
+  );
+
+}
+
+export { ModalData, EditModal, ConfirmModal, MultipleStatusModal };

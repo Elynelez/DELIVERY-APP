@@ -8,9 +8,10 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { DatePicker, Button, Modal, message, Select } from "antd";
 // materials
 import GetApp from '@mui/icons-material/GetApp';
+import { MultipleStatusModal } from "../Modals/DeliveryModals";
 
 
-const DataTableGrid = (props) => {
+const DataTableGrid = ({ data, columns, setReloadData, setLoading }) => {
   const location = useLocation()
   const { user } = useAuth0();
   const theme = useTheme();
@@ -18,7 +19,7 @@ const DataTableGrid = (props) => {
   const [totalSum, setTotalSum] = useState(0);
   const [dataStatus, setDataStatus] = useState([]);
   const [disabledButton, setDisabledButton] = useState(true);
-  const [filteredData, setFilteredData] = useState(props.data);
+  const [filteredData, setFilteredData] = useState(data);
   const [selectedStatus, setSelectedStatus] = useState(null)
 
   const downloadTable = () => {
@@ -30,7 +31,7 @@ const DataTableGrid = (props) => {
       return `<th>${e}</th>`
     }).join('') + `</tr>`
 
-    const tbody = props.data.map(row => {
+    const tbody = data.map(row => {
       return `<tr>${Object.keys(row).map((e) => {
         return `<td>${row[e]}</td>`
       }).join('')}</tr>`
@@ -54,7 +55,7 @@ const DataTableGrid = (props) => {
     return (
       <GridToolbarContainer >
         <GridToolbar />
-        {location.pathname.includes("AllOrders") && (
+        {location.pathname.includes("delivery/all") && (
           <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTable}>
             <GetApp /><p style={{ fontSize: "10px", paddingTop: "15px" }}>EXPORTAR EXCEL COMPLETO</p>
           </div>
@@ -75,7 +76,7 @@ const DataTableGrid = (props) => {
       }
     };
     const deleteFilter = () => {
-      setFilteredData(props.data)
+      setFilteredData(data)
     };
 
     return (
@@ -108,7 +109,7 @@ const DataTableGrid = (props) => {
   };
 
   const handleDateFilter = (startDate, endDate) => {
-    const filtered = props.data.filter((item) => {
+    const filtered = data.filter((item) => {
       const itemDate = new Date(item.date_generate_ISO);
       console.log(item.date_generate_ISO)
       return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
@@ -118,66 +119,9 @@ const DataTableGrid = (props) => {
 
   };
 
-  const updateOrderStatus = () => {
-    console.log("dbabdsa")
-  }
-
-  const updateMultipleStatus = () => {
-    var dataStatusNew = dataStatus.map(arr => [...arr, selectedStatus])
-    Modal.confirm({
-      title: '¿Seguro que quieres cambiar el estado?',
-      content: (
-        <div>
-          <p>Esta acción no se puede deshacer.</p>
-          <Select
-            placeholder="Selecciona una opción"
-            onChange={(value) => setSelectedStatus(value)}
-            style={{ width: '100%' }}
-            allowClear
-            showSearch
-            optionFilterProp="children"
-            filterOption={(input, option) =>
-              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-            required
-          >
-            <Select.Option value="COMPLETO">Completo</Select.Option>
-            <Select.Option value="ENTREGADO">Entregado</Select.Option>
-          </Select>
-        </div>
-      ),
-      onOk: () => {
-        if (!selectedStatus) {
-          message.warning('Por favor, selecciona una opción.');
-        } else {
-          message.info('unos momentos');
-          props.setLoading(true);
-          fetch("https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec?massiveStatus", {
-            redirect: "follow",
-            method: 'POST',
-            headers: {
-              "Content-Type": "text/plain;charset=utf-8",
-            },
-            body: JSON.stringify(dataStatusNew)
-          })
-            .then(response => response.json())
-            .then(data => {
-              message.success('Contenido actualizado exitosamente');
-              console.log(data);
-              props.setReloadData(true);
-            })
-            .catch(error => {
-              console.error('Error fetching data:', error);
-              message.info('no se pudo completar la operación');
-            });
-        }
-      }
-    });
-  };
-
   const handleSelectedRowsChange = (ids) => {
     const selectedIDs = new Set(ids);
-    const selectedRows = props.data.filter((row) =>
+    const selectedRows = data.filter((row) =>
       selectedIDs.has(row.id.toString()))
     let sum = selectedRows.reduce((acc, object) => acc + (object.total === "" ? 0 : parseFloat(object.total)), 0);
     setTotalSum(sum.toLocaleString("es-ES", { style: "currency", currency: "COP" }));
@@ -185,12 +129,12 @@ const DataTableGrid = (props) => {
 
   const handleSelectedRowsStatus = (ids) => {
     const selectedIDs = new Set(ids);
-    const selectedRows = props.data.filter((row) =>
+    const selectedRows = data.filter((row) =>
       selectedIDs.has(row.id.toString())
     )
-    let data = selectedRows.filter(object => object.status.includes("EN RUTA") || object.status.includes("ENTREGADO") || object.status.includes("INCOMPLETO") || object.status.includes("COMPLETO (FR)")).map(object => [object.order_id, object.total, user.email, props.typeSheet]);
-    setDisabledButton(data.length < 2);
-    setDataStatus(data);
+    let filteredData = selectedRows.filter(obj => obj.status.includes("EN RUTA") || obj.status.includes("ENTREGADO") || obj.status.includes("COMPLETO (FR)")).map(obj => { return { ...obj.complete, user: user ? user.email : "test" } })
+    setDisabledButton(filteredData.length < 2);
+    setDataStatus(filteredData)
   };
 
   const selectedRows = (ids) => {
@@ -234,44 +178,28 @@ const DataTableGrid = (props) => {
         },
       }}
     >
-      {props.typeSheet == "Inventory" ? (
-        <></>
-      ) : (
-        <>
-          Total sumado: $
-          <p style={{ display: "inline-block" }}>{totalSum}</p>
-          <br />
-        </>
-      )}
+
+      <>
+        Total sumado: $
+        <p style={{ display: "inline-block" }}>{totalSum}</p>
+        <br />
+      </>
 
       <div style={{ display: 'flex', gap: "5px" }}>
-        {props.typeSheet === "Inventory" ? (
-          <Button
-            type="primary"
-            style={{ backgroundColor: colors.blueAccent[1000] }}
-            onClick={() => { updateOrderStatus() }}
-            disabled={false}>
-            Cambiar Estado
-          </Button>
-        ) : props.typeSheet === "Delivery" || props.typeSheet === "ExternalService" ? (
-          <Button
-            type="primary"
-            style={{ backgroundColor: colors.blueAccent[1000] }}
-            onClick={() => { updateMultipleStatus() }}
-            disabled={disabledButton}>
-            Cambiar Estado
-          </Button>
-        ) : (
-          <></>
+        {location.pathname.includes("delivery") && (
+          <MultipleStatusModal
+            setReloadData={setReloadData}
+            colors={colors}
+            data={dataStatus}
+          />
         )}
-
         <DateRangeFilter onFilter={handleDateFilter} />
       </div>
       <DataGridPro
         onRowSelectionModelChange={selectedRows}
         checkboxSelection
         rows={filteredData}
-        columns={props.columns}
+        columns={columns}
         slots={{ toolbar: CustomToolbar }}
         pagination={{ paginationModel: { pageSize: 25 } }}
       />

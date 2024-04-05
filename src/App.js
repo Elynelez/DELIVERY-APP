@@ -160,7 +160,7 @@ function App() {
   //                     setCountProducts={setCountProducts}
   //                   />} />
   //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total} />} />
-  //               <Route exact path="/travels/:id"
+  //               <Route exact path="/delivery/:id"
   //                 element={<DeliveryTable
   //                   user={user}
   //                   emails={logisticEmails.concat(bossEmails)}
@@ -168,7 +168,7 @@ function App() {
   //                   setDeliveryData={setDeliveryData}
   //                   API_URL={API_DUCOR}
   //                 />} />
-  //               <Route exact path="/travels/form"
+  //               <Route exact path="/delivery/form"
   //                 element={<DeliveryForm
   //                   socket={socket}
   //                   API_URL={API_DUCOR}
