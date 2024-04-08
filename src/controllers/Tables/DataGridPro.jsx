@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material";
 import { useLocation } from 'react-router-dom';
 import { React, useState } from "react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { DatePicker, Button, Modal, message, Select } from "antd";
+import { DatePicker, Button, message} from "antd";
 // materials
 import GetApp from '@mui/icons-material/GetApp';
 import { MultipleStatusModal } from "../Modals/DeliveryModals";
@@ -18,23 +18,36 @@ const DataTableGrid = ({ data, columns, setReloadData, setLoading }) => {
   const colors = tokens(theme.palette.mode);
   const [totalSum, setTotalSum] = useState(0);
   const [dataStatus, setDataStatus] = useState([]);
-  const [disabledButton, setDisabledButton] = useState(true);
   const [filteredData, setFilteredData] = useState(data);
-  const [selectedStatus, setSelectedStatus] = useState(null)
 
   const downloadTable = () => {
     const uri = 'data:application/vnd.ms-excel;base64,';
     const template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" /><meta name="ProgId" content="Excel.Sheet"/><meta http-equiv="X-UA-Compatible" content="IE=edge" /><style>table{border-collapse:collapse;}th,td{border:1px solid gray;padding:10px;}th{background-color:lightgray;}</style><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
     const base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) };
 
-    var thead = `<tr>` + ["GUÍA", "FECHA DESPACHO", "FECHA DESPACHO", "FECHA ENTREGA", "ZONA", "CÓDIGO", "MENSAJERO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "TOTAL", "OBSERVACIONES", "DINERO ENTREGADO", "ESTADO"].map((e) => {
+    var thead = `<tr>` + ["ORDER_ID", "FECHA_DESPACHO", "FECHA_ENTREGA", "ZONA", "CODIGO", "MENSAJERO", "CLIENTE", "DIRECCION", "VENDEDOR", "CONDICION", "MEDIO DE PAGO", "VALOR", "OBSERVACIONES", "DINERO ENTREGADO", "ESTADO"].map((e) => {
       return `<th>${e}</th>`
     }).join('') + `</tr>`
 
-    const tbody = data.map(row => {
-      return `<tr>${Object.keys(row).map((e) => {
-        return `<td>${row[e]}</td>`
-      }).join('')}</tr>`
+    var tbody = data.map(obj => {
+      const real_data = obj.complete
+      return `
+      <tr><td>${real_data.id}</td>
+      <td>${real_data.date_generate}</td>
+      <td>${real_data.date_delivery}</td>
+      <td>${real_data.order.shipping_data.zone}</td>
+      <td>${real_data.order.id}</td>
+      <td>${real_data.order.shipping_data.coursier}</td>
+      <td>${real_data.order.customer.name}</td>
+      <td>${real_data.order.customer.address}</td>
+      <td>${real_data.order.seller.name}</td>
+      <td>${real_data.order.transactions.condition}</td>
+      <td>${real_data.order.transactions.method}</td>
+      <td>${real_data.order.transactions.total}</td>
+      <td>${real_data.order.remarks.map(not => {return `fecha: ${not.date}, id: ${not.id_person}, observación: ${not.notation}`}).join("; ")}</td>
+      <td>${real_data.order.money_delivered}</td>
+      <td>${real_data.order.status}</td></tr>
+      `
     }).join('')
 
     const tableHtml = thead + tbody
@@ -133,7 +146,6 @@ const DataTableGrid = ({ data, columns, setReloadData, setLoading }) => {
       selectedIDs.has(row.id.toString())
     )
     let filteredData = selectedRows.filter(obj => obj.status.includes("EN RUTA") || obj.status.includes("ENTREGADO") || obj.status.includes("COMPLETO (FR)")).map(obj => { return { ...obj.complete, user: user ? user.email : "test" } })
-    setDisabledButton(filteredData.length < 2);
     setDataStatus(filteredData)
   };
 
