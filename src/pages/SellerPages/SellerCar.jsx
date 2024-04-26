@@ -12,7 +12,7 @@ const SellerCar = (props) => {
 
   const loadData = () => {
     setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec")
+    fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?path=inventory/products")
       .then(response => response.json())
       .then(parsedData => {
         let dataO = parsedData.map(product => {
@@ -36,21 +36,7 @@ const SellerCar = (props) => {
   }, [reloadData]);
 
   useEffect(() => {
-    setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec")
-      .then(response => response.json())
-      .then(parsedData => {
-        let dataO = parsedData.map(product => {
-          product.carQuantity = 1
-          return product
-        });
-        setData(dataO);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
+    loadData()
   }, []);
 
   const onAddProduct = (product) => {
