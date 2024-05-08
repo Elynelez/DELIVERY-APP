@@ -108,7 +108,7 @@ const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
           message.success('Cargado exitosamente')
           setLoading(true);
           handleCancel()
-          socket.emit("objectValuesSettings", data)
+          socket.emit("postSettings", data)
         } catch (err) {
           message.error("no se pudo completar la operación")
           console.log(err)
@@ -153,7 +153,7 @@ const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
   )
 }
 
-const ConfirmInventoryModalServer = ({ pendingData, data, setLoading, socket, user, rangeItems, receiveOrders, URL_SERVER }) => {
+const ConfirmInventoryModalServer = ({ pendingData, setPendingData, data, setLoading, socket, user, rangeItems, receiveOrders, URL_SERVER }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(true)
@@ -186,21 +186,34 @@ const ConfirmInventoryModalServer = ({ pendingData, data, setLoading, socket, us
       onOk: () => {
         message.info('unos momentos')
         setLoading(true);
-        socket.emit('deleteOrder', data);
-        setLoading(false)
+        socket.emit('deleteExit', data);
+        setTimeout(() => {
+          setVisible(false);
+          try {
+            const newPendingData = pendingData = pendingData.filter(obj => obj !== data)
+            setPendingData(newPendingData)
+            message.success('cargado exitosamente')
+            setLoading(false);
+          } catch (err) {
+            console.error('Error changing row:', err);
+            message.info('no se pudo completar la operación')
+            setLoading(false);
+          }
+        }, 5000)
       },
     });
-
   }
 
-  const onFinish = (values) => {
+  const onFinish = (e) => {
     Modal.confirm({
       title: '¿Seguro que quieres actualizar este contenido?',
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
+        let order = pendingData.find(obj => { return obj.order_number == data.order_number })
+        order.platform = e.platform
         message.info('unos momentos')
         setLoading(true);
-        socket.emit('sendConfirmExit', { order_number: data.order_number, platform: values.platform, user: user ? user.email : "test" })
+        socket.emit('sendConfirmExit', { order_number: data.order_number, platform: e.platform, user: user ? user.email : "test" })
         setTimeout(() => {
           setVisible(false);
           try {
@@ -212,7 +225,6 @@ const ConfirmInventoryModalServer = ({ pendingData, data, setLoading, socket, us
             setLoading(false);
           }
         }, 5000);
-
       },
     });
   }
@@ -284,7 +296,7 @@ const ConfirmInventoryModalServer = ({ pendingData, data, setLoading, socket, us
               setLoading={setLoading}
               nameButton={"Editar"}
               platformStatus={true}
-              valueOrder={data.order_number}
+              dataOrder={data}
               cash={false}
               socket={socket}
               receiveOrders={receiveOrders}
@@ -297,7 +309,7 @@ const ConfirmInventoryModalServer = ({ pendingData, data, setLoading, socket, us
   );
 }
 
-const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nameButton, platformStatus, valueOrder, cash, socket, receiveOrders, URL_SERVER }) => {
+const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nameButton, platformStatus, dataOrder, cash, socket, receiveOrders, URL_SERVER }) => {
   const { user } = useAuth0();
   const [allValues, setAllValues] = useState(prev);
   const [visible, setVisible] = useState(false);
@@ -342,16 +354,18 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
         let foundError = [];
         var date = new Date()
         const idExit = v4()
-        let order = pendingData.find(obj => obj.id == id)
 
         if (cash) {
+
           let rangeOrderNumbers = pendingData.map(obj => { return obj.order_number }).filter(orderNumber => !/^[A-Za-z]+$/.test(orderNumber))
 
           let blockExecution = rangeOrderNumbers.some(number => {
             number = number.toString().toUpperCase()
             e.facture_number = e.facture_number.toString().toUpperCase()
             return (
-              number.includes(e.facture_number) || e.facture_number.includes(number)
+              (number.includes(e.facture_number) || e.facture_number.includes(number)) &&
+              !e.facture_number.includes("REENVASAR") &&
+              !e.facture_number.includes("PORCIONAR")
             );
           });
 
@@ -364,9 +378,6 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
             setDisabled(false)
             return;
           }
-        }
-
-        if (cash) {
 
           e.projects = e.projects.map(obj => {
             const matchingRangeItem = rangeItems.find(rangeItem => rangeItem.sku === obj.sku);
@@ -393,16 +404,14 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
           e.projects = e.projects.map(obj => {
             const matchingRangeItem = rangeItems.find(rangeItem => rangeItem.sku === obj.sku);
 
-            const quantity_edit = order.items.find(item => item.sku == obj.sku)
-
             if (matchingRangeItem) {
+
+              let preview_quantity = dataOrder.items.find(obj_item => obj_item.sku.toString() == obj.sku.toString())
 
               return {
                 ...matchingRangeItem,
                 quantity_currently: obj.quantity_currently,
-                quantity_edit: quantity_edit ?
-                  Number(quantity_edit.quantity) + Number(matchingRangeItem.quantity)
-                  : Number(obj.quantity_currently) + Number(matchingRangeItem.quantity)
+                db_quantity: preview_quantity ? Number(preview_quantity.db_quantity) + Number(preview_quantity.quantity) : Number(matchingRangeItem.quantity)
               };
             } else {
               notExistentSkus.push(obj.sku)
@@ -412,7 +421,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
           }).filter(obj => obj !== null);
 
           e.projects.forEach(obj => {
-            if (Number(obj.quantity_currently) > Number(obj.quantity_edit)) {
+            if (Number(obj.quantity_currently) > Number(obj.db_quantity)) {
               foundError.push(obj.name);
               return;
             }
@@ -448,13 +457,15 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
             code: obj.code,
             sku: obj.sku,
             name: obj.name,
-            quantity: obj.quantity_currently,
-            quantity_currently: obj.quantity_currently,
+            db_quantity: obj.db_quantity,
+            quantity: Number(obj.quantity_currently),
             brand: obj.brand
           }
         })
 
         data.items = allValues
+
+        console.log(data)
 
         switch (true) {
           case notExistentSkus.length > 0:
@@ -466,10 +477,9 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
             setDisabled(false)
             break;
           default:
-            setLoading(true)
             if (cash) {
               try {
-                socket.emit('objectValuesExits', data)
+                socket.emit('postExit', data)
                 receiveOrders(data)
                 message.success('cargado exitosamente')
                 localStorage.setItem("exitData", JSON.stringify({ projects: [] }))
@@ -482,7 +492,9 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
                 setLoading(false);
               }
             } else {
-              socket.emit('exitEditOrder', data)
+              console.log(data)
+              socket.emit('editExit', data)
+              handleCancel()
             }
         }
       })
@@ -503,7 +515,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
             label="número de pedido"
             name="facture_number"
             rules={[{ required: true }]}
-            initialValue={valueOrder}
+            initialValue={!cash ? dataOrder.order_number : ""}
           >
             <Input placeholder="field name" />
           </Form.Item>
@@ -579,7 +591,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
             )}
           </Form.List>
           <Form.Item>
-            <input type="submit" className="btn btn-primary" disabled={disabled}/>
+            <input type="submit" className="btn btn-primary" disabled={disabled} />
           </Form.Item>
         </Form>
       </Modal>
@@ -660,8 +672,7 @@ const PlatformAutoComplete = ({ socket, mainForm, colors }) => {
 
   const onFinishSH = (e) => {
     handleCancelSH()
-    const parts = e.qr.replace("^", "{").replace("*", "}").replace(/\?/g, "_").replace(/Ñ/g, ":").replace(/¨/g, '"')
-    const data = JSON.parse(parts)
+    const data = {id: e.qr.match(/\d+/)}
     console.log(data)
     socket.emit("preloadOrderSH", data)
 
@@ -678,8 +689,7 @@ const PlatformAutoComplete = ({ socket, mainForm, colors }) => {
 
   const onFinishML = (e) => {
     handleCancelML()
-    const parts = e.qr.replace("^", "{").replace("*", "}").replace(/\?/g, "_").replace(/Ñ/g, ":").replace(/¨/g, '"')
-    const data = JSON.parse(parts)
+    const data = {id: e.qr.match(/\d+/)}
     console.log(data)
     socket.emit("preloadOrderML", data)
 
@@ -823,4 +833,76 @@ const EditCodeProduct = ({ socket, code, loading, setLoading }) => {
   )
 }
 
-export { AddSkuModalServer, ModifyQuantityServer, ConfirmInventoryModalServer, ExitElementsServer, PlatformAutoComplete, EditCodeProduct };
+const MultiplePlatformModal = ({ids, colors}) => {
+  const [form] = Form.useForm();
+  const [visible, setVisible] = useState(false);
+
+  const onFinish = (e) => {
+    Modal.confirm({
+      title: '¿Seguro que quieres actualizar masivamente este contenido?',
+      content: 'Esta acción no se puede deshacer.',
+      onOk: () => {
+        message.info('unos momentos')
+        setVisible(false)
+        fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?path=" + "inventory/exits/massive", {
+          redirect: "follow",
+          method: 'POST',
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+          },
+          body: JSON.stringify(ids)
+        })
+          .then(response => response.json())
+          .then(data => {
+            message.success('Contenido editado exitosamente');
+            window.location.reload()
+          })
+          .catch(error => {
+            console.error('Error changing row:', error);
+            message.info('no se pudo completar la operación')
+          });
+      },
+    });
+  }
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
+  return (
+    <div>
+      <Button
+        type="primary"
+        style={{ backgroundColor: colors.blueAccent[1000] }}
+        onClick={showModal}
+      >
+        Cambiar Estado
+      </Button>
+      <Modal
+        visible={visible}
+        title="Actualización masiva"
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancelar
+          </Button>
+        ]}
+      >
+        <Form form={form} onFinish={onFinish} layout="vertical">
+          <div className="main-user-info-group">
+            <Form.Item>
+              <input type="submit" className="form-submit-btn" style={{ backgroundColor: "gray" }} />
+            </Form.Item>
+          </div>
+        </Form>
+      </Modal>
+    </div>
+
+  );
+}
+
+export { AddSkuModalServer, ModifyQuantityServer, ConfirmInventoryModalServer, ExitElementsServer, PlatformAutoComplete, EditCodeProduct, MultiplePlatformModal };

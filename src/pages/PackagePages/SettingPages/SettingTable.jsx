@@ -1,18 +1,51 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd"
-import axios from "axios";
+import DataTableGrid from "../../../controllers/Tables/DataGridPro";
+import { Box, Typography } from "@mui/material";
+import { tokens } from "../../../theme";
+import { useTheme } from "@mui/material";
 
-const SettingTable = ({ URL_SERVER }) => {
-    const [ordersSetting, setOrdersSetting] = useState([])
+const SettingTable = ({ ordersData, setOrdersData, socket }) => {
     const [loading, setLoading] = useState(true)
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
+
 
     useEffect(() => {
-        axios.get(URL_SERVER + "/inventory/settings")
-            .then((resp) => {
-                setOrdersSetting(resp.data)
+        socket.on('getSettings', (loadedData) => {
+            try {
+                setOrdersData(loadedData)
                 setLoading(false)
-            })
+            } catch (error) {
+                console.error('Error handling dataInventory event:', error);
+            }
+        })
+
+        return () => {
+            socket.off('getSettings')
+        }
     }, [])
+
+    const columns = [
+        { headerName: 'Fecha de ajuste', field: "date_generate", flex: 0.5 },
+        {
+            headerName: 'Artículos', field: "items", flex: 2, valueFormatter: (params) => {
+                return params.value.map(item => `${item.sku} - ${item.name} - ${item.quantity}`).join('; ');
+            }
+        },
+        {
+            headerName: 'Cantidad Anterior', field: "last_quantity", flex: 0.5, renderCell: params => (
+                <>
+                    {params.row.items[0].last_quantity}
+                </>
+            )
+        },
+        {
+            headerName: 'Usuario Ajuste', field: "setting", flex: 1, valueFormatter: (params) => {
+                return `Usuario: ${params.value.user} - IP: ${params.value.IP}`;
+            },
+        },
+    ]
 
     return (
         <div className="container py-5">
@@ -21,44 +54,27 @@ const SettingTable = ({ URL_SERVER }) => {
                     <Spin tip="Cargando datos..." />
                 </div>
             ) : (
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha de Ajuste</th>
-                            <th>Artículos</th>
-                            <th>Cantidad Anterior</th>
-                            <th>Usuario Ajuste</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {ordersSetting.map((order,index) => (
-                            <tr key={order.id+index}>
-                                <td>{order.date_generate}</td>
-                                <td>
-                                    <ul>
-                                        {order.items.map((item, index) => (
-                                            <li key={index}>
-                                                {item.sku} - {item.name} - {item.quantity}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul>
-                                        {order.items.map((item, index) => (
-                                            <li key={index}>
-                                                {item.last_quantity}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </td>
-                                <td>
-                                    {`Usuario: ${order.setting.user}, IP: ${order.setting.IP}`}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <Box m="20px">
+                    <Box mb="30px">
+                        <Typography
+                            variant="h2"
+                            color={colors.grey[100]}
+                            fontWeight="bold"
+                            sx={{ m: "0 0 5px 0" }}
+                        >
+                            TABLA DE AJUSTES
+                        </Typography>
+                        <Typography variant="h5" color={colors.greenAccent[400]}>
+                            últimos detalles
+                        </Typography>
+                    </Box>
+                    <DataTableGrid
+                        key={ordersData.length}
+                        data={ordersData.reverse()}
+                        columns={columns}
+                        setReloadData={setOrdersData}
+                    />
+                </Box>
             )}
         </div>
 

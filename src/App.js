@@ -22,11 +22,11 @@ import ExitTable from './pages/PackagePages/ExitPages/ExitTable';
 import CashForm from './pages/PackagePages/ExitPages/CashForm';
 import PendingOrders from './pages/PackagePages/ExitPages/PendingOrders';
 import InventoryTable from './pages/PackagePages/InventoryPages/InventoryTable';
-import SearchES from './pages/DefaultPages/SearchES';
 import SettingTable from './pages/PackagePages/SettingPages/SettingTable';
 import DeliveryTable from './pages/DeliveryPages/DeliveryTable';
 import DeliveryForm from './pages/DeliveryPages/DeliveryForm';
-import TableSHOPIFY from './pages/AccountingPages/Shopify';
+import PlatformTable from './pages/AccountingPages/PlatformTable';
+import CSVReader from './pages/AccountingPages/RappiForm';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -40,7 +40,7 @@ const API_DUCOR = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlL
 const URL_SERVER = "https://server-cloud-mggp.onrender.com"
 
 // Logistic Shipping
-const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com",]
+const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com"]
 const ExternalServiceEmails = ["xsharick08@gmail.com"]
 
 // Boss Functions
@@ -77,7 +77,7 @@ function App() {
 
   const [rangeItems, setRangeItems] = useState([])
 
-  const [pendingData, setPendingData] = useState([])
+  const [ordersData, setOrdersData] = useState([])
 
   const [deliveryData, setDeliveryData] = useState([])
 
@@ -114,9 +114,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    socket.on('dataInventory', (loadedData) => {
+    socket.on('getProducts', (loadedData) => {
       try {
-        console.log('dataInventory event received:', loadedData);
         setRangeItems(loadedData);
       } catch (error) {
         console.error('Error handling dataInventory event:', error);
@@ -130,7 +129,7 @@ function App() {
     localStorage.setItem("countProducts", countProducts)
   }, [allProducts]);
 
-  const receiveOrders = order => setPendingData(state => [order, ...state])
+  const receiveOrders = order => setOrdersData(state => [order, ...state])
 
   // return (
   //   <ColorModeContext.Provider value={colorMode}>
@@ -138,7 +137,17 @@ function App() {
   //       <CssBaseline />
   //       <Router>
   //         <div className='flex'>
-  //           <Sidebar couriers={["Brayan", "Edgar", "Juan David", "Raul", "Richard", "Estiven", "Nicolas", "Alexander", "Hernando", "Julian Morales", "Juano"]} />
+  //           <Sidebar
+  //             couriers={["brayan", "edgar", "raul", "richard", "estiven", "hernando", "juano", "servicio externo"]}
+  //             platforms={["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "DCMEDELLIN"]}
+  //             logisticEmails={logisticEmails}
+  //             bossEmails={bossEmails}
+  //             sellerEmails={sellerEmails}
+  //             ExternalServiceEmails={ExternalServiceEmails}
+  //             exitsInventoryEmails={exitsInventoryEmails}
+  //             entriesInventoryEmails={entriesInventoryEmails}
+  //             settingInventoryEmails={settingInventoryEmails}
+  //           />
   //           <div className='content'>
   //             <NavbarNavigation
   //               user={user}
@@ -152,19 +161,22 @@ function App() {
   //             />
   //             <Routes>
   //               <Route exact path="/"
-  //                 element={
-  //                   <SellerCar
-  //                     allProducts={allProducts}
-  //                     setAllProducts={setAllProducts}
-  //                     total={total} setTotal={setTotal}
-  //                     countProducts={countProducts}
-  //                     setCountProducts={setCountProducts}
-  //                   />} />
-  //               <Route exact path="/sales/form" element={<SellerForm allProducts={allProducts} total={total} />} />
+  //                 element={<SellerCar
+  //                   allProducts={allProducts}
+  //                   setAllProducts={setAllProducts}
+  //                   total={total} setTotal={setTotal}
+  //                   countProducts={countProducts}
+  //                   setCountProducts={setCountProducts}
+  //                 />} />
+  //               <Route exact path="/sales/form"
+  //                 element={<SellerForm
+  //                   allProducts={allProducts}
+  //                   total={total}
+  //                 />} />
   //               <Route exact path="/delivery/:id"
   //                 element={<DeliveryTable
   //                   user={user}
-  //                   emails={logisticEmails.concat(bossEmails)}
+  //                   emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
   //                   deliveryData={deliveryData}
   //                   setDeliveryData={setDeliveryData}
   //                   API_URL={API_DUCOR}
@@ -203,34 +215,37 @@ function App() {
   //                 />} />
   //               <Route exact path="/inventory/enter/table"
   //                 element={<EnterTable
-  //                   URL_SERVER={URL_SERVER}
+  //                   ordersData={ordersData}
+  //                   setOrdersData={setOrdersData}
   //                   socket={socket}
   //                 />} />
   //               <Route exact path="/inventory/setting/table"
   //                 element={<SettingTable
-  //                   URL_SERVER={URL_SERVER}
+  //                   ordersData={ordersData}
+  //                   setOrdersData={setOrdersData}
+  //                   socket={socket}
   //                 />} />
   //               <Route exact path="/inventory/exit/table"
   //                 element={<ExitTable
-  //                   pendingData={pendingData}
-  //                   setPendingData={setPendingData}
+  //                   ordersData={ordersData}
+  //                   setOrdersData={setOrdersData}
   //                   socket={socket}
-  //                   receiveOrders={receiveOrders}
   //                 />} />
   //               <Route exact path="/inventory/exit/form"
   //                 element={<ExitForm
   //                   user={user}
-  //                   pendingData={pendingData}
-  //                   setPendingData={setPendingData}
+  //                   ordersData={ordersData}
+  //                   setOrdersData={setOrdersData}
   //                   socket={socket}
   //                   rangeItems={rangeItems}
   //                   receiveOrders={receiveOrders}
   //                   URL_SERVER={URL_SERVER}
+  //                   API_URL={API_DUCOR}
   //                 />} />
   //               <Route exact path="/inventory/exit/cash"
   //                 element={<CashForm
-  //                   pendingData={pendingData}
-  //                   setPendingData={setPendingData}
+  //                   ordersData={ordersData}
+  //                   setOrdersData={setOrdersData}
   //                   socket={socket}
   //                   rangeItems={rangeItems}
   //                   receiveOrders={receiveOrders}
@@ -241,13 +256,19 @@ function App() {
   //                   rangeItems={rangeItems}
   //                   user={user}
   //                   socket={socket}
-  //                   pendingData={pendingData}
-  //                   setPendingData={setPendingData}
+  //                   ordersData={ordersData}
+  //                   setOrdersData={setOrdersData}
   //                   receiveOrders={receiveOrders}
   //                   URL_SERVER={URL_SERVER}
   //                 />} />
-  //               <Route exact path="/search/ES" element={<SearchES />} />
-  //               <Route exact path="/platforms/shopify" element={<TableSHOPIFY API_URL={API_DUCOR} />} />
+  //               <Route exact path="/platforms/:id"
+  //                 element={<PlatformTable
+  //                   API_URL={API_DUCOR}
+  //                 />} />
+  //               <Route exact path='/platforms/rappi/form'
+  //                 element={<CSVReader
+  //                   API_URL={API_DUCOR}
+  //                 />} />
   //             </Routes>
   //           </div>
   //         </div>
@@ -264,12 +285,14 @@ function App() {
           <div className='flex'>
             <Sidebar
               couriers={["brayan", "edgar", "raul", "richard", "estiven", "hernando", "juano", "servicio externo"]}
+              platforms={["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "DCMEDELLIN"]}
               logisticEmails={logisticEmails}
               bossEmails={bossEmails}
               sellerEmails={sellerEmails}
               ExternalServiceEmails={ExternalServiceEmails}
               exitsInventoryEmails={exitsInventoryEmails}
               entriesInventoryEmails={entriesInventoryEmails}
+              settingInventoryEmails={settingInventoryEmails}
             />
             <div className='content'>
               <NavbarNavigation
@@ -283,12 +306,22 @@ function App() {
                 setCountProducts={setCountProducts}
               />
               <Routes>
-                <Route exact path="/" element={<SearchES />} />
-                <Route exact path="/platforms/shopify" element={<TableSHOPIFY API_URL={API_DUCOR} />} />
+                <Route exact path="/"
+                  element={<SellerCar
+                    allProducts={allProducts}
+                    setAllProducts={setAllProducts}
+                    total={total} setTotal={setTotal}
+                    countProducts={countProducts}
+                    setCountProducts={setCountProducts}
+                  />} />
+                <Route exact path="/platforms/:id"
+                  element={<PlatformTable
+                    API_URL={API_DUCOR}
+                  />} />
                 <Route exact path="/dashboard"
                   element={<Dashboard
-                    pendingData={pendingData}
-                    setPendingData={setPendingData}
+                    ordersData={ordersData}
+                    setOrdersData={setOrdersData}
                     socket={socket}
                     receiveOrders={receiveOrders}
                   />} />
@@ -297,131 +330,142 @@ function App() {
                     rangeItems={rangeItems}
                     user={user}
                     socket={socket}
-                    pendingData={pendingData}
-                    setPendingData={setPendingData}
+                    ordersData={ordersData}
+                    setOrdersData={setOrdersData}
                     receiveOrders={receiveOrders}
                     URL_SERVER={URL_SERVER}
                   />} />
-                {isAuthenticated && logisticEmails.concat(ExternalServiceEmails, bossEmails).includes(user.email) && (
+                {isAuthenticated && (
                   <>
-                    <Route exact path="/delivery/:id"
-                      element={<DeliveryTable
-                        user={user}
-                        emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
-                        deliveryData={deliveryData}
-                        setDeliveryData={setDeliveryData}
-                        API_URL={API_DUCOR}
-                      />} />
-                    <Route exact path="/delivery/form"
-                      element={<DeliveryForm
-                        socket={socket}
-                        API_URL={API_DUCOR}
-                      />} />
-                  </>
-                )}
-                {isAuthenticated && sellerEmails.includes(user.email) && (
-                  <>
-                    <Route exact path="/Sales" element={<SellerTable />} />
-                  </>
-                )}
-                {isAuthenticated && exitsInventoryEmails.includes(user.email) && (
-                  <>
-                    <Route exact path="/inventory/exit/form"
-                      element={<ExitForm
-                        user={user}
-                        pendingData={pendingData}
-                        setPendingData={setPendingData}
-                        socket={socket}
-                        rangeItems={rangeItems}
-                        receiveOrders={receiveOrders}
-                        URL_SERVER={URL_SERVER}
-                      />} />
-                    <Route exact path="/inventory/exit/cash"
-                      element={<CashForm
-                        pendingData={pendingData}
-                        setPendingData={setPendingData}
-                        socket={socket}
-                        rangeItems={rangeItems}
-                        receiveOrders={receiveOrders}
-                        URL_SERVER={URL_SERVER}
-                      />} />
-                    <Route exact path="/inventory/exit/pending"
-                      element={<PendingOrders
-                        rangeItems={rangeItems}
-                        user={user}
-                        socket={socket}
-                        pendingData={pendingData}
-                        setPendingData={setPendingData}
-                        receiveOrders={receiveOrders}
-                        URL_SERVER={URL_SERVER}
-                      />} />
-                    <Route exact path="/inventory/exit/table"
-                      element={<ExitTable
-                        pendingData={pendingData}
-                        setPendingData={setPendingData}
-                        socket={socket}
-                        receiveOrders={receiveOrders}
-                      />} />
-                  </>
-                )}
-                {isAuthenticated && entriesInventoryEmails.includes(user.email) && (
-                  <>
-                    <Route exact path="/inventory/enter/form"
-                      element={<EnterForm
-                        user={user}
-                        socket={socket}
-                        rangeItems={rangeItems}
-                        URL_SERVER={URL_SERVER}
-                      />} />
-                    <Route exact path="/inventory/create/form"
-                      element={<CreateProduct
-                        URL_SERVER={URL_SERVER}
-                        rangeItems={rangeItems}
-                        socket={socket}
-                      />} />
-
-                    <Route exact path="/inventory/table"
-                      element={<InventoryTable
-                        settingInventoryEmails={settingInventoryEmails}
-                        rangeItems={rangeItems}
-                        setRangeItems={setRangeItems}
-                        user={user}
-                        socket={socket}
-                        URL_SERVER={URL_SERVER}
-                      />} />
-
-                    <Route exact path="/inventory/enter/table"
-                      element={<EnterTable
-                        URL_SERVER={URL_SERVER}
-                        socket={socket}
-                      />} />
-                    <Route exact path="/inventory/edit/:id"
-                      element={<EditProduct
-                        rangeItems={rangeItems}
-                        socket={socket}
-                      />} />
-                  </>
-                )}
-                {isAuthenticated && settingInventoryEmails.includes(user.email) && (
-                  <>
-                    <Route exact path="/inventory/table"
-                      element={<InventoryTable
-                        settingInventoryEmails={settingInventoryEmails}
-                        rangeItems={rangeItems}
-                        setRangeItems={setRangeItems}
-                        user={user}
-                        socket={socket}
-                        URL_SERVER={URL_SERVER}
-                      />} />
-                    <Route exact path="/inventory/setting/table"
-                      element={<SettingTable
-                        URL_SERVER={URL_SERVER}
-                      />} />
-                    <Route exact path="/inventory/edit/:id"
-                      element={<EditProduct
-                        rangeItems={rangeItems}
-                        socket={socket}
-                      />} />
+                    {bossEmails.includes(user.email) && (
+                      <Route exact path='/platforms/rappi/form'
+                        element={<CSVReader
+                          API_URL={API_DUCOR}
+                        />} />
+                    )}
+                    {sellerEmails.includes(user.email) && (
+                      <Route exact path="/sales/table"
+                        element={<SellerTable
+                        />} />
+                    )}
+                    {logisticEmails.concat(bossEmails, ExternalServiceEmails).includes(user.email) && (
+                      <>
+                        {logisticEmails.includes(user.email) && (
+                          <Route exact path="/delivery/form"
+                            element={<DeliveryForm
+                              socket={socket}
+                              API_URL={API_DUCOR}
+                            />} />
+                        )}
+                        {logisticEmails.concat(bossEmails).includes(user.email) && (
+                          <Route exact path="/delivery/:id"
+                            element={<DeliveryTable
+                              user={user}
+                              emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
+                              deliveryData={deliveryData}
+                              setDeliveryData={setDeliveryData}
+                              API_URL={API_DUCOR}
+                            />} />
+                        )}
+                        {ExternalServiceEmails.includes(user.email) && (
+                          <Route exact path="/delivery/servicio externo"
+                            element={<DeliveryTable
+                              user={user}
+                              emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
+                              deliveryData={deliveryData}
+                              setDeliveryData={setDeliveryData}
+                              API_URL={API_DUCOR}
+                            />} />
+                        )}
+                      </>
+                    )}
+                    {entriesInventoryEmails.concat(exitsInventoryEmails, settingInventoryEmails).includes(user.email) && (
+                      <>
+                        <Route exact path="/inventory/table"
+                          element={<InventoryTable
+                            settingInventoryEmails={settingInventoryEmails}
+                            rangeItems={rangeItems}
+                            setRangeItems={setRangeItems}
+                            user={user}
+                            socket={socket}
+                            URL_SERVER={URL_SERVER}
+                          />} />
+                        {entriesInventoryEmails.includes(user.email) && (
+                          <>
+                            <Route exact path="/inventory/enter/form"
+                              element={<EnterForm
+                                user={user}
+                                socket={socket}
+                                rangeItems={rangeItems}
+                                URL_SERVER={URL_SERVER}
+                              />} />
+                            <Route exact path="/inventory/enter/table"
+                              element={<EnterTable
+                                socket={socket}
+                              />} />
+                          </>
+                        )}
+                        {exitsInventoryEmails.includes(user.email) && (
+                          <>
+                            <Route exact path="/inventory/exit/form"
+                              element={<ExitForm
+                                user={user}
+                                ordersData={ordersData}
+                                setOrdersData={setOrdersData}
+                                socket={socket}
+                                rangeItems={rangeItems}
+                                receiveOrders={receiveOrders}
+                                URL_SERVER={URL_SERVER}
+                                API_URL={API_DUCOR}
+                              />} />
+                            <Route exact path="/inventory/exit/cash"
+                              element={<CashForm
+                                ordersData={ordersData}
+                                setOrdersData={setOrdersData}
+                                socket={socket}
+                                rangeItems={rangeItems}
+                                receiveOrders={receiveOrders}
+                                URL_SERVER={URL_SERVER}
+                              />} />
+                            <Route exact path="/inventory/exit/pending"
+                              element={<PendingOrders
+                                rangeItems={rangeItems}
+                                user={user}
+                                socket={socket}
+                                ordersData={ordersData}
+                                setOrdersData={setOrdersData}
+                                receiveOrders={receiveOrders}
+                                URL_SERVER={URL_SERVER}
+                              />} />
+                            <Route exact path="/inventory/exit/table"
+                              element={<ExitTable
+                                ordersData={ordersData}
+                                setOrdersData={setOrdersData}
+                                socket={socket}
+                              />} />
+                          </>
+                        )}
+                        {settingInventoryEmails.includes(user.email) && (
+                          <>
+                            <Route exact path="/inventory/create/form"
+                              element={<CreateProduct
+                                URL_SERVER={URL_SERVER}
+                                rangeItems={rangeItems}
+                                socket={socket}
+                              />} />
+                            <Route exact path="/inventory/setting/table"
+                              element={<SettingTable
+                                URL_SERVER={URL_SERVER}
+                              />} />
+                            <Route exact path="/inventory/edit/:id"
+                              element={<EditProduct
+                                rangeItems={rangeItems}
+                                socket={socket}
+                              />} />
+                          </>
+                        )}
+                      </>
+                    )}
                   </>
                 )}
               </Routes>

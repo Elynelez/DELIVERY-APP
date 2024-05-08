@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Spin } from "antd"
 import { ExitElementsServer } from "../../../controllers/Modals/InventoryModals";
 
-const CashProduct = ({ pendingData, setPendingData, rangeItems, socket, receiveOrders, URL_SERVER }) => {
+const CashProduct = ({ ordersData, setOrdersData, rangeItems, socket, receiveOrders, URL_SERVER }) => {
     const [loading, setLoading] = useState(false)
     const [allValues, setAllValues] = useState(() => {
         const savedData = JSON.parse(localStorage.getItem("exitData"))
@@ -15,10 +15,9 @@ const CashProduct = ({ pendingData, setPendingData, rangeItems, socket, receiveO
 
     useEffect(() => {
 
-        socket.on('loadOrdersExits', (loadedOrders) => {
+        socket.on('getExits', (loadedOrders) => {
             try {
-                console.log('loadOrders event received:', loadedOrders);
-                setPendingData(loadedOrders);
+                setOrdersData(loadedOrders);
                 setLoading(false);
             } catch (error) {
                 console.error('Error handling loadOrders event:', error);
@@ -50,8 +49,8 @@ const CashProduct = ({ pendingData, setPendingData, rangeItems, socket, receiveO
                     <div className="container-RBTable">
                     </div>
                     <ExitElementsServer
-                        pendingData={pendingData}
-                        setPendingData={setPendingData}
+                        pendingData={ordersData}
+                        setPendingData={setOrdersData}
                         prev={allValues}
                         rangeItems={rangeItems}
                         setLoading={setLoading}

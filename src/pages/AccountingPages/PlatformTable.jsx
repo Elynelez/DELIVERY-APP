@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Spin } from "antd"
 import DataTableGrid from "../../controllers/Tables/DataGridPro";
 import { useTheme, Box, Typography } from "@mui/material";
 import { tokens } from "../../theme";
+import { useParams } from 'react-router-dom';
 import axios from "axios";
 
-const TableSHOPIFY = ({ API_URL }) => {
+const PlatformTable = ({ API_URL }) => {
+    const { id } = useParams();
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    useEffect(() => {
-        axios.get(API_URL + "platforms/orders/SHOPIFY")
+    const loadData = () => {
+        setLoading(true);
+        axios.get(API_URL + "platforms/orders/" + id)
             .then((resp) => {
                 const data = resp.data.map(obj => {
                     return {
@@ -36,7 +39,11 @@ const TableSHOPIFY = ({ API_URL }) => {
             .catch((err) => {
                 console.log(err)
             })
-    }, [])
+    }
+
+    useEffect(() => {
+        loadData();
+    }, [id])
 
     const statusColorMap = {
         'EN RUTA': '#A48BF4',
@@ -91,7 +98,7 @@ const TableSHOPIFY = ({ API_URL }) => {
                             fontWeight="bold"
                             sx={{ m: "0 0 5px 0" }}
                         >
-                            TABLA DE PEDIDOS SHOPIFY
+                            TABLA DE PEDIDOS <p>{id.toUpperCase()}</p>
                         </Typography>
                         <Typography variant="h5" color={colors.greenAccent[400]}>
                             últimos detalles
@@ -100,7 +107,7 @@ const TableSHOPIFY = ({ API_URL }) => {
                     <DataTableGrid
                         key={orders.length}
                         columns={columns}
-                        data={orders}
+                        data={orders.reverse()}
                         setReloadData={setOrders}
                         setLoading={setLoading}
                     />
@@ -111,4 +118,4 @@ const TableSHOPIFY = ({ API_URL }) => {
     );
 };
 
-export default TableSHOPIFY;
+export default PlatformTable;

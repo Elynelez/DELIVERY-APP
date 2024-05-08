@@ -31,55 +31,59 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
             headerName: 'Acciones', renderCell: params => (
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
                     <Menu.SubMenu title="Acciones" key="sub-menu">
-                        {user && settingInventoryEmails.includes(user.email) && (
+                        {user && (
                             <>
-                                <Menu.Item key="0">
-                                    <AddSkuModalServer
-                                        data={params.row}
-                                        rangeItems={rangeItems}
-                                        socket={socket}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        URL_SERVER={URL_SERVER}
-                                    />
-                                </Menu.Item>
-                                <Menu.Item key="1">
-                                    <ModifyQuantityServer
-                                        socket={socket}
-                                        data={params.row}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                    />
-                                </Menu.Item>
-                                <Menu.Item key="2">
-                                    <Link to={`/inventory/edit/${params.row.code}`}>
-                                        <Button>
-                                            Editar
-                                        </Button>
-                                    </Link>
-                                </Menu.Item>
-                            </>
-                        )}
-                        {user && user.email == "pedidos.ducor@gmail.com" && (
-                            <>
-                                <Menu.Item key="3">
-                                    <EditCodeProduct
-                                        socket={socket}
-                                        code={params.row.code}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                    />
-                                </Menu.Item>
-                                <Menu.Item key="4">
-                                    <Button onClick={() => { deleteSku(params.row) }}>
-                                        Eliminar sku
-                                    </Button>
-                                </Menu.Item>
-                                <Menu.Item key="5">
-                                    <Button onClick={() => { deleteProduct(params.row) }}>
-                                        Eliminar item
-                                    </Button>
-                                </Menu.Item>
+                                {settingInventoryEmails.includes(user.email) && (
+                                    <>
+                                        <Menu.Item key="0">
+                                            <AddSkuModalServer
+                                                data={params.row}
+                                                rangeItems={rangeItems}
+                                                socket={socket}
+                                                loading={loading}
+                                                setLoading={setLoading}
+                                                URL_SERVER={URL_SERVER}
+                                            />
+                                        </Menu.Item>
+                                        <Menu.Item key="1">
+                                            <ModifyQuantityServer
+                                                socket={socket}
+                                                data={params.row}
+                                                loading={loading}
+                                                setLoading={setLoading}
+                                            />
+                                        </Menu.Item>
+                                        <Menu.Item key="2">
+                                            <Link to={`/inventory/edit/${params.row.code}`}>
+                                                <Button>
+                                                    Editar
+                                                </Button>
+                                            </Link>
+                                        </Menu.Item>
+                                    </>
+                                )}
+                                {user.email == "pedidos.ducor@gmail.com" && (
+                                    <>
+                                        <Menu.Item key="3">
+                                            <EditCodeProduct
+                                                socket={socket}
+                                                code={params.row.code}
+                                                loading={loading}
+                                                setLoading={setLoading}
+                                            />
+                                        </Menu.Item>
+                                        <Menu.Item key="4">
+                                            <Button onClick={() => { deleteSku(params.row) }}>
+                                                Eliminar sku
+                                            </Button>
+                                        </Menu.Item>
+                                        <Menu.Item key="5">
+                                            <Button onClick={() => { deleteProduct(params.row) }}>
+                                                Eliminar item
+                                            </Button>
+                                        </Menu.Item>
+                                    </>
+                                )}
                             </>
                         )}
                     </Menu.SubMenu>

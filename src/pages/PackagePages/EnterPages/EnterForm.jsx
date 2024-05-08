@@ -25,6 +25,7 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
     }, [socket])
 
     const onFinish = (e) => {
+
         setDisabled(true)
         if (!e.projects || e.projects.length === 0) {
             notification.error({
@@ -45,14 +46,17 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
                 let foundError = [];
 
                 e.projects = e.projects.map(obj => {
-                    const matchingRangeItem = rangeItems.find(rangeItem => rangeItem.sku === obj.sku);
+
+                    const matchingRangeItem = rangeItems.find(rangeItem => rangeItem.sku === obj.sku)
 
                     if (matchingRangeItem) {
 
-                        return { ...matchingRangeItem, quantity_currently: obj.quantity_currently };
+                        return { ...matchingRangeItem, quantity_currently: obj.quantity_currently }
+
                     }
 
-                    return null;
+                    return null
+
                 }).filter(obj => obj !== null);
 
                 e.projects.forEach(obj => {
@@ -90,6 +94,7 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
                         code: obj.code,
                         sku: obj.sku,
                         name: obj.name,
+                        db_quantity: obj.quantity,
                         quantity: obj.quantity_currently,
                         brand: obj.brand
                     }
@@ -100,7 +105,7 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
                 setLoading(true);
 
                 try {
-                    socket.emit('objectValuesEntries', data)
+                    socket.emit('postEnter', data)
                     message.success('Cargado exitosamente')
                     localStorage.setItem("enterData", JSON.stringify({}))
                     setDisabled(false)

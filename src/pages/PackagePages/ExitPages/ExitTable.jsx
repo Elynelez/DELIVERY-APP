@@ -5,40 +5,30 @@ import { Box, Typography } from "@mui/material";
 import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";
 
-const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
+const ExitTable = ({ ordersData, setOrdersData, socket }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
     const returnToPicking = (data) => {
-        
+
         socket.emit("returnToPicking", data)
         window.location.reload()
     }
 
     useEffect(() => {
 
-        socket.on('loadOrdersExits', (loadedOrders) => {
+        socket.on('getExits', (loadedData) => {
             try {
-                console.log('loadOrders event received:', loadedOrders);
-                setPendingData(loadedOrders);
+                setOrdersData(loadedData)
                 setLoading(false);
             } catch (error) {
                 console.error('Error handling loadOrders event:', error);
             }
         });
 
-        socket.on('dataOrderExit', obj => {
-            try {
-                console.log('dataOrder event received:', obj);
-                receiveOrders(obj);
-            } catch (error) {
-                console.error('Error handling dataOrder event:', error);
-            }
-        })
-
         return () => {
-            socket.off('dataOrderExit')
+            socket.off('getExits')
         }
     }, [])
 
@@ -73,7 +63,7 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
                     <Menu.SubMenu title="Acciones" key="sub-menu">
                         <Menu.Item key="0">
-                            <Button onClick={()=>{returnToPicking(params.row)}}>
+                            <Button onClick={() => { returnToPicking(params.row) }}>
                                 retornar
                             </Button>
                         </Menu.Item>
@@ -105,12 +95,10 @@ const ExitTable = ({ pendingData, setPendingData, socket, receiveOrders }) => {
                         </Typography>
                     </Box>
                     <DataTableGrid
-                        key={pendingData.length}
+                        key={ordersData.length}
+                        data={ordersData.map(obj => { return { ...obj, date_packing: obj.packing.hour } }).reverse()}
                         columns={columns}
-                        data={pendingData.map(obj => { return { ...obj, date_packing: obj.packing.hour } })}
-                        setReloadData={setPendingData}
-                        setLoading={setLoading}
-                        typeSheet={"Inventory"}
+                        setReloadData={setOrdersData}
                     />
                 </Box>
             )}

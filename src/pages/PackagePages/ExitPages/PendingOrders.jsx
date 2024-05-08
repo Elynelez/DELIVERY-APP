@@ -6,17 +6,16 @@ import { Box, Typography } from "@mui/material";
 import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";
 
-const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiveOrders, user, URL_SERVER }) => {
+const PendingOrders = ({ rangeItems, ordersData, setOrdersData, socket, receiveOrders, user, URL_SERVER }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
     useEffect(() => {
 
-        socket.on('loadOrdersExits', (loadedOrders) => {
+        socket.on('getExits', (loadedOrders) => {
             try {
-                console.log('loadOrders event received:', loadedOrders);
-                setPendingData(loadedOrders);
+                setOrdersData(loadedOrders);
                 setLoading(false);
             } catch (error) {
                 console.error('Error handling loadOrders event:', error);
@@ -35,7 +34,7 @@ const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiv
         return () => {
             socket.off('dataOrderExit')
         }
-    }, [])
+    }, [socket])
 
     const columns = [
         { headerName: 'Fecha', field: "date_generate", flex: 1 },
@@ -44,7 +43,7 @@ const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiv
         {
             headerName: 'Usuario', field: "picking", renderCell: params => (
                 <>
-                    {params.row.picking ?  params.row.picking.user : params.row.user}
+                    {params.row.picking ? params.row.picking.user : params.row.user}
                 </>
             )
         },
@@ -55,7 +54,8 @@ const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiv
                         <Menu.SubMenu title="Acciones">
                             <Menu.Item key="0">
                                 <ConfirmInventoryModalServer
-                                    pendingData={pendingData}
+                                    pendingData={ordersData}
+                                    setPendingData={setOrdersData}
                                     data={params.row}
                                     setLoading={setLoading}
                                     socket={socket}
@@ -95,13 +95,10 @@ const PendingOrders = ({ rangeItems, pendingData, setPendingData, socket, receiv
                         </Typography>
                     </Box>
                     <DataTableGrid
-                        key={pendingData.length}
+                        key={ordersData.length}
+                        data={ordersData.filter(obj => obj.platform == "POR CONFIRMAR").reverse()}
                         columns={columns}
-                        data={pendingData.filter(obj => obj.platform == "POR CONFIRMAR")}
-                        setReloadData={setPendingData}
-                        // setReloadData={setReloadData}
-                        setLoading={setLoading}
-                        typeSheet={"Inventory"}
+                        setReloadData={setOrdersData}
                     />
                 </Box>
             )}

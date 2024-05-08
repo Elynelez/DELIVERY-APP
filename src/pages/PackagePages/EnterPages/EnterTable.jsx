@@ -4,20 +4,25 @@ import DataTableGrid from "../../../controllers/Tables/DataGridPro";
 import { Box, Typography } from "@mui/material";
 import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";
-import axios from "axios";
 
-const EnterTable = ({ URL_SERVER }) => {
-    const [orders, setOrders] = useState([])
+const EnterTable = ({ ordersData, setOrdersData, socket }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
     useEffect(() => {
-        axios.get(URL_SERVER + "/inventory/entries")
-            .then((resp) => {
-                setOrders(resp.data)
+        socket.on('getEntries', (loadedData) => {
+            try {
+                setOrdersData(loadedData)
                 setLoading(false)
-            })
+            } catch (error) {
+                console.error('Error handling dataInventory event:', error);
+            }
+        })
+
+        return () => {
+            socket.off('getEntries')
+        }
     }, [])
 
     const columns = [
@@ -25,23 +30,15 @@ const EnterTable = ({ URL_SERVER }) => {
         { headerName: 'Número de factura', field: "facture_number", flex: 1 },
         { headerName: 'Proveedor', field: "provider", flex: 1 },
         {
-            headerName: 'Artículos', field: "items", renderCell: params => (
-                <ul>
-                    {params.row.items.map((item, index) => (
-                        <li key={index}>
-                            {item.sku} - {item.name} - {item.quantity}
-                        </li>
-                    ))}
-                </ul>
-            )
+            headerName: 'Artículos', field: "items", valueFormatter: (params) => {
+                return params.value.map(item => `${item.sku} - ${item.name} - ${item.quantity}`).join('; ');
+            }
         },
         {
-            headerName: 'Usuario Entrada', field: "review", flex: 1, renderCell: params => (
-                <>
-                    {`Usuario: ${params.row.review.user}, IP: ${params.row.review.IP}`}
-                </>
-            )
-        }
+            headerName: 'Usuario Entrada', field: "review", flex: 1, valueFormatter: (params) => {
+                return `Usuario: ${params.value.user} - IP: ${params.value.IP}`;
+            },
+        },
     ]
 
     return (
@@ -66,12 +63,10 @@ const EnterTable = ({ URL_SERVER }) => {
                         </Typography>
                     </Box>
                     <DataTableGrid
-                        key={orders.length}
+                        key={ordersData.length}
+                        data={ordersData.reverse()}
                         columns={columns}
-                        data={orders}
-                        setReloadData={setOrders}
-                        setLoading={setLoading}
-                        typeSheet={"Inventory"}
+                        setReloadData={setOrdersData}
                     />
                 </Box>
             )}

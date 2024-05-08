@@ -6,13 +6,54 @@ import { v4 } from 'uuid';
 import axios from "axios";
 import { PlatformAutoComplete } from "../../../controllers/Modals/InventoryModals";
 
-const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, receiveOrders, URL_SERVER }) => {
+const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receiveOrders, URL_SERVER, API_URL }) => {
+    const [dbExits, setDbExits] = useState(() => {
+        const savedDB = localStorage.getItem("dbExits")
+        return savedDB ? JSON.parse(savedDB) : []
+    })
+
     const [exitData, setExitData] = useState({})
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [form] = Form.useForm();
     const [disabled, setDisabled] = useState(false)
+
+    const saveStartTimeToLocalStorage = () => {
+        const startTime = new Date().getTime();
+        localStorage.setItem("timer", startTime.toString());
+    };
+
+    const getElapsedTimeInMinutes = () => {
+        const startTime = parseInt(localStorage.getItem("timer"));
+        const currentTime = new Date().getTime();
+        const elapsedTimeInMilliseconds = currentTime - startTime;
+        return elapsedTimeInMilliseconds / (1000 * 60);
+    };
+
+    setInterval(() => {
+        const elapsedTime = getElapsedTimeInMinutes();
+        console.log(dbExits)
+        if (elapsedTime >= 20) {
+            fetch(API_URL + "inventory/exits/missing", {
+                redirect: "follow",
+                method: 'POST',
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8",
+                },
+                body: JSON.stringify(dbExits)
+            })
+                .then(response => response.json())
+                .then(parsedData => {
+                    console.log(parsedData)
+                    saveStartTimeToLocalStorage()
+                    localStorage.setItem("dbExits", JSON.stringify([]))
+                })
+                .catch(error => {
+                    console.error('Error cancelling order:', error);
+                });
+        }
+    }, 1200000)
 
     useEffect(() => {
 
@@ -21,10 +62,9 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
             savedExitData ? setExitData(JSON.parse(savedExitData)) : setExitData({ facture_number: "", platform: "POR CONFIRMAR", projects: [] })
         }
 
-        socket.on('loadOrdersExits', (loadedOrders) => {
+        socket.on('getExits', (loadedOrders) => {
             try {
-                console.log('loadOrders event received:', loadedOrders);
-                setPendingData(loadedOrders);
+                setOrdersData(loadedOrders);
                 setLoading(false);
             } catch (error) {
                 console.error('Error handling loadOrders event:', error);
@@ -33,7 +73,6 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
 
         socket.on('dataOrderExit', obj => {
             try {
-                console.log('dataOrder event received:', obj);
                 receiveOrders(obj);
             } catch (error) {
                 console.error('Error handling dataOrder event:', error);
@@ -46,7 +85,31 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
     }, [socket])
 
     const onFinish = (e) => {
+        setLoading(true)
         setDisabled(true)
+
+        const skuSet = new Set();
+        let hasDuplicates = false;
+
+        for (const project of e.projects) {
+            if (skuSet.has(project.sku)) {
+                hasDuplicates = true;
+                break;
+            }
+            skuSet.add(project.sku);
+        }
+
+        if (hasDuplicates) {
+            notification.error({
+                message: 'No puedes enviar elementos con SKU repetidos en una misma salida',
+                description: 'Verifica y elimina los elementos duplicados antes de continuar.',
+                duration: 5,
+            });
+            setDisabled(false);
+            setLoading(false);
+            return;
+        }
+
         if (!e.projects || e.projects.length === 0) {
             notification.error({
                 message: 'No puedes enviar una salida vacía',
@@ -54,6 +117,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                 duration: 5,
             });
             setDisabled(false);
+            setLoading(false);
             return;
         }
 
@@ -61,7 +125,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
             .then(resp => {
                 rangeItems = resp.data
 
-                let rangeOrderNumbers = pendingData.map(obj => { return obj.order_number }).filter(orderNumber => !/^[A-Za-z]+$/.test(orderNumber))
+                let rangeOrderNumbers = ordersData.map(obj => { return obj.order_number }).filter(orderNumber => !/^[A-Za-z]+$/.test(orderNumber))
                 var date = new Date()
                 const idExit = v4()
                 let foundError = [];
@@ -83,6 +147,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                         duration: 5,
                     });
                     setDisabled(false)
+                    setLoading(false)
                     return;
                 }
 
@@ -112,6 +177,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                         duration: 5,
                     });
                     setDisabled(false)
+                    setLoading(false)
                     return;
                 }
 
@@ -133,6 +199,7 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                         code: obj.code,
                         sku: obj.sku,
                         name: obj.name,
+                        db_quantity: obj.quantity,
                         quantity: obj.quantity_currently,
                         brand: obj.brand
                     }
@@ -140,12 +207,12 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
 
                 data.items = allValues
 
-                setLoading(true);
-
                 try {
-                    socket.emit('objectValuesExits', data)
+                    socket.emit('postExit', data)
                     receiveOrders(data)
                     message.success('Cargado exitosamente')
+                    setDbExits([...dbExits, data])
+                    localStorage.setItem("dbExits", JSON.stringify([...dbExits, data]))
                     localStorage.setItem("exitData", JSON.stringify({}))
                     setDisabled(false)
                 } catch (err) {
@@ -207,7 +274,6 @@ const ExitForm = ({ user, pendingData, setPendingData, rangeItems, socket, recei
                                         </div>
                                     </div>
                                     <h4 className="h4-bottom-form" style={{ color: "#6870fa" }}></h4>
-
                                     <Form.List name="projects">
                                         {(fields, { add, remove }) => (
                                             <>

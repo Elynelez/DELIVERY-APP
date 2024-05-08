@@ -6,6 +6,14 @@ import { tokens } from "../theme.js";
 import { ProSidebar, Menu as SidebarMenu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import {
+    AddchartSharp,
+    Dashboard,
+    LocalShipping,
+    LocalConvenienceStore,
+    TableView,
+    AddCircle,
+    Poll,
+    PendingActions,
     HomeOutlined as HomeOutlinedIcon,
     PeopleOutlined as PeopleOutlinedIcon,
     ContactsOutlined as ContactsOutlinedIcon,
@@ -41,6 +49,7 @@ const Sidebar = (props) => {
     const { isAuthenticated, user } = useAuth0();
     const [isCollapsed, setIsCollapsed] = useState(true);
     const [selected, setSelected] = useState("Dashboard");
+    const email = user ? user.email : "test"
 
     return (
         <Box
@@ -64,7 +73,6 @@ const Sidebar = (props) => {
         >
             <ProSidebar collapsed={isCollapsed}>
                 <SidebarMenu iconShape="square">
-                    {/* LOGO AND MENU ICON */}
                     <MenuItem
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
@@ -118,213 +126,270 @@ const Sidebar = (props) => {
                     )}
 
                     <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-                        <Item
-                            title="Dashboard"
-                            to="/dashboard"
-                            icon={<HomeOutlinedIcon />}
-                            selected={selected}
-                            setSelected={setSelected}
-                        />
-                        <Item
-                            title="Consultar inter"
-                            to="/"
-                            icon={<HomeOutlinedIcon />}
-                            selected={selected}
-                            setSelected={setSelected}
-                        />
-                        <Item
-                            title="DC Shopify"
-                            to="/platforms/shopify"
-                            icon={<HomeOutlinedIcon />}
-                            selected={selected}
-                            setSelected={setSelected}
-                        />
                         <Typography
                             variant="h6"
                             color={colors.grey[300]}
                             sx={{ m: "15px 0 5px 20px" }}
                         >
-                            Inventario
+                            Statistics
                         </Typography>
-                        <Item
-                            title="Inventario"
-                            to="/inventory/table"
-                            icon={<CalendarToday />}
-                            selected={selected}
-                            setSelected={setSelected}
-                        />
-                        <Item
-                            title="Ajustes"
-                            to="/inventory/setting/table"
-                            icon={<CalendarToday />}
-                            selected={selected}
-                            setSelected={setSelected}
-                        />
-                        {isAuthenticated && props.logisticEmails.includes(user.email) && (
-                            <>
-                                <Typography
-                                    variant="h6"
-                                    color={colors.grey[300]}
-                                    sx={{ m: "15px 0 5px 20px" }}
-                                >
-                                    Canales
-                                </Typography>
+                        <SubMenu title="Estadísticas" icon={<AddchartSharp />}>
+                            <Item
+                                title="Dashboard"
+                                to="/dashboard"
+                                icon={<Dashboard />}
+                                selected={selected}
+                                setSelected={setSelected}
+                            />
+                        </SubMenu>
+                        <Typography
+                            variant="h6"
+                            color={colors.grey[300]}
+                            sx={{ m: "15px 0 5px 20px" }}
+                        >
+                            Platforms
+                        </Typography>
+                        <SubMenu title="Plataformas" icon={<PeopleOutlinedIcon />}>
+                            {props.platforms.map((platform) => (
                                 <Item
-                                    title="Delivery"
-                                    to="/delivery/form"
-                                    icon={<ContactsOutlinedIcon />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-
-                            </>
-                        )}
-
-                        {isAuthenticated && (props.bossEmails.includes(user.email) || props.logisticEmails.includes(user.email)) && (
-                            <>
-                                <Typography
-                                    variant="h6"
-                                    color={colors.grey[300]}
-                                    sx={{ m: "15px 0 5px 20px" }}
-                                >
-                                    Tablas
-                                </Typography>
-                                <SubMenu title="Mensajeros" icon={<PeopleOutlinedIcon />}>
-                                    {props.couriers.map((coursier) => (
-                                        <Item
-                                            title={coursier}
-                                            to={`/delivery/${coursier}`}
-                                            icon={<PersonOutlinedIcon />}
-                                            selected={selected}
-                                            setSelected={setSelected}
-                                        />
-                                    ))}
-                                </SubMenu>
-                                <Item
-                                    title="Todos"
-                                    to="delivery/all"
-                                    icon={<ReceiptOutlinedIcon />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-                            </>
-                        )}
-
-                        {isAuthenticated && props.ExternalServiceEmails.includes(user.email) && (
-                            <>
-                                <Typography
-                                    variant="h6"
-                                    color={colors.grey[300]}
-                                    sx={{ m: "15px 0 5px 20px" }}
-                                >
-                                    Interrapidísimo
-                                </Typography>
-                                <Item
-                                    title="Servicio Externo"
-                                    to="/delivery/servicio externo"
+                                    title={platform.toLowerCase()}
+                                    to={`/platforms/${platform.toLowerCase()}`}
                                     icon={<PersonOutlinedIcon />}
                                     selected={selected}
                                     setSelected={setSelected}
                                 />
-                            </>
-                        )}
-
-                        {isAuthenticated && props.sellerEmails.includes(user.email) && (
+                            ))}
+                            <Item
+                                title="Subir rappi"
+                                to="/platforms/rappi/form"
+                                icon={<HomeOutlinedIcon />}
+                                selected={selected}
+                                setSelected={setSelected}
+                            />
+                        </SubMenu>
+                        {isAuthenticated && (
                             <>
-                                <Typography
-                                    variant="h6"
-                                    color={colors.grey[300]}
-                                    sx={{ m: "15px 0 5px 20px" }}
-                                >
-                                    Ventas
-                                </Typography>
-                                <Item
-                                    title="Mis ventas"
-                                    to="/Sales"
-                                    icon={<CalendarToday />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-                            </>
-                        )}
-
-                        {isAuthenticated && props.exitsInventoryEmails.includes(user.email) && (
-                            <>
-                                <Typography
-                                    variant="h6"
-                                    color={colors.grey[300]}
-                                    sx={{ m: "15px 0 5px 20px" }}
-                                >
-                                    Salidas
-                                </Typography>
-                                <Item
-                                    title="Formulario de Salidas"
-                                    to="/inventory/exit/form"
-                                    icon={<Inventory />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-                                <Item
-                                    title="Formulario RB"
-                                    to="/inventory/exit/cash"
-                                    icon={<Games />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-                                <Item
-                                    title="Pendientes"
-                                    to="/inventory/exit/pending"
-                                    icon={<CalendarToday />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-                                <Item
-                                    title="Salidas"
-                                    to="/inventory/exit/table"
-                                    icon={<CalendarToday />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-                            </>
-                        )}
-
-                        {isAuthenticated && props.entriesInventoryEmails.includes(user.email) && (
-                            <>
-                                <Typography
-                                    variant="h6"
-                                    color={colors.grey[300]}
-                                    sx={{ m: "15px 0 5px 20px" }}
-                                >
-                                    Entradas
-                                </Typography>
-                                <Item
-                                    title="Formualrio de Entradas"
-                                    to="/inventory/enter/form"
-                                    icon={<Inventory />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-                                <Item
-                                    title="Creación"
-                                    to="/inventory/create/form"
-                                    icon={<Games />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-                                <Item
-                                    title="Inventario"
-                                    to="/inventory/table"
-                                    icon={<CalendarToday />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
-                                <Item
-                                    title="Entradas"
-                                    to="/inventory/enter/table"
-                                    icon={<CalendarToday />}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                />
+                                {props.sellerEmails.concat(props.bossEmails).includes(email) && (
+                                    <>
+                                        <Typography
+                                            variant="h6"
+                                            color={colors.grey[300]}
+                                            sx={{ m: "15px 0 5px 20px" }}
+                                        >
+                                            Sales
+                                        </Typography>
+                                        <SubMenu title="Canales" icon={<LocalConvenienceStore />}>
+                                            <Item
+                                                title="Crear pedido"
+                                                to="/"
+                                                icon={<ReceiptOutlinedIcon />}
+                                                selected={selected}
+                                                setSelected={setSelected}
+                                            />
+                                            <Item
+                                                title="Pedidos"
+                                                to="/sales/table"
+                                                icon={<TableView />}
+                                                selected={selected}
+                                                setSelected={setSelected}
+                                            />
+                                        </SubMenu>
+                                    </>
+                                )}
+                                {props.logisticEmails.concat(props.bossEmails, props.ExternalServiceEmails).includes(email) && (
+                                    <>
+                                        <Typography
+                                            variant="h6"
+                                            color={colors.grey[300]}
+                                            sx={{ m: "15px 0 5px 20px" }}
+                                        >
+                                            Delivery
+                                        </Typography>
+                                        <SubMenu title="Mensajería" icon={<LocalShipping />}>
+                                            {props.logisticEmails.includes(email) && (
+                                                <>
+                                                    <Typography
+                                                        variant="h6"
+                                                        color={colors.grey[300]}
+                                                        sx={{ m: "15px 0 5px 20px" }}
+                                                    >
+                                                        Formulario
+                                                    </Typography>
+                                                    <Item
+                                                        title="Crear ruta"
+                                                        to="/delivery/form"
+                                                        icon={<ContactsOutlinedIcon />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                </>
+                                            )}
+                                            {props.logisticEmails.concat(props.bossEmails).includes(email) && (
+                                                <>
+                                                    <Typography
+                                                        variant="h6"
+                                                        color={colors.grey[300]}
+                                                        sx={{ m: "15px 0 5px 20px" }}
+                                                    >
+                                                        Mensajeros
+                                                    </Typography>
+                                                    {props.couriers.map((coursier) => (
+                                                        <Item
+                                                            title={coursier}
+                                                            to={`/delivery/${coursier}`}
+                                                            icon={<PersonOutlinedIcon />}
+                                                            selected={selected}
+                                                            setSelected={setSelected}
+                                                        />
+                                                    ))}
+                                                    <Item
+                                                        title="Todos"
+                                                        to="delivery/all"
+                                                        icon={<PeopleOutlinedIcon />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                </>
+                                            )}
+                                            {props.ExternalServiceEmails.includes(email) && (
+                                                <>
+                                                    <Typography
+                                                        variant="h6"
+                                                        color={colors.grey[300]}
+                                                        sx={{ m: "15px 0 5px 20px" }}
+                                                    >
+                                                        Interrapidísimo
+                                                    </Typography>
+                                                    <Item
+                                                        title="Servicio Externo"
+                                                        to="/delivery/servicio externo"
+                                                        icon={<PersonOutlinedIcon />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                </>
+                                            )}
+                                        </SubMenu>
+                                    </>
+                                )}
+                                {props.entriesInventoryEmails.concat(props.exitsInventoryEmails, props.settingInventoryEmails).includes(email) && (
+                                    <>
+                                        <Typography
+                                            variant="h6"
+                                            color={colors.grey[300]}
+                                            sx={{ m: "15px 0 5px 20px" }}
+                                        >
+                                            Inventory
+                                        </Typography>
+                                        <SubMenu title="Inventario" icon={<Inventory />}>
+                                            <Typography
+                                                variant="h6"
+                                                color={colors.grey[300]}
+                                                sx={{ m: "15px 0 5px 20px" }}
+                                            >
+                                                Productos
+                                            </Typography>
+                                            {props.settingInventoryEmails.includes(email) && (
+                                                <Item
+                                                    title="Crear"
+                                                    to="/inventory/create/form"
+                                                    icon={<AddCircle />}
+                                                    selected={selected}
+                                                    setSelected={setSelected}
+                                                />
+                                            )}
+                                            <Item
+                                                title="Listado"
+                                                to="/inventory/table"
+                                                icon={<CalendarToday />}
+                                                selected={selected}
+                                                setSelected={setSelected}
+                                            />
+                                            {props.entriesInventoryEmails.includes(email) && (
+                                                <>
+                                                    <Typography
+                                                        variant="h6"
+                                                        color={colors.grey[300]}
+                                                        sx={{ m: "15px 0 5px 20px" }}
+                                                    >
+                                                        Entradas
+                                                    </Typography>
+                                                    <Item
+                                                        title="Generar"
+                                                        to="/inventory/enter/form"
+                                                        icon={<Poll />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                    <Item
+                                                        title="Entradas"
+                                                        to="/inventory/enter/table"
+                                                        icon={<CalendarToday />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                </>
+                                            )}
+                                            {props.exitsInventoryEmails.includes(email) && (
+                                                <>
+                                                    <Typography
+                                                        variant="h6"
+                                                        color={colors.grey[300]}
+                                                        sx={{ m: "15px 0 5px 20px" }}
+                                                    >
+                                                        Salidas
+                                                    </Typography>
+                                                    <Item
+                                                        title="Generar"
+                                                        to="/inventory/exit/form"
+                                                        icon={<Poll />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                    <Item
+                                                        title="Caja Registradora"
+                                                        to="/inventory/exit/cash"
+                                                        icon={<Games />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                    <Item
+                                                        title="Pendientes"
+                                                        to="/inventory/exit/pending"
+                                                        icon={<PendingActions />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                    <Item
+                                                        title="Salidas"
+                                                        to="/inventory/exit/table"
+                                                        icon={<CalendarToday />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                </>
+                                            )}
+                                            {props.settingInventoryEmails.includes(email) && (
+                                                <>
+                                                    <Typography
+                                                        variant="h6"
+                                                        color={colors.grey[300]}
+                                                        sx={{ m: "15px 0 5px 20px" }}
+                                                    >
+                                                        Ajustes
+                                                    </Typography>
+                                                    <Item
+                                                        title="Ajustes"
+                                                        to="/inventory/setting/table"
+                                                        icon={<CalendarToday />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                </>
+                                            )}
+                                        </SubMenu>
+                                    </>
+                                )}
                             </>
                         )}
                     </Box>

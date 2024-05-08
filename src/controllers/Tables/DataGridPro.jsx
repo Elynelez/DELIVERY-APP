@@ -9,9 +9,10 @@ import { DatePicker, Button, message} from "antd";
 // materials
 import GetApp from '@mui/icons-material/GetApp';
 import { MultipleStatusModal } from "../Modals/DeliveryModals";
+import { MultiplePlatformModal } from "../Modals/InventoryModals";
 
 
-const DataTableGrid = ({ data, columns, setReloadData, setLoading }) => {
+const DataTableGrid = ({ data, columns, setReloadData }) => {
   const location = useLocation()
   const { user } = useAuth0();
   const theme = useTheme();
@@ -124,7 +125,6 @@ const DataTableGrid = ({ data, columns, setReloadData, setLoading }) => {
   const handleDateFilter = (startDate, endDate) => {
     const filtered = data.filter((item) => {
       const itemDate = new Date(item.date_generate_ISO);
-      console.log(item.date_generate_ISO)
       return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
     });
 
@@ -149,10 +149,18 @@ const DataTableGrid = ({ data, columns, setReloadData, setLoading }) => {
     setDataStatus(filteredData)
   };
 
-  const selectedRows = (ids) => {
+  const handleInventoryUpdateMassive = (ids) => {
+    setDataStatus(ids)
+  }
+
+  const selectedRowsDelivery = (ids) => {
     handleSelectedRowsChange(ids);
     handleSelectedRowsStatus(ids);
   };
+
+  const selectedRowsInventory = (ids) => {
+    handleInventoryUpdateMassive(ids)
+  }
 
   return (
     <Box
@@ -205,10 +213,16 @@ const DataTableGrid = ({ data, columns, setReloadData, setLoading }) => {
             data={dataStatus}
           />
         )}
+        {location.pathname.includes("pending") && (
+          <MultiplePlatformModal
+            ids={dataStatus}
+            colors={colors}
+          />
+        )}
         <DateRangeFilter onFilter={handleDateFilter} />
       </div>
       <DataGridPro
-        onRowSelectionModelChange={selectedRows}
+        onRowSelectionModelChange={location.pathname.includes("delivery") ? selectedRowsDelivery : selectedRowsInventory}
         checkboxSelection
         rows={filteredData}
         columns={columns}
