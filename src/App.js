@@ -401,6 +401,8 @@ function App() {
                               />} />
                             <Route exact path="/inventory/enter/table"
                               element={<EnterTable
+                                ordersData={ordersData}
+                                setOrdersData={setOrdersData}
                                 socket={socket}
                               />} />
                           </>
@@ -455,7 +457,9 @@ function App() {
                               />} />
                             <Route exact path="/inventory/setting/table"
                               element={<SettingTable
-                                URL_SERVER={URL_SERVER}
+                                ordersData={ordersData}
+                                setOrdersData={setOrdersData}
+                                socket={socket}
                               />} />
                             <Route exact path="/inventory/edit/:id"
                               element={<EditProduct
