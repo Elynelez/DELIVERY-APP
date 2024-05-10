@@ -230,7 +230,7 @@ body {
 /* start car */
 .container-items {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(2, 1fr);
 	gap: 20px;
 }
 
@@ -267,9 +267,11 @@ body {
 .info-product {
 	padding: 15px 30px;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
 	gap: 10px;
-	height: 250px;
+	height: 160px;
 	/* text-align: center; */
 }
 

@@ -167,6 +167,7 @@ function App() {
   //                   total={total} setTotal={setTotal}
   //                   countProducts={countProducts}
   //                   setCountProducts={setCountProducts}
+  //                   rangeItems={rangeItems}
   //                 />} />
   //               <Route exact path="/sales/form"
   //                 element={<SellerForm
@@ -313,6 +314,7 @@ function App() {
                     total={total} setTotal={setTotal}
                     countProducts={countProducts}
                     setCountProducts={setCountProducts}
+                    rangeItems={rangeItems}
                   />} />
                 <Route exact path="/platforms/:id"
                   element={<PlatformTable
@@ -335,6 +337,11 @@ function App() {
                     receiveOrders={receiveOrders}
                     URL_SERVER={URL_SERVER}
                   />} />
+                <Route exact path="/sales/form"
+                  element={<SellerForm
+                    allProducts={allProducts}
+                    total={total}
+                  />} />
                 {isAuthenticated && (
                   <>
                     {bossEmails.includes(user.email) && (
@@ -344,9 +351,16 @@ function App() {
                         />} />
                     )}
                     {sellerEmails.includes(user.email) && (
-                      <Route exact path="/sales/table"
-                        element={<SellerTable
-                        />} />
+                      <>
+                        <Route exact path="/sales/table"
+                          element={<SellerTable
+                          />} />
+                        <Route exact path="/sales/form"
+                          element={<SellerForm
+                            allProducts={allProducts}
+                            total={total}
+                          />} />
+                      </>
                     )}
                     {logisticEmails.concat(bossEmails, ExternalServiceEmails).includes(user.email) && (
                       <>

@@ -1,86 +1,94 @@
 import React, { useState, useEffect } from "react";
-import { Button, Spin } from "antd"
+import { Button, Spin, Form, Input } from "antd"
 import { tokens } from "./../../theme";
-import { useTheme } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
-const SellerCar = (props) => {
+const SellerCar = ({ allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts, rangeItems }) => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true)
-  const [reloadData, setReloadData] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [form] = Form.useForm();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const loadData = () => {
-    setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?path=inventory/products")
-      .then(response => response.json())
-      .then(parsedData => {
-        let dataO = parsedData.map(product => {
-          product.carQuantity = 1
-          return product
-        });
-        setData(dataO);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  };
-
   useEffect(() => {
-    if (reloadData) {
-      loadData();
-      setReloadData(false);
-    }
-  }, [reloadData]);
+    setData(rangeItems.slice(0, 6));
+  }, [rangeItems])
 
-  useEffect(() => {
-    loadData()
-  }, []);
+  const searchProduct = (e) => {
+    setLoading(true)
+    let filteredData = rangeItems.filter(obj => obj.name.toLowerCase().includes(e.search) || obj.sku.includes(e.search))
+    console.log(filteredData)
+    setData(filteredData)
+    setLoading(false)
+  }
 
   const onAddProduct = (product) => {
 
-    if(props.allProducts.find(item => item.code === product.code)){
-      
-      const products = props.allProducts.map(item => item.code === product.code 
-        ? {...item, carQuantity: item.carQuantity + 1}
+    if (allProducts.find(item => item.code === product.code)) {
+
+      const products = allProducts.map(item => item.code === product.code
+        ? { ...item, carQuantity: item.carQuantity + 1 }
         : item
       )
-      props.setTotal(props.total + (parseFloat(product.sale_price.replace(/[\$,]/g, ''))*1000) * product.carQuantity);
-      props.setCountProducts(props.countProducts + product.carQuantity)
-      return props.setAllProducts([...products])
+      setTotal(total + (parseFloat(product.sale_price.replace(/[\$,]/g, '')) * 1000) * product.carQuantity);
+      setCountProducts(countProducts + product.carQuantity)
+      return setAllProducts([...products])
     }
 
-    props.setTotal(props.total + (parseFloat(product.sale_price.replace(/[\$,]/g, ''))*1000) * product.carQuantity)
-    props.setCountProducts(props.countProducts + product.carQuantity)
-    props.setAllProducts([...props.allProducts, product])
+    setTotal(total + (parseFloat(product.sale_price.replace(/[\$,]/g, '')) * 1000) * product.carQuantity)
+    setCountProducts(countProducts + product.carQuantity)
+    setAllProducts([...allProducts, product])
   }
 
   return (
     <div className="container py-5">
-
       {loading ? (
         <div className="text-center">
           <Spin tip="Cargando datos..." />
         </div>
       ) : (
-        <div className='container-items'>
-          {data.slice(1, 10).map(product => (
-            <div className='item' key={product.code}>
-              <figure>
+        <>
+          <Box
+            display="flex"
+            backgroundColor={colors.primary[400]}
+            borderRadius="3px"
+            alignItems="center"
+          >
+            <Form form={form} onFinish={searchProduct} layout="horizontal" style={{ display: "flex", flexDirection: "row"}}>
+              <Form.Item
+                name="search"
+                labelAlign="left"
+                rules={[{ required: true }]}
+                style={{width: 600+"px"}}
+              >
+                <Input
+                  style={{ backgroundColor: "transparent", border: "none", color: colors.grey[100] }}
+                />
+              </Form.Item>
+              <button type="submit" style={{ backgroundColor: "transparent", border: "none", color: colors.grey[100] }}>
+                <SearchIcon />
+              </button>
+            </Form>
+          </Box>
+          <br />
+          <div className='container-items'>
+            {data.map(product => (
+              <div className='item' key={product.code}>
+                {/* <figure>
                 <img src={product.image} alt={product.name} />
-              </figure>
-              <div className='info-product' style={{backgroundColor: colors.primary[400]}}>
-                <h2>{product.name}</h2>
-                <p className='price'>{product.sale_price}</p>
-                <Button type="primary" onClick={() => {onAddProduct(product)}}>
-                  Añadir al carrito
-                </Button>
+              </figure> */}
+                <div className='info-product' style={{ backgroundColor: colors.primary[400] }}>
+                  <h2>{product.name}</h2>
+                  <p className='price'>{product.sale_price}</p>
+                  <Button type="primary" onClick={() => { onAddProduct(product) }}>
+                    Añadir al carrito
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
