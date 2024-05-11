@@ -25,14 +25,15 @@ const PlatformTable = ({ API_URL }) => {
                         client: obj.customer.name,
                         seller: obj.seller.name,
                         address: obj.customer.shipping_data.address,
+                        items: obj.order.items,
                         condition: obj.order.transactions.condition,
                         method: obj.order.transactions.method,
                         total: obj.order.transactions.total_payments,
                         status: obj.order.status,
-                        notation: obj.remarks,
-                        complete: obj
+                        notation: obj.remarks
                     }
                 })
+                console.log(data)
                 setOrders(data)
                 setLoading(false)
             })
@@ -62,6 +63,11 @@ const PlatformTable = ({ API_URL }) => {
         { headerName: 'Cliente', field: "client", flex: 1 },
         { headerName: 'Vendedor', field: "seller", flex: 1 },
         { headerName: 'Dirección', field: "address", flex: 1 },
+        {
+            headerName: 'Artículos', field: "items", valueFormatter: (params) => {
+                return Array.isArray(params.value) ? params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join('; ') : params.value.items;
+            }
+        },
         { headerName: 'Condición', field: "condition", flex: 1 },
         {
             headerName: 'Método', field: "method", flex: 1, renderCell: (params) => (
