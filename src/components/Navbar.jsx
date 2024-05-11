@@ -29,7 +29,7 @@ const NavbarNavigation = (props) => {
       item => item.code !== product.code
     );
 
-    props.setTotal(props.total - (parseFloat(product.sale_price.replace(/[\$,]/g, '')) * 1000) * product.carQuantity);
+    props.setTotal(props.total - parseFloat(product.sale_price) * product.carQuantity);
     props.setCountProducts(props.countProducts - product.carQuantity);
     props.setAllProducts(results);
   }

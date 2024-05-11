@@ -12,15 +12,25 @@ const SellerCar = ({ allProducts, setAllProducts, total, setTotal, countProducts
   const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
-    setData(rangeItems.slice(0, 6));
+    setData(rangeItems.map(obj => {return {
+      ...obj,
+      sale_price: obj.sale_price != "" ? Number(obj.sale_price) : 0,
+      carQuantity: 1
+    }}).slice(0, 6));
   }, [rangeItems])
 
   const searchProduct = (e) => {
     setLoading(true)
-    let filteredData = rangeItems.filter(obj => obj.name.toLowerCase().includes(e.search) || obj.sku.includes(e.search))
-    console.log(filteredData)
-    setData(filteredData)
-    setLoading(false)
+    setTimeout(() => {
+      let filteredData = rangeItems.map(obj => {return {
+        ...obj,
+        sale_price: obj.sale_price != "" ? Number(obj.sale_price) : 0,
+        carQuantity: 1
+      }}).filter(obj => obj.name.toLowerCase().includes(e.search) || obj.sku.includes(e.search))
+  
+      setData(filteredData)
+      setLoading(false)
+    }, 1000);
   }
 
   const onAddProduct = (product) => {
@@ -31,12 +41,12 @@ const SellerCar = ({ allProducts, setAllProducts, total, setTotal, countProducts
         ? { ...item, carQuantity: item.carQuantity + 1 }
         : item
       )
-      setTotal(total + (parseFloat(product.sale_price.replace(/[\$,]/g, '')) * 1000) * product.carQuantity);
+      setTotal(total + (parseFloat(product.sale_price)) * product.carQuantity);
       setCountProducts(countProducts + product.carQuantity)
       return setAllProducts([...products])
     }
 
-    setTotal(total + (parseFloat(product.sale_price.replace(/[\$,]/g, '')) * 1000) * product.carQuantity)
+    setTotal(total + (parseFloat(product.sale_price)) * product.carQuantity)
     setCountProducts(countProducts + product.carQuantity)
     setAllProducts([...allProducts, product])
   }
@@ -60,7 +70,7 @@ const SellerCar = ({ allProducts, setAllProducts, total, setTotal, countProducts
                 name="search"
                 labelAlign="left"
                 rules={[{ required: true }]}
-                style={{width: 600+"px"}}
+                style={{width: (window.innerWidth*0.80)+"px"}}
               >
                 <Input
                   style={{ backgroundColor: "transparent", border: "none", color: colors.grey[100] }}

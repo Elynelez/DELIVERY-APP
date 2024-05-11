@@ -422,7 +422,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
 
           e.projects.forEach(obj => {
             if (Number(obj.quantity_currently) > Number(obj.db_quantity)) {
-              foundError.push(obj.name);
+              foundError.push([obj.name, obj.quantity]);
               return;
             }
           });
