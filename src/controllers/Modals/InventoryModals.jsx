@@ -411,7 +411,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
               return {
                 ...matchingRangeItem,
                 quantity_currently: obj.quantity_currently,
-                db_quantity: preview_quantity ? Number(obj.db_quantity) + Number(preview_quantity.quantity) : Number(matchingRangeItem.quantity)
+                db_quantity: preview_quantity ? Number(matchingRangeItem.quantity) + Number(preview_quantity.quantity) : Number(matchingRangeItem.quantity)
               };
             } else {
               notExistentSkus.push(obj.sku)
