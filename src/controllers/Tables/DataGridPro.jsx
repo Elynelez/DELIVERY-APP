@@ -5,7 +5,7 @@ import { useTheme } from "@mui/material";
 import { useLocation } from 'react-router-dom';
 import { React, useState } from "react";
 import { useAuth0 } from '@auth0/auth0-react';
-import { DatePicker, Button, message} from "antd";
+import { DatePicker, Button, message } from "antd";
 // materials
 import GetApp from '@mui/icons-material/GetApp';
 import { MultipleStatusModal } from "../Modals/DeliveryModals";
@@ -21,7 +21,7 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
   const [dataStatus, setDataStatus] = useState([]);
   const [filteredData, setFilteredData] = useState(data);
 
-  const downloadTable = () => {
+  const downloadTableDelivery = () => {
     const uri = 'data:application/vnd.ms-excel;base64,';
     const template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" /><meta name="ProgId" content="Excel.Sheet"/><meta http-equiv="X-UA-Compatible" content="IE=edge" /><style>table{border-collapse:collapse;}th,td{border:1px solid gray;padding:10px;}th{background-color:lightgray;}</style><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
     const base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) };
@@ -45,7 +45,7 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
       <td>${real_data.order.transactions.condition}</td>
       <td>${real_data.order.transactions.method}</td>
       <td>${real_data.order.transactions.total}</td>
-      <td>${real_data.order.remarks.map(not => {return `fecha: ${not.date}, id: ${not.id_person}, observación: ${not.notation}`}).join("; ")}</td>
+      <td>${real_data.order.remarks.map(not => { return `fecha: ${not.date}, id: ${not.id_person}, observación: ${not.notation}` }).join("; ")}</td>
       <td>${real_data.order.money_delivered}</td>
       <td>${real_data.order.status}</td></tr>
       `
@@ -64,13 +64,61 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
     document.body.removeChild(link);
   };
 
+  const downloadTableInventoryExits = () => {
+    const uri = 'data:application/vnd.ms-excel;base64,';
+    const template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" /><meta name="ProgId" content="Excel.Sheet"/><meta http-equiv="X-UA-Compatible" content="IE=edge" /><style>table{border-collapse:collapse;}th,td{border:1px solid gray;padding:10px;}th{background-color:lightgray;}</style><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
+    const base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) };
+
+    var thead = `<tr>` + ["ID", "FECHA PICKING", "FECHA PACKING", "PEDIDO", "PLATAFORMA", "CODE", "SKU", "NOMBRE", "CANTIDAD", "MARCA", "USUARIO PICKING", "USUARIO PACKING", "IP PICKING", "IP PACKING"].map((e) => {
+      return `<th>${e}</th>`
+    }).join('') + `</tr>`
+
+    var tbody = data.map(obj => {
+      return obj.items.map(product => {
+        return `
+      <tr><td>${obj.id}</td>
+      <td>${obj.date_generate}</td>
+      <td>${obj.date_packing}</td>
+      <td>${obj.order_number}</td>
+      <td>${obj.platform}</td>
+      <td>${product.code}</td>
+      <td>${product.sku}</td>
+      <td>${product.name}</td>
+      <td>${product.quantity}</td>
+      <td>${product.brand}</td>
+      <td>${obj.picking.user}</td>
+      <td>${obj.packing.user}</td>
+      <td>${obj.picking.IP}</td>
+      <td>${obj.packing.IP}</td></tr>
+      `
+      })
+    }).flat().join('')
+
+    const tableHtml = thead + tbody
+
+    const content = template.replace('{table}', tableHtml);
+    const encodedUri = uri + base64(content);
+
+    const link = document.createElement('a');
+    link.href = encodedUri;
+    link.download = `Exits.xls`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   const CustomToolbar = () => {
 
     return (
       <GridToolbarContainer >
         <GridToolbar />
         {location.pathname.includes("delivery/all") && (
-          <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTable}>
+          <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTableDelivery}>
+            <GetApp /><p style={{ fontSize: "10px", paddingTop: "15px" }}>EXPORTAR EXCEL COMPLETO</p>
+          </div>
+        )}
+        {location.pathname.includes("exit/table") && (
+          <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTableInventoryExits}>
             <GetApp /><p style={{ fontSize: "10px", paddingTop: "15px" }}>EXPORTAR EXCEL COMPLETO</p>
           </div>
         )}
