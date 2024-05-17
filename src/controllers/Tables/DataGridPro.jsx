@@ -107,6 +107,85 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
     document.body.removeChild(link);
   }
 
+  const downloadTableInventoryEntries = () => {
+    const uri = 'data:application/vnd.ms-excel;base64,';
+    const template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" /><meta name="ProgId" content="Excel.Sheet"/><meta http-equiv="X-UA-Compatible" content="IE=edge" /><style>table{border-collapse:collapse;}th,td{border:1px solid gray;padding:10px;}th{background-color:lightgray;}</style><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
+    const base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) };
+
+    var thead = `<tr>` + ["ID", "FECHA", "FACTURA", "PROVEEDOR", "CODE", "SKU", "NOMBRE", "CANTIDAD", "MARCA", "USUARIO", "IP"].map((e) => {
+      return `<th>${e}</th>`
+    }).join('') + `</tr>`
+
+    var tbody = data.map(obj => {
+      return obj.items.map(product => {
+        return `
+      <tr><td>${obj.id}</td>
+      <td>${obj.date_generate}</td>
+      <td>${obj.facture_number}</td>
+      <td>${obj.provider}</td>
+      <td>${product.code}</td>
+      <td>${product.sku}</td>
+      <td>${product.name}</td>
+      <td>${product.quantity}</td>
+      <td>${product.brand}</td>
+      <td>${obj.review.user}</td>
+      <td>${obj.review.IP}</td></tr>
+      `
+      })
+    }).flat().join('')
+
+    const tableHtml = thead + tbody
+
+    const content = template.replace('{table}', tableHtml);
+    const encodedUri = uri + base64(content);
+
+    const link = document.createElement('a');
+    link.href = encodedUri;
+    link.download = `Entries.xls`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  const downloadTableInventorySettings = () => {
+    const uri = 'data:application/vnd.ms-excel;base64,';
+    const template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" /><meta name="ProgId" content="Excel.Sheet"/><meta http-equiv="X-UA-Compatible" content="IE=edge" /><style>table{border-collapse:collapse;}th,td{border:1px solid gray;padding:10px;}th{background-color:lightgray;}</style><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
+    const base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) };
+
+    var thead = `<tr>` + ["ID", "FECHA", "CODE", "SKU", "NOMBRE", "CANTIDAD", "CANTIDAD ANTERIOR", "MARCA", "USUARIO", "IP"].map((e) => {
+      return `<th>${e}</th>`
+    }).join('') + `</tr>`
+
+    var tbody = data.map(obj => {
+      return obj.items.map(product => {
+        return `
+      <tr><td>${obj.id}</td>
+      <td>${obj.date_generate}</td>
+      <td>${product.code}</td>
+      <td>${product.sku}</td>
+      <td>${product.name}</td>
+      <td>${product.quantity}</td>
+      <td>${product.last_quantity}</td>
+      <td>${product.brand}</td>
+      <td>${obj.setting.user}</td>
+      <td>${obj.setting.IP}</td></tr>
+      `
+      })
+    }).flat().join('')
+
+    const tableHtml = thead + tbody
+
+    const content = template.replace('{table}', tableHtml);
+    const encodedUri = uri + base64(content);
+
+    const link = document.createElement('a');
+    link.href = encodedUri;
+    link.download = `Settings.xls`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   const CustomToolbar = () => {
 
     return (
@@ -119,6 +198,16 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
         )}
         {location.pathname.includes("exit/table") && (
           <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTableInventoryExits}>
+            <GetApp /><p style={{ fontSize: "10px", paddingTop: "15px" }}>EXPORTAR EXCEL COMPLETO</p>
+          </div>
+        )}
+        {location.pathname.includes("enter/table") && (
+          <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTableInventoryEntries}>
+            <GetApp /><p style={{ fontSize: "10px", paddingTop: "15px" }}>EXPORTAR EXCEL COMPLETO</p>
+          </div>
+        )}
+        {location.pathname.includes("setting/table") && (
+          <div style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }} onClick={downloadTableInventorySettings}>
             <GetApp /><p style={{ fontSize: "10px", paddingTop: "15px" }}>EXPORTAR EXCEL COMPLETO</p>
           </div>
         )}

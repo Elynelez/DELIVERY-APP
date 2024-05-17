@@ -82,7 +82,7 @@ const AddSkuModalServer = ({ rangeItems, socket, data, loading, setLoading, URL_
   )
 }
 
-const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
+const ModifyQuantityServer = ({ rangeItems, socket, data, loading, setLoading }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const { user } = useAuth0()
@@ -96,6 +96,7 @@ const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
   };
 
   const onFinish = (values) => {
+    var foundProduct = rangeItems.find(obj => obj.code == data.code)
     data.real_quantity = Number(values.real_quantity)
     data.id = v4()
     data.user = user ? user.email : "test"
@@ -105,15 +106,18 @@ const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
         try {
+          socket.emit("postSettings", data)
           message.success('Cargado exitosamente')
           setLoading(true);
           handleCancel()
-          socket.emit("postSettings", data)
+          foundProduct.quantity = data.real_quantity
         } catch (err) {
           message.error("no se pudo completar la operación")
           console.log(err)
         } finally {
-          window.location.reload()
+          setTimeout(() => {
+            setLoading(false)
+          }, 3000);
         }
 
       }

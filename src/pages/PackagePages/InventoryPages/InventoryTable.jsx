@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Spin, Menu } from "antd"
 import DataTableGrid from "../../../controllers/Tables/DataGridPro";
 import { AddSkuModalServer, ModifyQuantityServer, EditCodeProduct } from "../../../controllers/Modals/InventoryModals";
@@ -47,6 +47,7 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
                                         </Menu.Item>
                                         <Menu.Item key="1">
                                             <ModifyQuantityServer
+                                                rangeItems={rangeItems}
                                                 socket={socket}
                                                 data={params.row}
                                                 loading={loading}
