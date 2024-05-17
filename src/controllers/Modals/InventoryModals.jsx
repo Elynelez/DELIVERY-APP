@@ -96,7 +96,6 @@ const ModifyQuantityServer = ({ rangeItems, socket, data, loading, setLoading })
   };
 
   const onFinish = (values) => {
-    var foundProduct = rangeItems.find(obj => obj.code == data.code)
     data.real_quantity = Number(values.real_quantity)
     data.id = v4()
     data.user = user ? user.email : "test"
@@ -106,18 +105,15 @@ const ModifyQuantityServer = ({ rangeItems, socket, data, loading, setLoading })
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
         try {
-          socket.emit("postSettings", data)
           message.success('Cargado exitosamente')
           setLoading(true);
           handleCancel()
-          foundProduct.quantity = data.real_quantity
+          socket.emit("postSettings", data)
         } catch (err) {
           message.error("no se pudo completar la operación")
           console.log(err)
         } finally {
-          setTimeout(() => {
-            setLoading(false)
-          }, 3000);
+          window.location.reload()
         }
 
       }
