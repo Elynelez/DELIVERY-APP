@@ -47,7 +47,6 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
                                         </Menu.Item>
                                         <Menu.Item key="1">
                                             <ModifyQuantityServer
-                                                rangeItems={rangeItems}
                                                 socket={socket}
                                                 data={params.row}
                                                 loading={loading}

@@ -82,7 +82,7 @@ const AddSkuModalServer = ({ rangeItems, socket, data, loading, setLoading, URL_
   )
 }
 
-const ModifyQuantityServer = ({ rangeItems, socket, data, loading, setLoading }) => {
+const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const { user } = useAuth0()
@@ -105,15 +105,17 @@ const ModifyQuantityServer = ({ rangeItems, socket, data, loading, setLoading })
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
         try {
+          socket.emit("postSettings", data)
           message.success('Cargado exitosamente')
           setLoading(true);
           handleCancel()
-          socket.emit("postSettings", data)
         } catch (err) {
           message.error("no se pudo completar la operación")
           console.log(err)
         } finally {
-          window.location.reload()
+          setTimeout(() => {
+            setLoading(false)
+          }, 3000);
         }
 
       }
