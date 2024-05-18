@@ -105,17 +105,15 @@ const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
       content: 'Esta acción no se puede deshacer.',
       onOk: () => {
         try {
-          socket.emit("postSettings", data)
           message.success('Cargado exitosamente')
           setLoading(true);
           handleCancel()
+          socket.emit("postSettings", data)
         } catch (err) {
           message.error("no se pudo completar la operación")
           console.log(err)
         } finally {
-          setTimeout(() => {
-            setLoading(false)
-          }, 3000);
+          window.location.reload()
         }
 
       }
