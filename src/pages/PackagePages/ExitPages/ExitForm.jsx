@@ -7,53 +7,12 @@ import axios from "axios";
 import { PlatformAutoComplete } from "../../../controllers/Modals/InventoryModals";
 
 const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receiveOrders, URL_SERVER, API_URL }) => {
-    const [dbExits, setDbExits] = useState(() => {
-        const savedDB = localStorage.getItem("dbExits")
-        return savedDB ? JSON.parse(savedDB) : []
-    })
-
     const [exitData, setExitData] = useState({})
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [form] = Form.useForm();
     const [disabled, setDisabled] = useState(false)
-
-    const saveStartTimeToLocalStorage = () => {
-        const startTime = new Date().getTime();
-        localStorage.setItem("timer", startTime.toString());
-    };
-
-    const getElapsedTimeInMinutes = () => {
-        const startTime = parseInt(localStorage.getItem("timer"));
-        const currentTime = new Date().getTime();
-        const elapsedTimeInMilliseconds = currentTime - startTime;
-        return elapsedTimeInMilliseconds / (1000 * 60);
-    };
-
-    setInterval(() => {
-        const elapsedTime = getElapsedTimeInMinutes();
-        console.log(dbExits)
-        if (elapsedTime >= 20) {
-            fetch(API_URL + "inventory/exits/missing", {
-                redirect: "follow",
-                method: 'POST',
-                headers: {
-                    "Content-Type": "text/plain;charset=utf-8",
-                },
-                body: JSON.stringify(dbExits)
-            })
-                .then(response => response.json())
-                .then(parsedData => {
-                    console.log(parsedData)
-                    saveStartTimeToLocalStorage()
-                    localStorage.setItem("dbExits", JSON.stringify([]))
-                })
-                .catch(error => {
-                    console.error('Error cancelling order:', error);
-                });
-        }
-    }, 1200000)
 
     useEffect(() => {
 
@@ -124,6 +83,17 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
 
         axios.get(URL_SERVER + "/inventory/products")
             .then(resp => {
+                if (/^\d+$/.test(e.facture_number)) {
+                    notification.error({
+                        message: 'Número de factura inválido',
+                        description: 'No puedes poner sólo números tiene que tener la letra correspondiente.',
+                        duration: 5,
+                    });
+                    setDisabled(false)
+                    setLoading(false)
+                    return;
+                }
+
                 rangeItems = resp.data
 
                 let rangeOrderNumbers = ordersData.map(obj => { return obj.order_number }).filter(orderNumber => !/^[A-Za-z]+$/.test(orderNumber))
@@ -212,8 +182,6 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
                     socket.emit('postExit', data)
                     receiveOrders(data)
                     message.success('Cargado exitosamente')
-                    setDbExits([...dbExits, data])
-                    localStorage.setItem("dbExits", JSON.stringify([...dbExits, data]))
                     localStorage.setItem("exitData", JSON.stringify({}))
                     setDisabled(false)
                 } catch (err) {
