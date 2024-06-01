@@ -285,7 +285,7 @@ function App() {
         <Router>
           <div className='flex'>
             <Sidebar
-              couriers={["brayan", "edgar", "raul", "richard", "estiven", "hernando", "juano", "servicio externo"]}
+              couriers={["brayan", "edgar", "raul", "richard", "estiven", "hernando", "camilo", "santiago", "juano", "servicio externo"]}
               platforms={["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "DCMEDELLIN"]}
               logisticEmails={logisticEmails}
               bossEmails={bossEmails}
