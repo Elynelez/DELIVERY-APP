@@ -15,7 +15,7 @@ const PendingOrders = ({ rangeItems, ordersData, setOrdersData, socket, receiveO
 
         socket.on('getExits', (loadedOrders) => {
             try {
-                setOrdersData(loadedOrders);
+                setOrdersData(loadedOrders.reverse());
                 setLoading(false);
             } catch (error) {
                 console.error('Error handling loadOrders event:', error);
@@ -96,7 +96,7 @@ const PendingOrders = ({ rangeItems, ordersData, setOrdersData, socket, receiveO
                     </Box>
                     <DataTableGrid
                         key={ordersData.length}
-                        data={ordersData.filter(obj => obj.platform == "POR CONFIRMAR").reverse()}
+                        data={ordersData.filter(obj => obj.platform == "POR CONFIRMAR")}
                         columns={columns}
                         setReloadData={setOrdersData}
                     />
