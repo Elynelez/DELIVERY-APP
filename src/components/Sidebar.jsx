@@ -6,6 +6,8 @@ import { tokens } from "../theme.js";
 import { ProSidebar, Menu as SidebarMenu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import {
+    Work,
+    AddBusiness,
     AddchartSharp,
     Dashboard,
     LocalShipping,
@@ -149,12 +151,12 @@ const Sidebar = (props) => {
                         >
                             Platforms
                         </Typography>
-                        <SubMenu title="Plataformas" icon={<PeopleOutlinedIcon />}>
+                        <SubMenu title="Plataformas" icon={<AddBusiness />}>
                             {props.platforms.map((platform) => (
                                 <Item
                                     title={platform.toLowerCase()}
                                     to={`/platforms/${platform.toLowerCase()}`}
-                                    icon={<PersonOutlinedIcon />}
+                                    icon={<Work />}
                                     selected={selected}
                                     setSelected={setSelected}
                                 />
