@@ -4,7 +4,7 @@ import { PieChart, Pie, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianG
 
 
 
-const Dashboard = ({ pendingData, setPendingData, socket, receiveOrders }) => {
+const Dashboard = ({ ordersData, setOrdersData, socket, receiveOrders }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -12,7 +12,7 @@ const Dashboard = ({ pendingData, setPendingData, socket, receiveOrders }) => {
         socket.on('loadOrdersExits', (loadedOrders) => {
             try {
                 console.log('loadOrders event received:', loadedOrders);
-                setPendingData(loadedOrders);
+                setOrdersData(loadedOrders);
                 setLoading(false);
             } catch (error) {
                 console.error('Error handling loadOrders event:', error);
@@ -34,7 +34,7 @@ const Dashboard = ({ pendingData, setPendingData, socket, receiveOrders }) => {
     }, [])
 
     const filterDataByHourAndDay = (date, startHour, endHour, email1, email2) => {
-        var filteredData = pendingData.filter(obj => {
+        var filteredData = ordersData.filter(obj => {
 
             var objDate = obj.date_generate.slice(0, 10);
 

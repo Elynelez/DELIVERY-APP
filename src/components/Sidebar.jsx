@@ -24,7 +24,8 @@ import {
     MenuOutlined as MenuOutlinedIcon,
     CalendarToday,
     Inventory,
-    Games
+    Games,
+    RadioButtonChecked
 } from "@mui/icons-material/"
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -135,11 +136,18 @@ const Sidebar = (props) => {
                         >
                             Statistics
                         </Typography>
-                        <SubMenu title="Estadísticas" icon={<AddchartSharp />}>
+                        <SubMenu title="Rúbricas" icon={<AddchartSharp />}>
                             <Item
                                 title="Dashboard"
                                 to="/dashboard"
                                 icon={<Dashboard />}
+                                selected={selected}
+                                setSelected={setSelected}
+                            />
+                            <Item
+                                title="Grabadora"
+                                to="/screenrecord"
+                                icon={<RadioButtonChecked />}
                                 selected={selected}
                                 setSelected={setSelected}
                             />

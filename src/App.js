@@ -27,6 +27,7 @@ import DeliveryTable from './pages/DeliveryPages/DeliveryTable';
 import DeliveryForm from './pages/DeliveryPages/DeliveryForm';
 import PlatformTable from './pages/AccountingPages/PlatformTable';
 import CSVReader from './pages/AccountingPages/RappiForm';
+import ScreenRecorder from './pages/DefaultPages/ScreenRecorder';
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
@@ -160,6 +161,9 @@ function App() {
   //               setCountProducts={setCountProducts}
   //             />
   //             <Routes>
+  //               <Route exact path='/record'
+  //                 element={<ScreenRecorder
+  //                 />} />
   //               <Route exact path="/"
   //                 element={<SellerCar
   //                   allProducts={allProducts}
@@ -176,6 +180,7 @@ function App() {
   //                 />} />
   //               <Route exact path="/delivery/:id"
   //                 element={<DeliveryTable
+  //                   socket={socket}
   //                   user={user}
   //                   emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
   //                   deliveryData={deliveryData}
@@ -264,7 +269,7 @@ function App() {
   //                 />} />
   //               <Route exact path="/platforms/:id"
   //                 element={<PlatformTable
-  //                   API_URL={API_DUCOR}
+  //                   socket={socket}
   //                 />} />
   //               <Route exact path='/platforms/rappi/form'
   //                 element={<CSVReader
@@ -318,7 +323,7 @@ function App() {
                   />} />
                 <Route exact path="/platforms/:id"
                   element={<PlatformTable
-                    API_URL={API_DUCOR}
+                    socket={socket}
                   />} />
                 <Route exact path="/dashboard"
                   element={<Dashboard
@@ -326,6 +331,9 @@ function App() {
                     setOrdersData={setOrdersData}
                     socket={socket}
                     receiveOrders={receiveOrders}
+                  />} />
+                <Route exact path="/screenrecord"
+                  element={<ScreenRecorder
                   />} />
                 <Route exact path="/inventory/exit/pending"
                   element={<PendingOrders
@@ -374,6 +382,7 @@ function App() {
                         {logisticEmails.concat(bossEmails).includes(user.email) && (
                           <Route exact path="/delivery/:id"
                             element={<DeliveryTable
+                              socket={socket}
                               user={user}
                               emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
                               deliveryData={deliveryData}
