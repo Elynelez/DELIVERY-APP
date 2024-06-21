@@ -6,7 +6,7 @@ import { tokens } from "../../theme";
 import { useParams } from 'react-router-dom';
 import axios from "axios";
 
-const PlatformTable = ({ API_URL }) => {
+const PlatformTable = ({ socket }) => {
     const { id } = useParams();
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
@@ -15,31 +15,20 @@ const PlatformTable = ({ API_URL }) => {
 
     const loadData = () => {
         setLoading(true);
-        axios.get(API_URL + "platforms/orders/" + id)
-            .then((resp) => {
-                const data = resp.data.map(obj => {
-                    return {
-                        id: obj.id,
-                        date_generate: obj.date_generate,
-                        coursier: obj.order.delivery.coursiers.join(", "),
-                        client: obj.customer.name,
-                        seller: obj.seller.name,
-                        address: obj.customer.shipping_data.address,
-                        items: obj.order.items,
-                        condition: obj.order.transactions.condition,
-                        method: obj.order.transactions.method,
-                        total: obj.order.transactions.total_payments,
-                        status: obj.order.status,
-                        notation: obj.remarks
-                    }
-                })
-                console.log(data)
-                setOrders(data)
+        socket.on('getPlatforms', (loadedData) => {
+            try {
+                console.log(loadedData[id])
+                setOrders(loadedData[id])
                 setLoading(false)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+            }
+        });
+
+        return () => {
+            socket.off('getPlatforms')
+        }
     }
 
     useEffect(() => {
