@@ -6,9 +6,9 @@ import { useTheme, Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useParams } from 'react-router-dom';
 
-const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL }) => {
+const DeliveryTable = ({ socket, user, emails, deliveryData, setDeliveryData, API_URL }) => {
     const { id } = useParams();
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [reloadData, setReloadData] = useState(true);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -16,11 +16,10 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
     const loadData = () => {
         let data
         setLoading(true);
-        fetch(API_URL + "delivery/travels")
-            .then(response => response.json())
-            .then(parsedData => {
-                console.log(parsedData)
-                data = parsedData.map(obj => {
+        socket.on('getOrdersDelivery', (loadedData) => {
+            console.log(loadedData)
+            try {
+                data = loadedData.map(obj => {
                     return {
                         id: obj.id,
                         code: obj.order.id,
@@ -37,7 +36,6 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
                         complete: obj
                     }
                 })
-
                 if (id != "all") {
                     data = data.filter(obj => obj.coursier.includes(id))
                 }
@@ -45,11 +43,15 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
                 setDeliveryData(data);
                 setLoading(false);
                 setReloadData(false)
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error fetching data:', error);
                 setLoading(false);
-            });
+            }
+        });
+
+        return () => {
+            socket.off('getOrdersDelivery')
+        }
     };
 
     const deleteRowById = (id) => {
@@ -134,14 +136,16 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
         { headerName: 'Vendedor', field: "seller", flex: 1 },
         { headerName: 'Dirección', field: "address", flex: 1 },
         { headerName: 'Condición', field: "condition", flex: 1 },
-        { headerName: 'Método', field: "method", flex: 1, renderCell: (params) => (
-            params.row.method === "EFECTIVO" ?
-                <div style={{ color: '#052c65' }}>
-                    {params.row.method}
-                </div> : <div>
-                    {params.row.method}
-                </div>
-        ) },
+        {
+            headerName: 'Método', field: "method", flex: 1, renderCell: (params) => (
+                params.row.method === "EFECTIVO" ?
+                    <div style={{ color: '#052c65' }}>
+                        {params.row.method}
+                    </div> : <div>
+                        {params.row.method}
+                    </div>
+            )
+        },
         { headerName: 'Valor', field: "total", flex: 1 },
         {
             headerName: 'Estado', field: 'status', flex: 1, renderCell: (params) => (
