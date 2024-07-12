@@ -290,11 +290,11 @@ function App() {
   // )
 
   return (
-    blocked ? (
-      <div className="block-screen">
-        <p>Conectando...</p>
-      </div>
-    ) : (
+    // blocked ? (
+    //   <div className="block-screen">
+    //     <p>Conectando...</p>
+    //   </div>
+    // ) : (
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
@@ -513,7 +513,7 @@ function App() {
         </ThemeProvider>
       </ColorModeContext.Provider>
     )
-  )
+  // )
 }
 
 export default App;
