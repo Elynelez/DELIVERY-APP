@@ -438,6 +438,7 @@ function App() {
                                   ordersData={ordersData}
                                   setOrdersData={setOrdersData}
                                   socket={socket}
+                                  API_URL={URL_SERVER}
                                 />} />
                             </>
                           )}

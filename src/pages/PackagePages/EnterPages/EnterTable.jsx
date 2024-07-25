@@ -5,24 +5,34 @@ import { Box, Typography } from "@mui/material";
 import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";
 
-const EnterTable = ({ ordersData, setOrdersData, socket }) => {
+const EnterTable = ({ ordersData, setOrdersData, socket, API_URL }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    useEffect(() => {
-        socket.on('getEntries', (loadedData) => {
-            try {
-                setOrdersData(loadedData)
-                setLoading(false)
-            } catch (error) {
-                console.error('Error handling dataInventory event:', error);
-            }
-        })
+    // useEffect(() => {
+    //     socket.on('getEntries', (loadedData) => {
+    //         try {
+    //             setOrdersData(loadedData)
+    //             setLoading(false)
+    //         } catch (error) {
+    //             console.error('Error handling dataInventory event:', error);
+    //         }
+    //     })
 
-        return () => {
-            socket.off('getEntries')
-        }
+    //     return () => {
+    //         socket.off('getEntries')
+    //     }
+    // }, [])
+
+    useEffect(() => {
+        console.log(API_URL + "/inventory/entries")
+        fetch(API_URL + "/inventory/entries")
+            .then(response => response.json())
+            .then(parsedData => {
+                setOrdersData(parsedData)
+                setLoading(false);
+            })
     }, [])
 
     const columns = [
