@@ -35,7 +35,6 @@ import { ColorModeContext, useMode } from "./theme";
 // middlewares
 
 // API URL'S
-const API_URL_DELIVERY = "https://script.google.com/macros/s/AKfycbyu_G-OoCPMs9dVJuSNbE7Wc-jtDSGK2-RyrLO-IGTAYZxMf6BYfm8vGn6Wul0ADiXvDg/exec"
 const API_DUCOR = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?path="
 // const URL_SERVER = 'http://localhost:' + 8080
 const URL_SERVER = "https://server-cloud-mggp.onrender.com"
@@ -276,6 +275,7 @@ function App() {
   //               <Route exact path="/platforms/:id"
   //                 element={<PlatformTable
   //                   socket={socket}
+  //                   API_URL={URL_SERVER}
   //                 />} />
   //               <Route exact path='/platforms/rappi/form'
   //                 element={<CSVReader
@@ -334,7 +334,7 @@ function App() {
                     />} />
                   <Route exact path="/platforms/:id"
                     element={<PlatformTable
-                      socket={socket}
+                      API_URL={URL_SERVER}
                     />} />
                   <Route exact path="/dashboard"
                     element={<Dashboard

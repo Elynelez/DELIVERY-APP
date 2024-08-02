@@ -4,9 +4,8 @@ import DataTableGrid from "../../controllers/Tables/DataGridPro";
 import { useTheme, Box, Typography } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams } from 'react-router-dom';
-import axios from "axios";
 
-const PlatformTable = ({ socket }) => {
+const PlatformTable = ({ API_URL }) => {
     const { id } = useParams();
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
@@ -14,22 +13,37 @@ const PlatformTable = ({ socket }) => {
     const colors = tokens(theme.palette.mode);
 
     const loadData = () => {
+        let data
         setLoading(true);
-        socket.on('getPlatforms', (loadedData) => {
-            try {
-                console.log(loadedData[id])
-                setOrders(loadedData[id])
-                setLoading(false)
-            } catch (error) {
+        fetch(`${API_URL}/platforms/${id}`)
+            .then(response => response.json())
+            .then(parsedData => {
+                console.log(parsedData)
+                data = parsedData.map(obj => {
+                    return {
+                        id: obj.id,
+                        date_generate: obj.date_generate,
+                        coursier: Array.isArray(obj.order.delivery) ? obj.order.delivery.join(", ") : obj.order.delivery,
+                        seller: obj.seller.name,
+                        client: obj.customer.name,
+                        address: obj.customer.shipping_data.address,
+                        state: obj.customer.shipping_data.state,
+                        city: obj.customer.shipping_data.city,
+                        items: Array.isArray(obj.order.items) ? obj.order.items.map(item => `${item.item.sku} - ${item.item.name} - ${item.item.quantity}`).join('; ') : obj.order.items,
+                        condition: obj.order.transactions.condition,
+                        method: obj.order.transactions.method,
+                        total: Number(obj.order.transactions.total_payments) + Number(obj.order.transactions.total_shipping),
+                        status: obj.order.status
+                    }
+                })
+                setOrders(data);
+                setLoading(false);
+            })
+            .catch(error => {
                 console.error('Error fetching data:', error);
                 setLoading(false);
-            }
-        });
-
-        return () => {
-            socket.off('getPlatforms')
-        }
-    }
+            });
+    };
 
     useEffect(() => {
         loadData();
@@ -48,26 +62,19 @@ const PlatformTable = ({ socket }) => {
     const columns = [
         { headerName: 'Fecha desp.', field: "date_generate", flex: 1 },
         { headerName: 'Código', field: "id", flex: 1 },
-        { headerName: 'Mensajero', field: "coursier", flex: 1 },
+        { headerName: 'Mensajeros', field: "coursier", flex: 1 },
         { headerName: 'Cliente', field: "client", flex: 1 },
         { headerName: 'Vendedor', field: "seller", flex: 1 },
         { headerName: 'Dirección', field: "address", flex: 1 },
-        {
-            headerName: 'Artículos', field: "items", valueFormatter: (params) => {
-                return Array.isArray(params.value) ? params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join('; ') : params.value.items;
-            }
-        },
+        { headerName: 'Departamento', field: "state", flex: 1 },
+        { headerName: 'Ciudad', field: "city", flex: 1 },
+        // {
+        //     headerName: 'Artículos', field: "items", valueFormatter: (params) => {
+        //         return Array.isArray(params.value) ? params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join('; ') : params.value.items;
+        //     }
+        // },
         { headerName: 'Condición', field: "condition", flex: 1 },
-        {
-            headerName: 'Método', field: "method", flex: 1, renderCell: (params) => (
-                params.row.method === "EFECTIVO" ?
-                    <div style={{ color: '#052c65' }}>
-                        {params.row.method}
-                    </div> : <div>
-                        {params.row.method}
-                    </div>
-            )
-        },
+        { headerName: 'Método', field: "method", flex: 1 },
         { headerName: 'Valor', field: "total", flex: 1 },
         {
             headerName: 'Estado', field: 'status', flex: 1, renderCell: (params) => (
@@ -102,7 +109,7 @@ const PlatformTable = ({ socket }) => {
                     <DataTableGrid
                         key={orders.length}
                         columns={columns}
-                        data={orders.reverse()}
+                        data={orders}
                         setReloadData={setOrders}
                         setLoading={setLoading}
                     />
