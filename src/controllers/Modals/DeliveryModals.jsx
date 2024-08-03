@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Input, Checkbox, Spin, message, Select, Typography, List, notification } from 'antd';
-import 'sweetalert2/dist/sweetalert2.min.css';
 
 
 const ModalData = ({ data }) => {

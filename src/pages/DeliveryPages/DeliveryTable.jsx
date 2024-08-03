@@ -16,7 +16,7 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
     const loadData = () => {
         let data
         setLoading(true);
-        fetch(API_URL + "delivery/travels")
+        fetch(`${API_URL}/delivery/travels`)
             .then(response => response.json())
             .then(parsedData => {
                 console.log(parsedData)
@@ -211,6 +211,7 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
                         </Typography>
                     </Box>
                     <DataTableGrid
+                        key={deliveryData.length}
                         columns={columns}
                         data={"user.email" == "contableducor@gmail.com" ? deliveryData.filter(obj => obj.method != "EFECTIVO") : deliveryData}
                         setReloadData={setReloadData}

@@ -190,7 +190,7 @@ function App() {
   //                   emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
   //                   deliveryData={deliveryData}
   //                   setDeliveryData={setDeliveryData}
-  //                   API_URL={API_DUCOR}
+  //                   API_URL={URL_SERVER}
   //                 />} />
   //               <Route exact path="/delivery/form"
   //                 element={<DeliveryForm
@@ -398,7 +398,7 @@ function App() {
                                 emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
                                 deliveryData={deliveryData}
                                 setDeliveryData={setDeliveryData}
-                                API_URL={API_DUCOR}
+                                API_URL={URL_SERVER}
                               />} />
                           )}
                           {ExternalServiceEmails.includes(user.email) && (
