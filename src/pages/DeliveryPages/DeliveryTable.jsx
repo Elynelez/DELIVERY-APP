@@ -6,7 +6,7 @@ import { useTheme, Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useParams } from 'react-router-dom';
 
-const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL }) => {
+const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL, URL_SERVER }) => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true)
     const [reloadData, setReloadData] = useState(true);
@@ -16,7 +16,7 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL })
     const loadData = () => {
         let data
         setLoading(true);
-        fetch(`${API_URL}/delivery/travels`)
+        fetch(`${URL_SERVER}/delivery/travels`)
             .then(response => response.json())
             .then(parsedData => {
                 console.log(parsedData)

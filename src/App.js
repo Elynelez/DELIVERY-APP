@@ -398,7 +398,8 @@ function App() {
                                 emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
                                 deliveryData={deliveryData}
                                 setDeliveryData={setDeliveryData}
-                                API_URL={URL_SERVER}
+                                API_URL={API_DUCOR}
+                                URL_SERVER={URL_SERVER}
                               />} />
                           )}
                           {ExternalServiceEmails.includes(user.email) && (
@@ -409,6 +410,7 @@ function App() {
                                 deliveryData={deliveryData}
                                 setDeliveryData={setDeliveryData}
                                 API_URL={API_DUCOR}
+                                URL_SERVER={URL_SERVER}
                               />} />
                           )}
                         </>
