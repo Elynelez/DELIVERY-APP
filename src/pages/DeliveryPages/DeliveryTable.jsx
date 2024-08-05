@@ -168,11 +168,15 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL, U
                                         <Menu.Item key="3">
                                             <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(params.row.id)}>Borrar</Button>
                                         </Menu.Item>
-                                        {(params.row.status == "EN RUTA" || ["contableducor@gmail.com", "inducorsas@gmail.com"].includes(user.email)) && (
+                                        {(["contableducor@gmail.com", "inducorsas@gmail.com", "logistica.inducor@gmail.com"].includes(user.email)) && (
                                             <>
                                                 <Menu.Item key="4">
                                                     <EditModal setReloadData={setReloadData} data={params.row.complete} API_URL={API_URL} />
                                                 </Menu.Item>
+                                            </>
+                                        )}
+                                        {(["contableducor@gmail.com", "inducorsas@gmail.com"].includes(user.email)) && (
+                                            <>
                                                 <Menu.Item key="5">
                                                     <ConfirmModal setReloadData={setReloadData} data={params.row.complete} API_URL={API_URL} user={user} />
                                                 </Menu.Item>
