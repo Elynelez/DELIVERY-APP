@@ -42,7 +42,7 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL, U
                     data = data.filter(obj => obj.coursier.includes(id))
                 }
 
-                setDeliveryData(data);
+                setDeliveryData(data.reverse());
                 setLoading(false);
                 setReloadData(false)
             })
