@@ -162,8 +162,8 @@ const ConfirmInventoryModalServer = ({ pendingData, setPendingData, data, setLoa
   useEffect(() => {
     const objectGroup = {}
     for (const obj of data.items) {
-      const sku = obj.sku;
-      objectGroup[sku] = Number(obj.quantity);
+      const sku = obj.item.sku;
+      objectGroup[sku] = Number(obj.item.quantity);
     }
 
     const resultArray = Array.from(Object.entries(objectGroup).flatMap(([key, value]) => Array(value).fill(key))).filter(function (i) { return i !== "undefined" })
@@ -256,9 +256,9 @@ const ConfirmInventoryModalServer = ({ pendingData, setPendingData, data, setLoa
             <TableBody>
               {data.items.map((obj) => (
                 <TableRow key={obj.sku}>
-                  <TableCell>{obj.sku}</TableCell>
-                  <TableCell>{obj.name}</TableCell>
-                  <TableCell align="right">{obj.quantity}</TableCell>
+                  <TableCell>{obj.item.sku}</TableCell>
+                  <TableCell>{obj.item.name}</TableCell>
+                  <TableCell align="right">{obj.item.quantity}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -454,12 +454,14 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
 
         const allValues = e.projects.map(obj => {
           return {
-            code: obj.code,
-            sku: obj.sku,
-            name: obj.name,
-            db_quantity: obj.db_quantity,
-            quantity: Number(obj.quantity_currently),
-            brand: obj.brand
+            item: {
+              code: obj.code,
+              sku: obj.sku,
+              name: obj.name,
+              db_quantity: obj.db_quantity,
+              quantity: Number(obj.quantity_currently),
+              brand: obj.brand
+            }
           }
         })
 
@@ -672,7 +674,7 @@ const PlatformAutoComplete = ({ socket, mainForm, colors }) => {
 
   const onFinishSH = (e) => {
     handleCancelSH()
-    const data = {id: e.qr.match(/\d+/)}
+    const data = { id: e.qr.match(/\d+/) }
     console.log(data)
     socket.emit("preloadOrderSH", data)
 
@@ -689,7 +691,7 @@ const PlatformAutoComplete = ({ socket, mainForm, colors }) => {
 
   const onFinishML = (e) => {
     handleCancelML()
-    const data = {id: e.qr.match(/\d+/)}
+    const data = { id: e.qr.match(/\d+/) }
     console.log(data)
     socket.emit("preloadOrderML", data)
 
@@ -833,7 +835,7 @@ const EditCodeProduct = ({ socket, code, loading, setLoading }) => {
   )
 }
 
-const MultiplePlatformModal = ({ids, colors}) => {
+const MultiplePlatformModal = ({ ids, colors }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
 

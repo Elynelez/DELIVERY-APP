@@ -166,14 +166,14 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
                 }
 
                 const allValues = e.projects.map(obj => {
-                    return {
+                    return {item: {
                         code: obj.code,
                         sku: obj.sku,
                         name: obj.name,
                         db_quantity: obj.quantity,
                         quantity: obj.quantity_currently,
                         brand: obj.brand
-                    }
+                    }}
                 })
 
                 data.items = allValues
