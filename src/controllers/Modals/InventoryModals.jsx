@@ -255,7 +255,7 @@ const ConfirmInventoryModalServer = ({ pendingData, setPendingData, data, setLoa
             </TableHead>
             <TableBody>
               {data.items.map((obj) => (
-                <TableRow key={obj.sku}>
+                <TableRow key={obj.item.sku}>
                   <TableCell>{obj.item.sku}</TableCell>
                   <TableCell>{obj.item.name}</TableCell>
                   <TableCell align="right">{obj.item.quantity}</TableCell>
