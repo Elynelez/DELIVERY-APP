@@ -406,7 +406,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
 
             if (matchingRangeItem) {
 
-              let preview_quantity = dataOrder.items.find(obj_item => obj_item.sku.toString() == obj.sku.toString())
+              let preview_quantity = dataOrder.items.find(obj_item => obj_item.item.sku.toString() == obj.sku.toString())
 
               return {
                 ...matchingRangeItem,
