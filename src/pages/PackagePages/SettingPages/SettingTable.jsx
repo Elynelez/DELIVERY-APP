@@ -30,7 +30,7 @@ const SettingTable = ({ ordersData, setOrdersData, socket }) => {
         { headerName: 'Fecha de ajuste', field: "date_generate", flex: 0.5 },
         {
             headerName: 'Artículos', field: "items", flex: 2, valueFormatter: (params) => {
-                return params.value.map(item => `${item.sku} - ${item.name} - ${item.quantity}`).join('; ');
+                return params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join('; ');
             }
         },
         {

@@ -91,12 +91,14 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
 
                 const allValues = e.projects.map(obj => {
                     return {
-                        code: obj.code,
-                        sku: obj.sku,
-                        name: obj.name,
-                        db_quantity: obj.quantity,
-                        quantity: obj.quantity_currently,
-                        brand: obj.brand
+                        item: {
+                            code: obj.code,
+                            sku: obj.sku,
+                            name: obj.name,
+                            db_quantity: obj.quantity,
+                            quantity: obj.quantity_currently,
+                            brand: obj.brand
+                        }
                     }
                 })
 

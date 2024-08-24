@@ -26,7 +26,6 @@ const EnterTable = ({ ordersData, setOrdersData, socket, API_URL }) => {
     // }, [])
 
     useEffect(() => {
-        console.log(API_URL + "/inventory/entries")
         fetch(API_URL + "/inventory/entries")
             .then(response => response.json())
             .then(parsedData => {
@@ -41,7 +40,7 @@ const EnterTable = ({ ordersData, setOrdersData, socket, API_URL }) => {
         { headerName: 'Proveedor', field: "provider", flex: 1 },
         {
             headerName: 'Artículos', field: "items", valueFormatter: (params) => {
-                return params.value.map(item => `${item.sku} - ${item.name} - ${item.quantity}`).join('; ');
+                return params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join('; ');
             }
         },
         {
