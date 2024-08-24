@@ -5,29 +5,24 @@ import { Box, Typography } from "@mui/material";
 import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";
 
-const SettingTable = ({ ordersData, setOrdersData, socket }) => {
+const SettingTable = ({ ordersData, setOrdersData, API_URL }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
 
     useEffect(() => {
-        socket.on('getSettings', (loadedData) => {
-            try {
-                setOrdersData(loadedData)
-                setLoading(false)
-            } catch (error) {
-                console.error('Error handling dataInventory event:', error);
-            }
-        })
-
-        return () => {
-            socket.off('getSettings')
-        }
+        fetch(API_URL + "/inventory/settings")
+            .then(response => response.json())
+            .then(parsedData => {
+                console.log(parsedData)
+                setOrdersData(parsedData)
+                setLoading(false);
+            })
     }, [])
 
     const columns = [
-        { headerName: 'Fecha de ajuste', field: "date_generate", flex: 0.5 },
+        { headerName: 'Fecha', field: "date_generate", flex: 0.5 },
         {
             headerName: 'Artículos', field: "items", flex: 2, valueFormatter: (params) => {
                 return params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join('; ');
@@ -44,7 +39,7 @@ const SettingTable = ({ ordersData, setOrdersData, socket }) => {
             headerName: 'Usuario Ajuste', field: "setting", flex: 1, valueFormatter: (params) => {
                 return `Usuario: ${params.value.user} - IP: ${params.value.IP}`;
             },
-        },
+        }
     ]
 
     return (

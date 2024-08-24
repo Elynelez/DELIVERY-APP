@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material";
 import { tokens } from "../../../theme";
 import { useTheme } from "@mui/material";
 
-const ExitTable = ({ ordersData, setOrdersData, socket }) => {
+const ExitTable = ({ ordersData, setOrdersData, API_URL, socket  }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -17,35 +17,21 @@ const ExitTable = ({ ordersData, setOrdersData, socket }) => {
     }
 
     useEffect(() => {
-
-        socket.on('getExits', (loadedData) => {
-            try {
-                setOrdersData(loadedData)
+        fetch(API_URL + "/inventory/exits")
+            .then(response => response.json())
+            .then(parsedData => {
+                setOrdersData(parsedData)
                 setLoading(false);
-            } catch (error) {
-                console.error('Error handling loadOrders event:', error);
-            }
-        });
-
-        return () => {
-            socket.off('getExits')
-        }
+            })
     }, [])
 
     const columns = [
-        { headerName: 'Fecha de picking', field: "date_generate", flex: 1 },
-        {
-            headerName: 'Fecha de packing', field: "date_packing", flex: 1, renderCell: params => (
-                <>
-                    {params.row.date_packing}
-                </>
-            )
-        },
+        { headerName: 'Fecha', field: "date_generate", flex: 1 },
         { headerName: 'Número de orden', field: "order_number", flex: 1 },
         { headerName: 'Plataforma', field: "platform", flex: 1 },
         {
             headerName: 'Artículos', field: "items", valueFormatter: (params) => {
-                return params.value.map(item => `${item.sku} - ${item.name} - ${item.quantity}`).join('; ');
+                return params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join('; ');
             }
         },
         {
