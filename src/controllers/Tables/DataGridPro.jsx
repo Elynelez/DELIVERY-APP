@@ -81,11 +81,11 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
       <td>${obj.date_packing}</td>
       <td>${obj.order_number}</td>
       <td>${obj.platform}</td>
-      <td>${product.code}</td>
-      <td>${product.sku}</td>
-      <td>${product.name}</td>
-      <td>${product.quantity}</td>
-      <td>${product.brand}</td>
+      <td>${product.item.code}</td>
+      <td>${product.item.sku}</td>
+      <td>${product.item.name}</td>
+      <td>${product.item.quantity}</td>
+      <td>${product.item.brand}</td>
       <td>${obj.picking.user}</td>
       <td>${obj.packing.user}</td>
       <td>${obj.picking.IP}</td>
@@ -123,11 +123,11 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
       <td>${obj.date_generate}</td>
       <td>${obj.facture_number}</td>
       <td>${obj.provider}</td>
-      <td>${product.code}</td>
-      <td>${product.sku}</td>
-      <td>${product.name}</td>
-      <td>${product.quantity}</td>
-      <td>${product.brand}</td>
+      <td>${product.item.code}</td>
+      <td>${product.item.sku}</td>
+      <td>${product.item.name}</td>
+      <td>${product.item.quantity}</td>
+      <td>${product.item.brand}</td>
       <td>${obj.review.user}</td>
       <td>${obj.review.IP}</td></tr>
       `
@@ -161,12 +161,12 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
         return `
       <tr><td>${obj.id}</td>
       <td>${obj.date_generate}</td>
-      <td>${product.code}</td>
-      <td>${product.sku}</td>
-      <td>${product.name}</td>
-      <td>${product.quantity}</td>
-      <td>${product.last_quantity}</td>
-      <td>${product.brand}</td>
+      <td>${product.item.code}</td>
+      <td>${product.item.sku}</td>
+      <td>${product.item.name}</td>
+      <td>${product.item.quantity}</td>
+      <td>${product.item.last_quantity}</td>
+      <td>${product.item.brand}</td>
       <td>${obj.setting.user}</td>
       <td>${obj.setting.IP}</td></tr>
       `
