@@ -61,14 +61,14 @@ const NavbarNavigation = (props) => {
         <IconButton>
           <Dropdown isOpen={active} toggle={() => { setActive(!active) }}>
             <DropdownToggle nav caret>
-              <div class="container-cart-icon">
+              <div className="container-cart-icon">
                 <ShoppingCart />
-                <div class="count-products">
+                <div className="count-products">
                   <span id="contador-productos">{props.countProducts}</span>
                 </div>
               </div>
             </DropdownToggle>
-            <DropdownMenu right>
+            <DropdownMenu end>
               <DropdownItem header>Productos</DropdownItem>
               {props.allProducts.length ? (
                 <>
@@ -137,7 +137,7 @@ const NavbarNavigation = (props) => {
             <DropdownToggle nav caret>
               <PersonOutlinedIcon />
             </DropdownToggle>
-            <DropdownMenu right>
+            <DropdownMenu end>
               {props.isAuthenticated ? (
                 <>
                   <DropdownItem>

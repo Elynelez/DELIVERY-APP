@@ -162,6 +162,7 @@ const Sidebar = (props) => {
                         <SubMenu title="Plataformas" icon={<AddBusiness />}>
                             {props.platforms.map((platform) => (
                                 <Item
+                                    key={platform.toLowerCase()}
                                     title={platform.toLowerCase()}
                                     to={`/platforms/${platform.toLowerCase()}`}
                                     icon={<Work />}
@@ -169,6 +170,13 @@ const Sidebar = (props) => {
                                     setSelected={setSelected}
                                 />
                             ))}
+                            <Item
+                                title={"addi"}
+                                to={`/platforms/addi`}
+                                icon={<Work />}
+                                selected={selected}
+                                setSelected={setSelected}
+                            />
                             <Item
                                 title="Subir rappi"
                                 to="/platforms/rappi/form"
@@ -245,6 +253,7 @@ const Sidebar = (props) => {
                                                     </Typography>
                                                     {props.couriers.map((coursier) => (
                                                         <Item
+                                                            key={coursier}
                                                             title={coursier}
                                                             to={`/delivery/${coursier}`}
                                                             icon={<PersonOutlinedIcon />}
