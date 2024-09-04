@@ -1,35 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd"
 import DataTableGrid from "../../../controllers/Tables/DataGridPro";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
-import { useTheme } from "@mui/material";
+import axios from "axios";
 
-const EnterTable = ({ ordersData, setOrdersData, socket, API_URL }) => {
+const EnterTable = ({ ordersData, setOrdersData, API_URL }) => {
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    // useEffect(() => {
-    //     socket.on('getEntries', (loadedData) => {
-    //         try {
-    //             setOrdersData(loadedData)
-    //             setLoading(false)
-    //         } catch (error) {
-    //             console.error('Error handling dataInventory event:', error);
-    //         }
-    //     })
-
-    //     return () => {
-    //         socket.off('getEntries')
-    //     }
-    // }, [])
-
     useEffect(() => {
-        fetch(API_URL + "/inventory/entries")
-            .then(response => response.json())
-            .then(parsedData => {
-                setOrdersData(parsedData)
+        axios.get(`${API_URL}/inventory/entries`)
+            .then(resp => {
+                setOrdersData(resp.data)
                 setLoading(false);
             })
     }, [])
