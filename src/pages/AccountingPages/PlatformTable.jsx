@@ -78,7 +78,7 @@ const PlatformTable = ({ API_URL }) => {
         { headerName: 'Valor', field: "total", flex: 1 },
         {
             headerName: 'Estado', field: 'status', flex: 1, renderCell: (params) => (
-                <div style={{ display: "flex", alignItems: "center", textAlign: "center", backgroundColor: colors.black[100], width: "80px", height: "40px", borderRadius: "5px", color: statusColorMap[params.row.status] || 'white' }}>
+                <div style={{ display: "flex", alignItems: "center", textAlign: "center", backgroundColor: colors.black[100], width: "200px", height: "40px", borderRadius: "5px", color: statusColorMap[params.row.status] || 'white' }}>
                     <p style={{ display: "inline-block", margin: "auto", overflow: "hidden", padding: "1px 2px 1px" }}>{params.row.status}</p>
                 </div>
             )
