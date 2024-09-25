@@ -5,8 +5,224 @@ import { Button, Spin, message, Form, Input, Col, Row, Select, notification } fr
 import { v4 } from 'uuid';
 import axios from "axios";
 import { PlatformAutoComplete } from "../../../controllers/Modals/InventoryModals";
+// import { checkDuplicates, checkEmpty, checkFormat, checkOrderNumber, checkQuantity, processExitData } from "../../../middlewares";
 
-const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receiveOrders, URL_SERVER, API_URL }) => {
+// const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receiveOrders, URL_SERVER, API_URL }) => {
+//     const [exitData, setExitData] = useState({})
+//     const [loading, setLoading] = useState(true)
+//     const [disabled, setDisabled] = useState(false)
+//     const theme = useTheme();
+//     const colors = tokens(theme.palette.mode);
+//     const [form] = Form.useForm();
+//     const [ordersExits, setOrdersExits] = useState([])
+
+//     useEffect(() => {
+
+//         if (exitData) {
+//             const savedExitData = localStorage.getItem("exitData")
+//             savedExitData ? setExitData(JSON.parse(savedExitData)) : setExitData({ facture_number: "", platform: "POR CONFIRMAR", projects: [] })
+//         }
+
+//         socket.on('getPendings', (pendings) => {
+//             try {
+//                 console.log(pendings)
+//                 setOrdersData(pendings);
+//                 setLoading(false);
+//             } catch (error) {
+//                 console.error('Error handling loadOrders event:', error);
+//             }
+//         });
+
+//         socket.on('dataOrderExit', obj => {
+//             try {
+//                 receiveOrders(obj);
+//             } catch (error) {
+//                 console.error('Error handling dataOrder event:', error);
+//             }
+//         })
+
+//         return () => {
+//             socket.off('dataOrderExit')
+//         }
+//     }, [socket])
+
+//     useEffect(() => {
+//         axios.get(URL_SERVER + "/inventory/exits")
+//             .then((resp) => {
+//                 const exits = resp.data
+
+//                 setOrdersExits(exits)
+//             })
+//     }, [])
+
+//     const onFinish = async (e) => {
+//         setLoading(true);
+//         setDisabled(true);
+
+//         if (checkDuplicates(e, setLoading, setDisabled, notification) || 
+//             checkEmpty(e, setLoading, setDisabled, notification) || 
+//             checkFormat(e, setLoading, setDisabled, notification) || 
+//             checkOrderNumber(e, ordersData, ordersExits, setLoading, setDisabled, notification)) {
+//             return;
+//         }
+
+//         let allValues;
+//         let rangeItems;
+
+//         try {
+//             const resp = await axios.get(URL_SERVER + '/inventory/products');
+//             rangeItems = resp.data;
+
+//             allValues = e.projects.map((obj) => {
+//                 const prod = rangeItems.find(item => item.sku == obj.sku);
+//                 return {
+//                     item: {
+//                         code: prod.code,
+//                         sku: prod.sku,
+//                         name: prod.name,
+//                         db_quantity: prod.quantity,
+//                         quantity: obj.quantity_currently,
+//                         brand: prod.brand,
+//                     }
+//                 };
+//             });
+
+//             if (e.platform === 'OTRO') {
+//                 if (checkQuantity(e, rangeItems, setLoading, setDisabled, notification)) {
+//                     return;
+//                 }
+
+//                 processExitData(e, allValues, 'postExit', socket, receiveOrders, message, setLoading, setDisabled, form, user, v4);
+//             } else {
+//                 processExitData(e, allValues, 'postPending', socket, receiveOrders, message, setLoading, setDisabled, form, user, v4);
+//             }
+//         } catch (error) {
+//             setLoading(false);
+//             setDisabled(false);
+//             console.error("Error fetching products:", error);
+//         }
+//     };
+//     return (
+//         <div className="container py-5">
+//             {loading ? (
+//                 <div className="text-center">
+//                     <Spin tip="Cargando datos..." />
+//                 </div>
+//             ) : (
+//                 <div className="body-group-form">
+//                     <PlatformAutoComplete
+//                         socket={socket}
+//                         mainForm={form}
+//                         colors={colors}
+//                     />
+//                     <div className="container-group-form" style={{ backgroundColor: colors.primary[400] }}>
+//                         <h1 className="form-title-group" style={{ color: "#6870fa" }}><span>SALIDA DE PRODUCTOS</span></h1>
+//                         <Form form={form} onFinish={onFinish} initialValues={exitData} layout="vertical">
+//                             <div className="main-user-info-group">
+//                                 <div className="user-input-box-group">
+//                                     <div className="end-input-group-form">
+//                                         <div className="input-group-form">
+//                                             <Form.Item
+//                                                 label={<label style={{ color: "#6870fa" }}>Número del pedido</label>}
+//                                                 name="facture_number"
+//                                                 labelAlign="left"
+//                                                 rules={[{
+//                                                     required: true,
+//                                                     type: "regexp",
+//                                                     pattern: new RegExp(/^[a-zA-Z]$/),
+//                                                     message: 'El número del pedido debe comenzar con una letra y puede contener letras y números.'
+//                                                 }]}
+//                                             >
+//                                                 <Input className="input-info-form" style={{ borderBottom: "1px solid #6870fa" }} />
+//                                             </Form.Item>
+//                                         </div>
+//                                         <div className="input-group-form">
+//                                             <Form.Item
+//                                                 label={<label style={{ color: "#6870fa" }}>Plataforma</label>}
+//                                                 name="platform"
+//                                                 labelAlign="left"
+//                                                 rules={[{ required: true }]}
+//                                                 initialValue={"POR CONFIRMAR"}
+//                                             >
+//                                                 <Select
+//                                                     className="input-info-form"
+//                                                     style={{ borderBottom: "1px solid #6870fa" }}
+//                                                     showSearch={true}
+//                                                     placeholder="Choice a type"
+//                                                 >
+//                                                     <Select.Option value={"POR CONFIRMAR"} key={1}>pendiente</Select.Option>
+//                                                     <Select.Option value={"OTRO"} key={2}>Plataforma</Select.Option>
+//                                                 </Select>
+//                                             </Form.Item>
+//                                         </div>
+//                                     </div>
+//                                     <h4 className="h4-bottom-form" style={{ color: "#6870fa" }}></h4>
+//                                     <Form.List name="projects">
+//                                         {(fields, { add, remove }) => (
+//                                             <>
+//                                                 <Form.Item>
+//                                                     <Button className="button-add-form" style={{ backgroundColor: "#6870fa" }} onClick={add} >
+//                                                         Agregar
+//                                                     </Button>
+//                                                 </Form.Item>
+//                                                 <div className="limit-group-form">
+//                                                     {fields.map((field, index, ...fields) => (
+//                                                         <Row gutter={[12, 16]} key={index}>
+//                                                             <Col span={10}>
+//                                                                 <Form.Item
+//                                                                     {...fields}
+//                                                                     name={[index, "sku"]}
+//                                                                     rules={[{ required: true }]}
+//                                                                 >
+//                                                                     <Select
+//                                                                         className="input-info-form"
+//                                                                         style={{ borderBottom: "1px solid #6870fa" }}
+//                                                                         showSearch={true}
+//                                                                         placeholder="Select a product"
+//                                                                     >
+//                                                                         {rangeItems.map((obj, index) => (
+//                                                                             <Select.Option value={obj.sku} code={obj.code} key={index}>{obj.name}</Select.Option>
+//                                                                         ))}
+//                                                                     </Select>
+//                                                                 </Form.Item>
+//                                                             </Col>
+//                                                             <Col span={6}>
+//                                                                 <Form.Item
+//                                                                     {...fields}
+//                                                                     name={[index, "quantity_currently"]}
+//                                                                     rules={[
+//                                                                         { required: true }
+//                                                                     ]}
+//                                                                 >
+//                                                                     <Input className="input-info-form" style={{ borderBottom: "1px solid #6870fa" }} placeholder="Quantity" type="number" min="1" max="999" />
+//                                                                 </Form.Item>
+//                                                             </Col>
+//                                                             <Col span={8}>
+//                                                                 <Button danger onClick={() => remove(index)}>
+//                                                                     Eliminar
+//                                                                 </Button>
+//                                                             </Col>
+//                                                         </Row>
+//                                                     ))}
+//                                                 </div>
+//                                             </>
+//                                         )}
+//                                     </Form.List>
+//                                 </div>
+//                             </div>
+//                             <Form.Item>
+//                                 <input type="submit" className="form-submit-btn" style={{ backgroundColor: "#6870fa" }} disabled={disabled} />
+//                             </Form.Item>
+//                         </Form>
+//                     </div>
+//                 </div>
+//             )}
+//         </div >
+
+//     )
+// }
+
+const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receiveOrders, URL_SERVER }) => {
     const [exitData, setExitData] = useState({})
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
@@ -15,6 +231,16 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
     const [disabled, setDisabled] = useState(false)
 
     useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            axios.get(`${URL_SERVER}/inventory/exits`)
+                .then(response => {
+                    setOrdersData(response.data);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.error('Error al consultar la API:', error);
+                });
+        }, 5000)
 
         if (exitData) {
             const savedExitData = localStorage.getItem("exitData")
@@ -22,6 +248,7 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
         }
 
         socket.on('getExits', (loadedOrders) => {
+            clearTimeout(timeoutId)
             try {
                 setOrdersData(loadedOrders);
                 setLoading(false);
@@ -39,6 +266,7 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
         })
 
         return () => {
+            clearTimeout(timeoutId)
             socket.off('dataOrderExit')
         }
     }, [socket])
@@ -166,14 +394,16 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
                 }
 
                 const allValues = e.projects.map(obj => {
-                    return {item: {
-                        code: obj.code,
-                        sku: obj.sku,
-                        name: obj.name,
-                        db_quantity: obj.quantity,
-                        quantity: obj.quantity_currently,
-                        brand: obj.brand
-                    }}
+                    return {
+                        item: {
+                            code: obj.code,
+                            sku: obj.sku,
+                            name: obj.name,
+                            db_quantity: obj.quantity,
+                            quantity: obj.quantity_currently,
+                            brand: obj.brand
+                        }
+                    }
                 })
 
                 data.items = allValues
