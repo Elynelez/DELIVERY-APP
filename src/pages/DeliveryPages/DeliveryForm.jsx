@@ -1,93 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import { tokens } from "../../theme";
 import { useTheme } from "@mui/material";
-import { Button, Spin, Input, Form, Select, Space, notification, Modal } from 'antd';
+import { Button, Spin, Input, Form, Select, Space, notification, Modal, message } from 'antd';
 import axios from 'axios';
 
 const { Option } = Select;
 
-const DeliveryForm = ({ socket, API_URL }) => {
+const DeliveryForm = ({ socket, URL_SERVER }) => {
   const [loading, setLoading] = useState(true)
   const [items, setItems] = useState([]);
   const [itemName, setItemName] = useState('');
-  const [orders, setOrders] = useState([])
-  const [coursiers, setCoursiers] = useState([])
+  const [data, setData] = useState({ orders: [], coursiers: [] })
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
-
-    axios.get(API_URL + "delivery/coursiers")
+    axios.get(`${URL_SERVER}/delivery/coursiers`)
       .then(resp => {
-        setCoursiers(resp.data)
+        setData(prevState => ({
+          ...prevState,
+          coursiers: resp.data
+        }));
+        setLoading(false);
       })
       .catch(err => {
-        console.log(err)
-      })
+        console.log(err);
+      });
 
-    axios.get(API_URL + "delivery/travels")
+    axios.get(`${URL_SERVER}/delivery/travels`)
       .then(resp => {
-        let filteredData = resp.data.map(obj => { return obj.order.id })
-        setOrders(filteredData)
-        setLoading(false)
+        let filteredData = resp.data.map(obj => obj.order.id);
+        setData(prevState => ({
+          ...prevState,
+          orders: filteredData
+        }));
+        setLoading(false);
       })
       .catch(err => {
-        console.log(err)
-      })
-
+        console.log(err);
+      });
   }, [])
 
   const handleAddItem = async () => {
 
-    if (itemName.trim() !== '') {
+    const code = itemName.toString().toUpperCase().trim()
 
-      if (String(itemName).includes("id")) {
+    switch (true) {
+      case code == '':
+        notification.warning({
+          message: 'Celda vacía',
+          description: 'No puedes enviar contenido vacío',
+        });
+        break;
+      case items.includes(code):
+        notification.warning({
+          message: 'Ruta repetida',
+          description: 'No puedes poner un pedido más de una vez en una misma ruta',
+        });
+        break;
+      case data.orders.includes(code):
+        Modal.confirm({
+          title: 'Este pedido ya está registrado',
+          content: '¿Estás seguro de enviar este pedido?',
+          onOk() {
+            setItems([...items, code]);
+            setItemName('');
+          }
+        })
+        break;
+      case code.includes("ID"):
+        var qr = itemName.match(/\d+/)[0]
 
-        var code = itemName.match(/\d+/) ? itemName.match(/\d+/)[0] : itemName
+        socket.emit("autoCompleteDelivery", qr)
 
-        socket.emit("autoCompleteDelivery", code)
-
-        socket.on('numberDelivery', (data) => {
+        socket.on('numberDelivery', (number) => {
           try {
-            if (orders.includes(data)) {
+            if (data.orders.includes(number)) {
               Modal.confirm({
                 title: 'Este pedido ya está registrado',
                 content: '¿Estás seguro de enviar este pedido?',
                 onOk() {
-                  setItems([...items, data]);
+                  setItems([...items, number]);
                   setItemName('');
                 }
               })
-
+            } else if (items.includes(number)) {
+              notification.warning({
+                message: 'Ruta repetida',
+                description: 'No puedes poner un pedido más de una vez en una misma ruta',
+              })
             } else {
-              setItems([...items, data]);
+              setItems([...items, number]);
               setItemName('');
             }
 
           } catch (error) {
             console.error('Error handling number:', error);
           }
-        });
-
-      } else {
-
-        if (orders.includes(itemName)) {
-          Modal.confirm({
-            title: 'Este pedido ya está registrado',
-            content: '¿Estás seguro de enviar este pedido?',
-            onOk() {
-              setItems([...items, itemName]);
-              setItemName('');
-
-            }
-          });
-        } else {
-          setItems([...items, itemName]);
-          setItemName('');
-        }
-
-      }
-
+        })
+        break;
+      default:
+        setItems([...items, code]);
+        setItemName('')
+        break;
     }
   };
 
@@ -98,40 +113,24 @@ const DeliveryForm = ({ socket, API_URL }) => {
   };
 
   const onFinish = (e) => {
-    const uniqueItems = [...new Set(items)];
-
-    if (uniqueItems.length !== items.length) {
-      notification.warning({
-        message: 'Alerta de duplicados',
-        description: 'Se han encontrado elementos duplicados en la lista de pedidos.',
-      });
-      return
-    }
-
     let data = {
       coursier: e.coursier,
       zone: e.zone,
       orders: items,
-      range: orders
     }
 
-    fetch(API_URL + "delivery/travel/route", {
-      redirect: "follow",
-      method: 'POST',
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8",
-      },
-      body: JSON.stringify(data)
-    })
-      .then(response => response.json())
-      .catch(error => {
-        console.error('Error cancelling order:', error);
+    axios.post(`${URL_SERVER}/delivery/travel`, { body: data })
+      .then(resp => {
+        message.success(resp.data.message)
+        setData(prevState => ({
+          ...prevState,
+          orders: [...prevState.orders, ...items]
+        }));
+        setItems([])
+        setItemName('')
+      }).catch(error => {
+        message.error("error en el servidor")
       });
-
-    setOrders([...orders, items])
-    setItems([])
-    setItemName('')
-
   };
 
   return (
@@ -160,7 +159,7 @@ const DeliveryForm = ({ socket, API_URL }) => {
                           showSearch={true}
                           placeholder="Select a coursier"
                         >
-                          {coursiers.map(coursier => (
+                          {data.coursiers.map(coursier => (
                             <Option value={coursier}>{coursier}</Option>
                           ))}
                           <Option value={"Servicio Externo"}>Servicio Externo</Option>
