@@ -195,7 +195,7 @@ function App() {
   //               <Route exact path="/delivery/form"
   //                 element={<DeliveryForm
   //                   socket={socket}
-  //                   API_URL={API_DUCOR}
+  //                   URL_SERVER={URL_SERVER}
   //                 />} />
   //               <Route exact path="/inventory/create/form"
   //                 element={<CreateProduct
@@ -606,7 +606,7 @@ function App() {
                             <Route exact path="/delivery/form"
                               element={<DeliveryForm
                                 socket={socket}
-                                API_URL={API_DUCOR}
+                                URL_SERVER={URL_SERVER}
                               />} />
                           )}
                           {logisticEmails.concat(bossEmails).includes(user.email) && (
