@@ -44,14 +44,14 @@ const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com"
 const ExternalServiceEmails = ["xsharick08@gmail.com"]
 
 // Boss Functions
-const bossEmails = ["pedidos.ducor@gmail.com", "contableducor@gmail.com", "inducorsas@gmail.com"]
+const bossEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
 
 // Sells
 const sellerEmails = ["pedidos.ducor@gmail.com"]
 
 // Inventory
-const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "ainducor@gmail.com", "rramirez.inducor@gmail.com"]
-const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com", "empaque.inducor@gmail.com", "rramirez.inducor@gmail.com", "ydiaz.ducor@gmail.com", "santi.inducor@gmail.com"]
+const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com", "londono.ducor89@gmail.com"]
+const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com", "rramirez.inducor@gmail.com", "ydiaz.ducor@gmail.com", "santi.inducor@gmail.com", "londono.ducor89@gmail.com"]
 const settingInventoryEmails = ["pedidos.ducor@gmail.com", "aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com"]
 
 const socket = io(URL_SERVER);
