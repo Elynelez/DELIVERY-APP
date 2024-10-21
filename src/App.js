@@ -700,6 +700,7 @@ function App() {
                                   ordersData={ordersData}
                                   setOrdersData={setOrdersData}
                                   API_URL={URL_SERVER}
+                                  socket={socket}
                                 />} />
                             </>
                           )}
