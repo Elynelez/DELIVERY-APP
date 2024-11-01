@@ -290,7 +290,7 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
         if (hasDuplicates) {
             notification.error({
                 message: 'No puedes enviar elementos con SKU repetidos en una misma salida',
-                description: 'Verifica y elimina los elementos duplicados antes de continuar.'+JSON.stringify(skuSet),
+                description: 'Verifica y elimina los elementos duplicados antes de continuar.'+JSON.stringify(Array.from(skuSet)),
                 duration: 5,
             });
             setDisabled(false);
