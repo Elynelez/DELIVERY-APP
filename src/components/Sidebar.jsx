@@ -46,7 +46,10 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     );
 };
 
-const Sidebar = (props) => {
+const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmails, exitsInventoryEmails, entriesInventoryEmails, settingInventoryEmails}) => {
+
+    const coursiers = ["brayan", "edgar", "raul", "richard", "estiven", "hernando", "camilo", "santiago", "juano", "servicio externo", "medellín"]
+    const platforms = ["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "DCMEDELLIN"]
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const { isAuthenticated, user } = useAuth0();
@@ -160,7 +163,7 @@ const Sidebar = (props) => {
                             Platforms
                         </Typography>
                         <SubMenu title="Plataformas" icon={<AddBusiness />}>
-                            {props.platforms.map((platform) => (
+                            {platforms.map((platform) => (
                                 <Item
                                     key={platform.toLowerCase()}
                                     title={platform.toLowerCase()}
@@ -187,7 +190,7 @@ const Sidebar = (props) => {
                         </SubMenu>
                         {isAuthenticated && (
                             <>
-                                {props.sellerEmails.concat(props.bossEmails).includes(email) && (
+                                {sellerEmails.concat(bossEmails).includes(email) && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -214,7 +217,7 @@ const Sidebar = (props) => {
                                         </SubMenu>
                                     </>
                                 )}
-                                {props.logisticEmails.concat(props.bossEmails, props.ExternalServiceEmails).includes(email) && (
+                                {logisticEmails.concat(bossEmails, ExternalServiceEmails).includes(email) && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -224,7 +227,7 @@ const Sidebar = (props) => {
                                             Delivery
                                         </Typography>
                                         <SubMenu title="Mensajería" icon={<LocalShipping />}>
-                                            {props.logisticEmails.includes(email) && (
+                                            {logisticEmails.includes(email) && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -242,7 +245,7 @@ const Sidebar = (props) => {
                                                     />
                                                 </>
                                             )}
-                                            {props.logisticEmails.concat(props.bossEmails).includes(email) && (
+                                            {logisticEmails.concat(bossEmails).includes(email) && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -251,7 +254,7 @@ const Sidebar = (props) => {
                                                     >
                                                         Mensajeros
                                                     </Typography>
-                                                    {props.couriers.map((coursier) => (
+                                                    {coursiers.map((coursier) => (
                                                         <Item
                                                             key={coursier}
                                                             title={coursier}
@@ -270,7 +273,7 @@ const Sidebar = (props) => {
                                                     />
                                                 </>
                                             )}
-                                            {props.ExternalServiceEmails.includes(email) && (
+                                            {ExternalServiceEmails.includes(email) && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -291,7 +294,7 @@ const Sidebar = (props) => {
                                         </SubMenu>
                                     </>
                                 )}
-                                {props.entriesInventoryEmails.concat(props.exitsInventoryEmails, props.settingInventoryEmails).includes(email) && (
+                                {entriesInventoryEmails.concat(exitsInventoryEmails, settingInventoryEmails).includes(email) && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -308,7 +311,7 @@ const Sidebar = (props) => {
                                             >
                                                 Productos
                                             </Typography>
-                                            {props.settingInventoryEmails.includes(email) && (
+                                            {settingInventoryEmails.includes(email) && (
                                                 <Item
                                                     title="Crear"
                                                     to="/inventory/create/form"
@@ -324,7 +327,7 @@ const Sidebar = (props) => {
                                                 selected={selected}
                                                 setSelected={setSelected}
                                             />
-                                            {props.entriesInventoryEmails.includes(email) && (
+                                            {entriesInventoryEmails.includes(email) && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -349,7 +352,7 @@ const Sidebar = (props) => {
                                                     />
                                                 </>
                                             )}
-                                            {props.exitsInventoryEmails.includes(email) && (
+                                            {exitsInventoryEmails.includes(email) && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -388,7 +391,7 @@ const Sidebar = (props) => {
                                                     />
                                                 </>
                                             )}
-                                            {props.settingInventoryEmails.includes(email) && (
+                                            {settingInventoryEmails.includes(email) && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
