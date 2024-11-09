@@ -163,6 +163,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                             <Option value={coursier}>{coursier}</Option>
                           ))}
                           <Option value={"Servicio Externo"}>Servicio Externo</Option>
+                          <Option value={"Medellín"}>Medellín</Option>
                         </Select>
                       </Form.Item>
                     </div>
