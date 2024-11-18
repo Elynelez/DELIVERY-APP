@@ -255,7 +255,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission}) => {
                                                         <Item
                                                             key={coursier}
                                                             title={coursier}
-                                                            to={`/delivery/${coursier}`}
+                                                            to={`/delivery/${coursier.toLowerCase()}`}
                                                             icon={<PersonOutlinedIcon />}
                                                             selected={selected}
                                                             setSelected={setSelected}
