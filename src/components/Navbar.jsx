@@ -1,12 +1,15 @@
-import { Box, IconButton, useTheme } from "@mui/material";
+import { Box, IconButton, useTheme, InputBase } from "@mui/material";
 import { useContext, useState } from "react";
 import { ColorModeContext, tokens } from "../theme";
-import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
-import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import ShoppingCart from "@mui/icons-material/ShoppingCart";
+import {
+  LightModeOutlined as LightModeOutlinedIcon,
+  DarkModeOutlined as DarkModeOutlinedIcon,
+  NotificationsOutlined as NotificationsOutlinedIcon,
+  SettingsOutlined as SettingsOutlinedIcon,
+  PersonOutlined as PersonOutlinedIcon,
+  Search as SearchIcon,
+  ShoppingCart
+} from "@mui/icons-material";
 import {
   NavbarBrand,
   DropdownToggle,
@@ -21,7 +24,7 @@ const NavbarNavigation = (props) => {
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const [isOpen, setIsOpen] = useState(false);
-  const { logout, loginWithRedirect } = useAuth0()
+  const {logout, loginWithRedirect } = useAuth0()
   const [active, setActive] = useState(false)
 
   const onDeleteProduct = (product) => {
@@ -42,6 +45,17 @@ const NavbarNavigation = (props) => {
 
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
+      {/* SEARCH BAR */}
+      <Box
+        display="flex"
+        backgroundColor={colors.primary[400]}
+        borderRadius="3px"
+      >
+        <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
+        <IconButton type="button" sx={{ p: 1 }}>
+          <SearchIcon />
+        </IconButton>
+      </Box>
       <Box
         display="flex"
         borderRadius="3px"

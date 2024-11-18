@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Spin, Menu } from "antd"
 import DataTableGrid from "../../../controllers/Tables/DataGridPro";
 import { AddSkuModalServer, ModifyQuantityServer, EditCodeProduct } from "../../../controllers/Modals/InventoryModals";
@@ -6,7 +6,7 @@ import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
 import { Link } from 'react-router-dom';
 
-const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, user, socket, URL_SERVER }) => {
+const InventoryTable = ({ hasPermission, rangeItems, setRangeItems, user, socket, URL_SERVER }) => {
     const [loading, setLoading] = useState(false)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -21,6 +21,46 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
         window.location.reload()
     }
 
+    const activePublication = (data) => {
+        let object = data.publications
+        let ids = []
+        for (let platform in object) {
+            object[platform].forEach(element => {
+                ids.push(element.id)
+            });
+        }
+
+        const sendData = {
+            ids
+        }
+
+        socket.emit('activePublications', sendData)
+    }
+
+    const inactivePublication = (data) => {
+        let object = data.publications
+        let ids = []
+        for (let platform in object) {
+            object[platform].forEach(element => {
+                ids.push(element.id)
+            });
+        }
+
+        const sendData = {
+            ids
+        }
+
+        socket.emit('inactivePublications', sendData)
+    }
+
+    // const fixPublication = (data) => {
+
+    // }
+
+    // const unfixPublication = (data) => {
+
+    // }
+
     const columns = [
         { headerName: 'Sku', field: "sku", flex: 1 },
         { headerName: 'Nombre', field: "name", flex: 2 },
@@ -28,12 +68,16 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
         { headerName: 'Marca', field: "brand", flex: 1 },
         { headerName: 'Precio', field: "sale_price", flex: 1 },
         {
-            headerName: 'Acciones', renderCell: params => (
-                <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
+            headerName: 'Acciones',
+            renderCell: params => (
+                <Menu
+                    defaultSelectedKeys={['1']}
+                    style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}
+                >
                     <Menu.SubMenu title="Acciones" key="sub-menu">
                         {user && (
                             <>
-                                {settingInventoryEmails.includes(user.email) && (
+                                {hasPermission(user.email, ['boss', 'inventory_setting']) && (
                                     <>
                                         <Menu.Item key="0">
                                             <AddSkuModalServer
@@ -55,14 +99,12 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
                                         </Menu.Item>
                                         <Menu.Item key="2">
                                             <Link to={`/inventory/edit/${params.row.code}`}>
-                                                <Button>
-                                                    Editar
-                                                </Button>
+                                                <Button>Editar</Button>
                                             </Link>
                                         </Menu.Item>
                                     </>
                                 )}
-                                {user.email == "pedidos.ducor@gmail.com" && (
+                                {hasPermission(user.email, 'boss') && (
                                     <>
                                         <Menu.Item key="3">
                                             <EditCodeProduct
@@ -73,13 +115,23 @@ const InventoryTable = ({ settingInventoryEmails, rangeItems, setRangeItems, use
                                             />
                                         </Menu.Item>
                                         <Menu.Item key="4">
-                                            <Button onClick={() => { deleteSku(params.row) }}>
+                                            <Button onClick={() => deleteSku(params.row)}>
                                                 Eliminar sku
                                             </Button>
                                         </Menu.Item>
                                         <Menu.Item key="5">
-                                            <Button onClick={() => { deleteProduct(params.row) }}>
+                                            <Button onClick={() => deleteProduct(params.row)}>
                                                 Eliminar item
+                                            </Button>
+                                        </Menu.Item>
+                                        <Menu.Item key="6">
+                                            <Button onClick={() => activePublication(params.row)}>
+                                                Activar en plataformas
+                                            </Button>
+                                        </Menu.Item>
+                                        <Menu.Item key="7">
+                                            <Button onClick={() => inactivePublication(params.row)}>
+                                                Desactivar en plataformas
                                             </Button>
                                         </Menu.Item>
                                     </>

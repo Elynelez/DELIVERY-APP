@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { notification } from 'antd';
+import { useTheme } from "@mui/material";
+import { tokens } from '../../theme';
 
 const ScreenRecorder = () => {
   const [isRecording, setIsRecording] = useState(() => {
@@ -7,6 +10,9 @@ const ScreenRecorder = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordedChunks, setRecordedChunks] = useState([]);
   const videoRef = useRef(null);
+  const streamRef = useRef(null);
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
     localStorage.setItem('isRecording', isRecording);
@@ -19,6 +25,7 @@ const ScreenRecorder = () => {
     });
 
     const media = new MediaRecorder(stream);
+    streamRef.current = stream;
 
     media.ondataavailable = (event) => {
       if (event.data.size > 0) {
@@ -33,6 +40,14 @@ const ScreenRecorder = () => {
   };
 
   const stopRecording = () => {
+    if (streamRef.current && streamRef.current.active) {
+      notification.warning({
+        message: 'Acción Requerida',
+        description: 'Por favor, deja de compartir la pantalla antes de detener la grabación.',
+      });
+      return;
+    }
+
     mediaRecorder.stop();
     setIsRecording(false);
 
@@ -51,14 +66,29 @@ const ScreenRecorder = () => {
   };
 
   return (
-    <div>
-      <video ref={videoRef} autoPlay style={{ width: '100%' }}></video>
+    <div className="flex flex-col items-center p-4 space-y-4 min-h-screen">
+      <video 
+      ref={videoRef} 
+      autoPlay 
+      className="w-full max-w-2xl rounded shadow-lg border-2"
+      style={{ border: `4px solid ${colors.greenAccent[500]}`}}
+      ></video>
       <div>
         {isRecording ? (
-          <button onClick={stopRecording}>Detener Grabación</button>
+          <button
+            onClick={stopRecording}
+            className="px-6 py-2 text-white bg-red-500 hover:bg-red-600 rounded-md shadow"
+          >
+            Detener Grabación
+          </button>
         ) : (
-          <button onClick={startRecording}>Iniciar Grabación</button>
-        )} 
+          <button
+            onClick={startRecording}
+            className="px-6 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md shadow"
+          >
+            Iniciar Grabación
+          </button>
+        )}
       </div>
     </div>
   );

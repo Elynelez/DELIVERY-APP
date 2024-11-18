@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Spin } from "antd"
-import DataTableGrid from "../../controllers/Tables/DataGridPro";
 import { useTheme, Box, Typography } from "@mui/material";
-import { tokens } from "../../theme";
+import { Button, Spin, Menu, Modal, message } from "antd"
 import { useParams } from 'react-router-dom';
+import { tokens } from "../../theme";
+import DataTableGrid from "../../controllers/Tables/DataGridPro";
 
 const PlatformTable = ({ API_URL }) => {
     const { id } = useParams();
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
+    const [reloadData, setReloadData] = useState(false);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
@@ -18,7 +19,6 @@ const PlatformTable = ({ API_URL }) => {
         fetch(`${API_URL}/platforms/${id}`)
             .then(response => response.json())
             .then(parsedData => {
-                console.log(parsedData)
                 data = parsedData.map(obj => {
                     return {
                         id: obj.id,
@@ -29,7 +29,7 @@ const PlatformTable = ({ API_URL }) => {
                         address: obj.customer.shipping_data.address,
                         state: obj.customer.shipping_data.state,
                         city: obj.customer.shipping_data.city,
-                        items: Array.isArray(obj.order.items) ? obj.order.items.map(item => `${item.item.sku} - ${item.item.name} - ${item.item.quantity}`).join('; ') : obj.order.items,
+                        items: obj.order.items,
                         condition: obj.order.transactions.condition,
                         method: obj.order.transactions.method,
                         total: Number(obj.order.transactions.total_payments) + Number(obj.order.transactions.total_shipping),
@@ -43,11 +43,44 @@ const PlatformTable = ({ API_URL }) => {
                 console.error('Error fetching data:', error);
                 setLoading(false);
             });
-    };
+    }
+
+    const canceledOrderById = (id_order) => {
+        Modal.confirm({
+            title: '¿Seguro que quieres anular este padido?',
+            content: 'Esta acción no se puede deshacer.',
+            onOk: () => {
+                message.info('unos momentos')
+                fetch(`${API_URL}/platforms/${id}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id: id_order })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        message.success('Pedido cancelado exitosamente');
+                        setReloadData(true)
+                    })
+                    .catch(error => {
+                        console.error('Error cancelling order:', error);
+                        message.info('no se pudo completar la operación')
+                    });
+            },
+        });
+    }
 
     useEffect(() => {
         loadData();
     }, [id])
+
+    useEffect(() => {
+        if (reloadData) {
+            loadData()
+            setReloadData(false)
+        }
+    }, [reloadData]);
 
     const statusColorMap = {
         'EN RUTA': '#A48BF4',
@@ -68,11 +101,11 @@ const PlatformTable = ({ API_URL }) => {
         { headerName: 'Dirección', field: "address", flex: 1 },
         { headerName: 'Departamento', field: "state", flex: 1 },
         { headerName: 'Ciudad', field: "city", flex: 1 },
-        // {
-        //     headerName: 'Artículos', field: "items", valueFormatter: (params) => {
-        //         return Array.isArray(params.value) ? params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join('; ') : params.value.items;
-        //     }
-        // },
+        {
+            headerName: 'Artículos', field: "items", valueFormatter: (params) => {
+                return params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join(', ');
+            }
+        },
         { headerName: 'Condición', field: "condition", flex: 1 },
         { headerName: 'Método', field: "method", flex: 1 },
         { headerName: 'Valor', field: "total", flex: 1 },
@@ -81,6 +114,19 @@ const PlatformTable = ({ API_URL }) => {
                 <div style={{ display: "flex", alignItems: "center", textAlign: "center", backgroundColor: colors.black[100], width: "200px", height: "40px", borderRadius: "5px", color: statusColorMap[params.row.status] || 'white' }}>
                     <p style={{ display: "inline-block", margin: "auto", overflow: "hidden", padding: "1px 2px 1px" }}>{params.row.status}</p>
                 </div>
+            )
+        },
+        {
+            headerName: 'Acciones', renderCell: params => (
+                <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
+                    <Menu.SubMenu title="Acciones" key="sub-menu">
+                        <Menu.Item key="0">
+                            <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.id)}>
+                                Anular
+                            </Button>
+                        </Menu.Item>
+                    </Menu.SubMenu>
+                </Menu>
             )
         }
     ]

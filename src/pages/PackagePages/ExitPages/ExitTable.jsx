@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Spin, Menu } from "antd"
 import DataTableGrid from "../../../controllers/Tables/DataGridPro";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
-import { useTheme } from "@mui/material";
 
 const ExitTable = ({ ordersData, setOrdersData, API_URL, socket  }) => {
     const [loading, setLoading] = useState(true)

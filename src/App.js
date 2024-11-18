@@ -1,58 +1,39 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import NavbarNavigation from './components/Navbar';
-import Sidebar from './components/Sidebar';
-import './App.css';
-import { io } from 'socket.io-client';
-
-// auth
-import { useAuth0 } from '@auth0/auth0-react';
-
-// pages
-import Dashboard from './pages/DefaultPages/Dashboard';
-import SellerTable from './pages/SellerPages/SellerTable';
-import SellerCar from './pages/SellerPages/SellerCar';
-import SellerForm from './pages/SellerPages/SellerForm';
-import CreateProduct from './pages/PackagePages/InventoryPages/CreateProduct';
-import EditProduct from './pages/PackagePages/InventoryPages/EditProduct';
-import EnterForm from './pages/PackagePages/EnterPages/EnterForm';
-import EnterTable from './pages/PackagePages/EnterPages/EnterTable';
-import ExitForm from './pages/PackagePages/ExitPages/ExitForm';
-import ExitTable from './pages/PackagePages/ExitPages/ExitTable';
-import CashForm from './pages/PackagePages/ExitPages/CashForm';
-import PendingOrders from './pages/PackagePages/ExitPages/PendingOrders';
-import InventoryTable from './pages/PackagePages/InventoryPages/InventoryTable';
-import SettingTable from './pages/PackagePages/SettingPages/SettingTable';
-import DeliveryTable from './pages/DeliveryPages/DeliveryTable';
-import DeliveryForm from './pages/DeliveryPages/DeliveryForm';
-import PlatformTable from './pages/AccountingPages/PlatformTable';
-import CSVReader from './pages/AccountingPages/RappiForm';
-import ScreenRecorder from './pages/DefaultPages/ScreenRecorder';
-
+import { NavbarNavigation, Sidebar } from './components';
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
+import { io } from 'socket.io-client';
+import { useAuth0 } from '@auth0/auth0-react';
+import './App.css';
+
+// pages
+import { Dashboard, ScreenRecorder } from './pages/DefaultPages';
+import { SellerTable, SellerCar, SellerForm } from './pages/SellerPages';
+import { DeliveryTable, DeliveryForm } from './pages/DeliveryPages';
+import { PlatformTable, CSVReader } from './pages/AccountingPages';
+import {
+  CreateProduct,
+  EditProduct,
+  InventoryTable,
+  EnterForm,
+  EnterTable,
+  ExitForm,
+  ExitTable,
+  CashForm,
+  PendingOrders,
+  SettingTable,
+} from './pages/PackagePages';
 
 // middlewares
+import { hasPermission } from './middlewares';
 
 // API URL'S
-const API_DUCOR = "https://script.google.com/macros/s/AKfycbwRsm3LpadEdArAsn2UlLS8EuU8JUETg0QAFCEna-RJ_9_YxSBByfog7eCwkqshAKVe/exec?path="
+const API_DUCOR = process.env.REACT_APP_API_DUCOR
+const URL_SERVER = process.env.REACT_APP_URL_SERVER
 // const URL_SERVER = 'http://localhost:' + 8080
-const URL_SERVER = "https://server-cloud-mggp.onrender.com"
 
-// Logistic Shipping
-const logisticEmails = ["pedidos.ducor@gmail.com", "logistica.inducor@gmail.com", "inducorsas@gmail.com"]
-const ExternalServiceEmails = ["xsharick08@gmail.com"]
-
-// Boss Functions
-const bossEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com"]
-
-// Sells
-const sellerEmails = ["pedidos.ducor@gmail.com"]
-
-// Inventory
-const entriesInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com", "londono.ducor89@gmail.com"]
-const exitsInventoryEmails = ["pedidos.ducor@gmail.com", "inducorsas@gmail.com", "aocampo.inducor@gmail.com", "aforero.inducor@gmail.com", "rramirez.inducor@gmail.com", "ydiaz.ducor@gmail.com", "santi.inducor@gmail.com"]
-const settingInventoryEmails = ["pedidos.ducor@gmail.com", "aocampo.inducor@gmail.com", "rramirez.inducor@gmail.com", "londono.ducor89@gmail.com"]
+console.log(URL_SERVER)
 
 const socket = io(URL_SERVER);
 
@@ -302,13 +283,9 @@ function App() {
           <Router>
             <div className='flex'>
               <Sidebar
-                logisticEmails={logisticEmails}
-                bossEmails={bossEmails}
-                sellerEmails={sellerEmails}
-                ExternalServiceEmails={ExternalServiceEmails}
-                exitsInventoryEmails={exitsInventoryEmails}
-                entriesInventoryEmails={entriesInventoryEmails}
-                settingInventoryEmails={settingInventoryEmails}
+                isAuthenticated={isAuthenticated}
+                user={user}
+                hasPermission={hasPermission}
               />
               <div className='content'>
                 <NavbarNavigation
@@ -323,52 +300,28 @@ function App() {
                 />
                 <Routes>
                   <Route exact path="/"
-                    element={<SellerCar
-                      allProducts={allProducts}
-                      setAllProducts={setAllProducts}
-                      total={total} setTotal={setTotal}
-                      countProducts={countProducts}
-                      setCountProducts={setCountProducts}
-                      rangeItems={rangeItems}
-                    />} />
-                  <Route exact path="/platforms/:id"
-                    element={<PlatformTable
-                      API_URL={URL_SERVER}
-                    />} />
-                  <Route exact path="/dashboard"
                     element={<Dashboard
                       ordersData={ordersData}
                       setOrdersData={setOrdersData}
                       socket={socket}
                       receiveOrders={receiveOrders}
                     />} />
+                  <Route exact path="/platforms/:id"
+                    element={<PlatformTable
+                      API_URL={URL_SERVER}
+                    />} />
                   <Route exact path="/screenrecord"
                     element={<ScreenRecorder
                     />} />
-                  <Route exact path="/inventory/exit/pending"
-                    element={<PendingOrders
-                      rangeItems={rangeItems}
-                      user={user}
-                      socket={socket}
-                      ordersData={ordersData}
-                      setOrdersData={setOrdersData}
-                      receiveOrders={receiveOrders}
-                      URL_SERVER={URL_SERVER}
-                    />} />
-                  <Route exact path="/sales/form"
-                    element={<SellerForm
-                      allProducts={allProducts}
-                      total={total}
-                    />} />
                   {isAuthenticated && (
                     <>
-                      {bossEmails.includes(user.email) && (
+                      {hasPermission(user.email, 'boss') && (
                         <Route exact path='/platforms/rappi/form'
                           element={<CSVReader
                             API_URL={API_DUCOR}
                           />} />
                       )}
-                      {sellerEmails.includes(user.email) && (
+                      {hasPermission(user.email, ['boss', 'seller']) && (
                         <>
                           <Route exact path="/sales/table"
                             element={<SellerTable
@@ -378,54 +331,51 @@ function App() {
                               allProducts={allProducts}
                               total={total}
                             />} />
+                          <Route exact path="/sales/car"
+                            element={<SellerCar
+                              allProducts={allProducts}
+                              setAllProducts={setAllProducts}
+                              total={total} setTotal={setTotal}
+                              countProducts={countProducts}
+                              setCountProducts={setCountProducts}
+                              rangeItems={rangeItems}
+                            />} />
                         </>
                       )}
-                      {logisticEmails.concat(bossEmails, ExternalServiceEmails).includes(user.email) && (
+                      {hasPermission(user.email, ['logistic', 'boss']) && (
                         <>
-                          {logisticEmails.includes(user.email) && (
-                            <Route exact path="/delivery/form"
-                              element={<DeliveryForm
-                                socket={socket}
-                                URL_SERVER={URL_SERVER}
-                              />} />
-                          )}
-                          {logisticEmails.concat(bossEmails).includes(user.email) && (
-                            <Route exact path="/delivery/:id"
-                              element={<DeliveryTable
-                                socket={socket}
-                                user={user}
-                                emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
-                                deliveryData={deliveryData}
-                                setDeliveryData={setDeliveryData}
-                                API_URL={API_DUCOR}
-                                URL_SERVER={URL_SERVER}
-                              />} />
-                          )}
-                          {ExternalServiceEmails.includes(user.email) && (
-                            <Route exact path="/delivery/servicio externo"
-                              element={<DeliveryTable
-                                user={user}
-                                emails={logisticEmails.concat(ExternalServiceEmails, bossEmails)}
-                                deliveryData={deliveryData}
-                                setDeliveryData={setDeliveryData}
-                                API_URL={API_DUCOR}
-                                URL_SERVER={URL_SERVER}
-                              />} />
+                          {hasPermission(user.email, ['logistic', 'boss']) && (
+                            <>
+                              <Route exact path="/delivery/form"
+                                element={<DeliveryForm
+                                  socket={socket}
+                                  URL_SERVER={URL_SERVER}
+                                />} />
+                              <Route exact path="/delivery/:id"
+                                element={<DeliveryTable
+                                  user={user}
+                                  hasPermission={hasPermission}
+                                  deliveryData={deliveryData}
+                                  setDeliveryData={setDeliveryData}
+                                  API_URL={API_DUCOR}
+                                  URL_SERVER={URL_SERVER}
+                                />} />
+                            </>
                           )}
                         </>
                       )}
-                      {entriesInventoryEmails.concat(exitsInventoryEmails, settingInventoryEmails).includes(user.email) && (
+                      {hasPermission(user.email, ['boss', 'inventory_entry', 'inventory_exit', 'inventory_setting']) && (
                         <>
                           <Route exact path="/inventory/table"
                             element={<InventoryTable
-                              settingInventoryEmails={settingInventoryEmails}
+                              hasPermission={hasPermission}
                               rangeItems={rangeItems}
                               setRangeItems={setRangeItems}
                               user={user}
                               socket={socket}
                               URL_SERVER={URL_SERVER}
                             />} />
-                          {entriesInventoryEmails.includes(user.email) && (
+                          {hasPermission(user.email, ['boss', 'inventory_entry']) && (
                             <>
                               <Route exact path="/inventory/enter/form"
                                 element={<EnterForm
@@ -443,7 +393,7 @@ function App() {
                                 />} />
                             </>
                           )}
-                          {exitsInventoryEmails.includes(user.email) && (
+                          {hasPermission(user.email, ['boss', 'inventory_exit']) && (
                             <>
                               <Route exact path="/inventory/exit/form"
                                 element={<ExitForm
@@ -480,11 +430,10 @@ function App() {
                                   ordersData={ordersData}
                                   setOrdersData={setOrdersData}
                                   API_URL={URL_SERVER}
-                                  socket={socket}
                                 />} />
                             </>
                           )}
-                          {settingInventoryEmails.includes(user.email) && (
+                          {hasPermission(user.email, ['boss', 'inventory_setting']) && (
                             <>
                               <Route exact path="/inventory/create/form"
                                 element={<CreateProduct

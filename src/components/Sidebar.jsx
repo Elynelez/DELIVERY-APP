@@ -1,21 +1,19 @@
 import { React, useState } from "react";
 import { Link } from 'react-router-dom'
-import { useAuth0 } from '@auth0/auth0-react';
-import "react-pro-sidebar/dist/css/styles.css";
-import { tokens } from "../theme.js";
 import { ProSidebar, Menu as SidebarMenu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import { tokens } from "../theme.js";
 import {
     Work,
     AddBusiness,
     AddchartSharp,
     Dashboard,
     LocalShipping,
-    LocalConvenienceStore,
     TableView,
     AddCircle,
     Poll,
     PendingActions,
+    CurrencyExchangeOutlined as CurrencyExchangeOutlinedIcon,
     HomeOutlined as HomeOutlinedIcon,
     PeopleOutlined as PeopleOutlinedIcon,
     ContactsOutlined as ContactsOutlinedIcon,
@@ -27,6 +25,8 @@ import {
     Games,
     RadioButtonChecked
 } from "@mui/icons-material/"
+import "react-pro-sidebar/dist/css/styles.css";
+import { getCoursiers } from "../middlewares.js";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
     const theme = useTheme();
@@ -46,16 +46,13 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     );
 };
 
-const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmails, exitsInventoryEmails, entriesInventoryEmails, settingInventoryEmails}) => {
-
-    const coursiers = ["brayan", "edgar", "raul", "richard", "estiven", "hernando", "camilo", "santiago", "juano", "servicio externo", "medellín"]
+const Sidebar = ({ isAuthenticated, user, hasPermission}) => {
+    const coursiers = [...getCoursiers(), "servicio externo", "medellín"]
     const platforms = ["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "DCMEDELLIN"]
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const { isAuthenticated, user } = useAuth0();
     const [isCollapsed, setIsCollapsed] = useState(true);
     const [selected, setSelected] = useState("Dashboard");
-    const email = user ? user.email : "test"
 
     return (
         <Box
@@ -142,7 +139,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                         <SubMenu title="Rúbricas" icon={<AddchartSharp />}>
                             <Item
                                 title="Dashboard"
-                                to="/dashboard"
+                                to="/"
                                 icon={<Dashboard />}
                                 selected={selected}
                                 setSelected={setSelected}
@@ -190,7 +187,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                         </SubMenu>
                         {isAuthenticated && (
                             <>
-                                {sellerEmails.concat(bossEmails).includes(email) && (
+                                {hasPermission(user.email, ['boss', 'seller']) && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -199,7 +196,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                                         >
                                             Sales
                                         </Typography>
-                                        <SubMenu title="Canales" icon={<LocalConvenienceStore />}>
+                                        <SubMenu title="Canales" icon={<CurrencyExchangeOutlinedIcon />}>
                                             <Item
                                                 title="Crear pedido"
                                                 to="/"
@@ -217,7 +214,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                                         </SubMenu>
                                     </>
                                 )}
-                                {logisticEmails.concat(bossEmails, ExternalServiceEmails).includes(email) && (
+                                {hasPermission(user.email, ['logistic', 'boss']) && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -227,7 +224,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                                             Delivery
                                         </Typography>
                                         <SubMenu title="Mensajería" icon={<LocalShipping />}>
-                                            {logisticEmails.includes(email) && (
+                                            {hasPermission(user.email, ['logistic', 'boss']) && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -245,7 +242,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                                                     />
                                                 </>
                                             )}
-                                            {logisticEmails.concat(bossEmails).includes(email) && (
+                                            {hasPermission(user.email, ['logistic', 'boss']) && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -273,28 +270,10 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                                                     />
                                                 </>
                                             )}
-                                            {ExternalServiceEmails.includes(email) && (
-                                                <>
-                                                    <Typography
-                                                        variant="h6"
-                                                        color={colors.grey[300]}
-                                                        sx={{ m: "15px 0 5px 20px" }}
-                                                    >
-                                                        Interrapidísimo
-                                                    </Typography>
-                                                    <Item
-                                                        title="Servicio Externo"
-                                                        to="/delivery/servicio externo"
-                                                        icon={<PersonOutlinedIcon />}
-                                                        selected={selected}
-                                                        setSelected={setSelected}
-                                                    />
-                                                </>
-                                            )}
                                         </SubMenu>
                                     </>
                                 )}
-                                {entriesInventoryEmails.concat(exitsInventoryEmails, settingInventoryEmails).includes(email) && (
+                                {hasPermission(user.email, ['boss', 'inventory_entry', 'inventory_exit', 'inventory_setting']) && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -311,7 +290,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                                             >
                                                 Productos
                                             </Typography>
-                                            {settingInventoryEmails.includes(email) && (
+                                            {hasPermission(user.email, 'inventory_setting') && (
                                                 <Item
                                                     title="Crear"
                                                     to="/inventory/create/form"
@@ -327,7 +306,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                                                 selected={selected}
                                                 setSelected={setSelected}
                                             />
-                                            {entriesInventoryEmails.includes(email) && (
+                                            {hasPermission(user.email, 'inventory_entry') && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -352,7 +331,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                                                     />
                                                 </>
                                             )}
-                                            {exitsInventoryEmails.includes(email) && (
+                                            {hasPermission(user.email, 'inventory_exit') && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -391,7 +370,7 @@ const Sidebar = ({ logisticEmails, bossEmails, sellerEmails, ExternalServiceEmai
                                                     />
                                                 </>
                                             )}
-                                            {settingInventoryEmails.includes(email) && (
+                                            {hasPermission(user.email, 'inventory_setting') && (
                                                 <>
                                                     <Typography
                                                         variant="h6"

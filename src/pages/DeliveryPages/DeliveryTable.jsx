@@ -6,7 +6,7 @@ import { useTheme, Box, Typography } from "@mui/material";
 import { tokens } from "./../../theme";
 import { useParams } from 'react-router-dom';
 
-const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL, URL_SERVER }) => {
+const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, API_URL, URL_SERVER }) => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true)
     const [reloadData, setReloadData] = useState(true);
@@ -134,14 +134,16 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL, U
         { headerName: 'Vendedor', field: "seller", flex: 1 },
         { headerName: 'Dirección', field: "address", flex: 1 },
         { headerName: 'Condición', field: "condition", flex: 1 },
-        { headerName: 'Método', field: "method", flex: 1, renderCell: (params) => (
-            params.row.method === "EFECTIVO" ?
-                <div style={{ color: '#052c65' }}>
-                    {params.row.method}
-                </div> : <div>
-                    {params.row.method}
-                </div>
-        ) },
+        {
+            headerName: 'Método', field: "method", flex: 1, renderCell: (params) => (
+                params.row.method === "EFECTIVO" ?
+                    <div style={{ color: '#052c65' }}>
+                        {params.row.method}
+                    </div> : <div>
+                        {params.row.method}
+                    </div>
+            )
+        },
         { headerName: 'Valor', field: "total", flex: 1 },
         {
             headerName: 'Estado', field: 'status', flex: 1, renderCell: (params) => (
@@ -157,10 +159,9 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL, U
                         <Menu.Item key="0">
                             <ModalData data={params.row.complete} />
                         </Menu.Item>
-
                         {user && (
                             <>
-                                {emails.includes(user.email) && (
+                                {hasPermission(user.email, ['logistic', 'boss']) && (
                                     <>
                                         <Menu.Item key="2">
                                             <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.id)}>Anular</Button>
@@ -168,20 +169,12 @@ const DeliveryTable = ({ user, emails, deliveryData, setDeliveryData, API_URL, U
                                         <Menu.Item key="3">
                                             <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(params.row.id)}>Borrar</Button>
                                         </Menu.Item>
-                                        {(["contableducor@gmail.com", "inducorsas@gmail.com", "logistica.inducor@gmail.com"].includes(user.email)) && (
-                                            <>
-                                                <Menu.Item key="4">
-                                                    <EditModal setReloadData={setReloadData} data={params.row.complete} API_URL={API_URL} />
-                                                </Menu.Item>
-                                            </>
-                                        )}
-                                        {(["contableducor@gmail.com", "inducorsas@gmail.com"].includes(user.email)) && (
-                                            <>
-                                                <Menu.Item key="5">
-                                                    <ConfirmModal setReloadData={setReloadData} data={params.row.complete} API_URL={API_URL} user={user} />
-                                                </Menu.Item>
-                                            </>
-                                        )}
+                                        <Menu.Item key="4">
+                                            <EditModal setReloadData={setReloadData} data={params.row.complete} API_URL={API_URL} />
+                                        </Menu.Item>
+                                        <Menu.Item key="5">
+                                            <ConfirmModal setReloadData={setReloadData} data={params.row.complete} API_URL={API_URL} user={user} />
+                                        </Menu.Item>
                                     </>
                                 )}
                             </>
