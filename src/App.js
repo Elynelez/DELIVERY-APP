@@ -24,6 +24,7 @@ import {
   PendingOrders,
   SettingTable,
 } from './pages/PackagePages';
+import { PausePosting } from './pages/PublicationPages';
 
 // middlewares
 import { hasPermission } from './middlewares';
@@ -313,6 +314,9 @@ function App() {
                   <Route exact path="/screenrecord"
                     element={<ScreenRecorder
                     />} />
+                  <Route exact path='publication/pause'
+                    element={<PausePosting
+                    />} />
                   {isAuthenticated && (
                     <>
                       {hasPermission(user.email, 'boss') && (
@@ -430,6 +434,7 @@ function App() {
                                   ordersData={ordersData}
                                   setOrdersData={setOrdersData}
                                   API_URL={URL_SERVER}
+                                  socket={socket}
                                 />} />
                             </>
                           )}
