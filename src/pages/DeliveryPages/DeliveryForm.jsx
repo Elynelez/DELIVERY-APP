@@ -182,8 +182,25 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                         label={<label style={{ color: colors.primary[100], marginLeft: "10px" }}>Agregar Pedido</label>}
                       >
                         <Space>
-                          <Input className="input-info-form" style={{ borderBottom: "1px solid gray", marginLeft: "10px" }} value={itemName} onChange={(e) => setItemName(e.target.value)} />
-                          <Button type="primary" style={{ backgroundColor: colors.primary[100] }} onClick={handleAddItem}>Agregar</Button>
+                          <Input
+                            className="input-info-form"
+                            style={{ borderBottom: "1px solid gray", marginLeft: "10px" }}
+                            value={itemName}
+                            onChange={(e) => setItemName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault(); // Evita que el formulario se envíe
+                                handleAddItem(); // Agrega el pedido
+                              }
+                            }}
+                          />
+                          <Button
+                            type="primary"
+                            style={{ backgroundColor: colors.primary[100] }}
+                            onClick={handleAddItem}
+                          >
+                            Agregar
+                          </Button>
                         </Space>
                       </Form.Item>
                     </div>
