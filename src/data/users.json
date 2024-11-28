@@ -10,6 +10,11 @@
       "roles": ["logistic"]
     },
     {
+      "email": "servicioalcliente3.inducor@gmail.com",
+      "name": "Jennifer Roxana",
+      "roles": ["logistic"]
+    },
+    {
       "email": "inducorsas@gmail.com",
       "name": "Jefes",
       "roles": ["boss"]
