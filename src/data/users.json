@@ -42,7 +42,7 @@
     {
       "email": "santi.inducor@gmail.com",
       "name": "Santiago",
-      "roles": ["inventory_exit"]
+      "roles": ["inventory_exit", "logistic"]
     },
     {
       "email": "brayan.carvbrayan@gmail.com",
