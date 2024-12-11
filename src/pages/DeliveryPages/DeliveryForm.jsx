@@ -13,6 +13,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
   const [data, setData] = useState({ orders: [], coursiers: [] })
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     axios.get(`${URL_SERVER}/delivery/coursiers`)
@@ -128,6 +129,8 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
         }));
         setItems([])
         setItemName('')
+        form.resetFields();
+
       }).catch(error => {
         message.error("error en el servidor")
       });
@@ -143,7 +146,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
         <div className="body-group-form">
           <div className="container-group-form" style={{ backgroundColor: colors.primary[400] }}>
             <h1 className="form-title-group" style={{ color: colors.primary[100] }}><span>FORMULARIO MENSAJERÍA</span></h1>
-            <Form layout="vertical" onFinish={onFinish}>
+            <Form layout="vertical" form={form}  onFinish={onFinish}>
               <div className="main-user-info-group">
                 <div className="user-input-box-group">
                   <div className="end-input-group-form">

@@ -47,7 +47,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 };
 
 const Sidebar = ({ isAuthenticated, user, hasPermission}) => {
-    const coursiers = [...getCoursiers(), "servicio externo", "medellín"]
+    const coursiers = [...getCoursiers(), "servicio externo", "medellín", "dflex"]
     const platforms = ["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "DCMEDELLIN"]
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
