@@ -22,7 +22,7 @@
     {
       "email": "rramirez.inducor@gmail.com",
       "name": "Rony",
-      "roles": ["inventory_entry", "inventory_exit", "inventory_setting"]
+      "roles": ["inventory_entry", "inventory_exit", "inventory_setting", "logistic"]
     },
     {
       "email": "londono.ducor89@gmail.com",
