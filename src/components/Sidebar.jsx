@@ -48,7 +48,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 
 const Sidebar = ({ isAuthenticated, user, hasPermission}) => {
     const coursiers = [...getCoursiers(), "servicio externo", "medellín", "dflex"]
-    const platforms = ["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "DCMEDELLIN"]
+    const platforms = ["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "ADDI", "LINIO"]
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [isCollapsed, setIsCollapsed] = useState(true);
@@ -170,13 +170,6 @@ const Sidebar = ({ isAuthenticated, user, hasPermission}) => {
                                     setSelected={setSelected}
                                 />
                             ))}
-                            <Item
-                                title={"addi"}
-                                to={`/platforms/addi`}
-                                icon={<Work />}
-                                selected={selected}
-                                setSelected={setSelected}
-                            />
                             <Item
                                 title="Subir rappi"
                                 to="/platforms/rappi/form"
