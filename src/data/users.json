@@ -7,7 +7,7 @@
     {
       "email": "logistica.inducor@gmail.com",
       "name": "Raul",
-      "roles": ["logistic"]
+      "roles": ["logistic", "inventory_entry"]
     },
     {
       "email": "servicioalcliente3.inducor@gmail.com",
