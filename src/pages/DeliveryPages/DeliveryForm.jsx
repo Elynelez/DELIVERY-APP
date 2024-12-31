@@ -9,6 +9,7 @@ const { Option } = Select;
 const DeliveryForm = ({ socket, URL_SERVER }) => {
   const [loading, setLoading] = useState(true)
   const [items, setItems] = useState([]);
+  const [rescheduled, setRescheduled] = useState([])
   const [itemName, setItemName] = useState('');
   const [data, setData] = useState({ orders: [], coursiers: [] })
   const theme = useTheme();
@@ -53,7 +54,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
           description: 'No puedes enviar contenido vacío',
         });
         break;
-      case items.includes(code):
+      case items.includes(code) || items.includes(`${code}**`):
         notification.warning({
           message: 'Ruta repetida',
           description: 'No puedes poner un pedido más de una vez en una misma ruta',
@@ -64,7 +65,8 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
           title: 'Este pedido ya está registrado',
           content: '¿Estás seguro de enviar este pedido?',
           onOk() {
-            setItems([...items, code]);
+            setItems([...items, `${code}**`]);
+            setRescheduled([...rescheduled, {code: code, position: Number(data.orders.indexOf(code))+1}])
             setItemName('');
           }
         })
@@ -114,13 +116,16 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
   };
 
   const onFinish = (e) => {
-    let data = {
+    e = {
       coursier: e.coursier,
       zone: e.zone,
       orders: items,
+      rescheduled
     }
 
-    axios.post(`${URL_SERVER}/delivery/travel`, { body: data })
+    console.log(e)
+
+    axios.post(`${URL_SERVER}/delivery/travel`, { body: e })
       .then(resp => {
         message.success(resp.data.message)
         setData(prevState => ({
