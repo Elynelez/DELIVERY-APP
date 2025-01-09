@@ -947,6 +947,12 @@ const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
   };
 
   const onFinish = (values) => {
+    const now = new Date();
+
+    const bogotaTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Bogota" }));
+    const formattedDateTime = bogotaTime.toISOString();
+
+    data.date_generate = formattedDateTime
     data.real_quantity = Number(values.real_quantity)
     data.id = v4()
     data.user = user ? user.email : "test"

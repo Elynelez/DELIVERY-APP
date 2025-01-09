@@ -41,9 +41,12 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
             .then(resp => {
                 rangeItems = resp.data
 
-                var date = new Date()
+                const now = new Date();
+                const bogotaTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Bogota" }));
+                const formattedDateTime = bogotaTime.toISOString();
                 const idEnter = v4()
                 let foundError = [];
+
 
                 e.projects = e.projects.map(obj => {
 
@@ -79,8 +82,8 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
 
                 var data = {
                     id: idEnter,
-                    date_generate_ISO: date.toISOString(),
-                    date_generate: date.toLocaleString('sv', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 3 }).replace(',', '.').replace(' ', 'T') + "Z",
+                    date_generate_ISO: now.toISOString(),
+                    date_generate: formattedDateTime,
                     facture_number: e.facture_number.toString().toUpperCase(),
                     provider: e.provider,
                     items: [],

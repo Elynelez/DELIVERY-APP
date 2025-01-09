@@ -325,7 +325,9 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
                 rangeItems = resp.data
 
                 let rangeOrderNumbers = ordersData.map(obj => { return obj.order_number }).filter(orderNumber => !/^[A-Za-z]+$/.test(orderNumber))
-                var date = new Date()
+                const now = new Date();
+                const bogotaTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Bogota" }));
+                const formattedDateTime = bogotaTime.toISOString();
                 const idExit = v4()
                 let foundError = [];
 
@@ -382,8 +384,8 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
 
                 var data = {
                     id: idExit,
-                    date_generate_ISO: date.toISOString(),
-                    date_generate: date.toLocaleString('sv', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', fractionalSecondDigits: 3 }).replace(',', '.').replace(' ', 'T') + "Z",
+                    date_generate_ISO: now.toISOString(),
+                    date_generate: formattedDateTime,
                     order_number: e.facture_number.toString().toUpperCase(),
                     platform: e.platform,
                     items: [],
