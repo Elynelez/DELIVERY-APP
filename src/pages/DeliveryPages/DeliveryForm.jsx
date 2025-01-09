@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { tokens } from "../../theme";
 import { useTheme } from "@mui/material";
 import { Button, Spin, Input, Form, Select, Space, notification, Modal, message } from 'antd';
+import { v4 } from 'uuid';
 import axios from 'axios';
 
 const { Option } = Select;
@@ -120,7 +121,8 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
       coursier: e.coursier,
       zone: e.zone,
       orders: items,
-      rescheduled
+      rescheduled,
+      id: v4()
     }
 
     console.log(e)
