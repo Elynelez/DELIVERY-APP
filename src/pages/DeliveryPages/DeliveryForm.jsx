@@ -18,6 +18,11 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
+    const storedItems = JSON.parse(localStorage.getItem('items')) || [];
+    const storedRescheduled = JSON.parse(localStorage.getItem('rescheduled')) || [];
+    setItems(storedItems);
+    setRescheduled(storedRescheduled);
+
     axios.get(`${URL_SERVER}/delivery/coursiers`)
       .then(resp => {
         setData(prevState => ({
@@ -66,8 +71,12 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
           title: 'Este pedido ya está registrado',
           content: '¿Estás seguro de enviar este pedido?',
           onOk() {
-            setItems([...items, `${code}**`]);
-            setRescheduled([...rescheduled, {code: code, position: Number(data.orders.indexOf(code))+1}])
+            const updatedItems = [...items, `${code}**`];
+            const updatedRescheduled = [...rescheduled, { code: code, position: Number(data.orders.indexOf(code)) + 1 }];
+            setItems(updatedItems);
+            setRescheduled(updatedRescheduled);
+            localStorage.setItem('items', JSON.stringify(updatedItems));
+            localStorage.setItem('rescheduled', JSON.stringify(updatedRescheduled))
             setItemName('');
           }
         })
@@ -84,7 +93,12 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                 title: 'Este pedido ya está registrado',
                 content: '¿Estás seguro de enviar este pedido?',
                 onOk() {
-                  setItems([...items, number]);
+                  const updatedItems = [...items, `${code}**`];
+                  const updatedRescheduled = [...rescheduled, { code: code, position: Number(data.orders.indexOf(code)) + 1 }];
+                  setItems(updatedItems);
+                  setRescheduled(updatedRescheduled);
+                  localStorage.setItem('items', JSON.stringify(updatedItems));
+                  localStorage.setItem('rescheduled', JSON.stringify(updatedRescheduled))
                   setItemName('');
                 }
               })
@@ -94,7 +108,9 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                 description: 'No puedes poner un pedido más de una vez en una misma ruta',
               })
             } else {
-              setItems([...items, number]);
+              const updatedItems = [...items, code];
+              setItems(updatedItems);
+              localStorage.setItem('items', JSON.stringify(updatedItems));
               setItemName('');
             }
 
@@ -104,7 +120,9 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
         })
         break;
       default:
-        setItems([...items, code]);
+        const updatedItems = [...items, code];
+        setItems(updatedItems);
+        localStorage.setItem('items', JSON.stringify(updatedItems));
         setItemName('')
         break;
     }
@@ -134,6 +152,8 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
           ...prevState,
           orders: [...prevState.orders, ...items]
         }));
+        localStorage.setItem('items', JSON.stringify([]));
+        localStorage.setItem('rescheduled', JSON.stringify([]));
         setItems([])
         setItemName('')
         form.resetFields();
@@ -153,7 +173,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
         <div className="body-group-form">
           <div className="container-group-form" style={{ backgroundColor: colors.primary[400] }}>
             <h1 className="form-title-group" style={{ color: colors.primary[100] }}><span>FORMULARIO MENSAJERÍA</span></h1>
-            <Form layout="vertical" form={form}  onFinish={onFinish}>
+            <Form layout="vertical" form={form} onFinish={onFinish}>
               <div className="main-user-info-group">
                 <div className="user-input-box-group">
                   <div className="end-input-group-form">
