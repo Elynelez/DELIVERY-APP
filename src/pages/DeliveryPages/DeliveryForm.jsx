@@ -94,7 +94,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                 content: '¿Estás seguro de enviar este pedido?',
                 onOk() {
                   const updatedItems = [...items, `${code}**`];
-                  const updatedRescheduled = [...rescheduled, { code: code, position: Number(data.orders.indexOf(code)) + 1 }];
+                  const updatedRescheduled = [...rescheduled, { code: number, position: Number(data.orders.indexOf(code)) + 1 }];
                   setItems(updatedItems);
                   setRescheduled(updatedRescheduled);
                   localStorage.setItem('items', JSON.stringify(updatedItems));
@@ -108,7 +108,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                 description: 'No puedes poner un pedido más de una vez en una misma ruta',
               })
             } else {
-              const updatedItems = [...items, code];
+              const updatedItems = [...items, number];
               setItems(updatedItems);
               localStorage.setItem('items', JSON.stringify(updatedItems));
               setItemName('');
