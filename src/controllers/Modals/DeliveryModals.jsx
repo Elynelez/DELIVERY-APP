@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Input, Checkbox, Spin, message, Select, Typography, List, notification } from 'antd';
+import React, { useState } from 'react';
+import { Modal, Button, Form, Input, message, Select, Typography, List, notification } from 'antd';
 
 
 const ModalData = ({ data }) => {
@@ -45,7 +45,7 @@ const ModalData = ({ data }) => {
           size="small"
           dataSource={[
             { title: 'ID del Pedido', value: data.order.id },
-            { title: 'Coursier', value: data.order.shipping_data.coursier },
+            { title: 'Mensajero', value: data.order.shipping_data.coursier },
             { title: 'Zona', value: data.order.shipping_data.zone },
             { title: 'Nombre del Cliente', value: data.order.customer.name },
             { title: 'Dirección de Entrega', value: data.order.customer.address },

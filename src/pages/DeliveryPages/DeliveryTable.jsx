@@ -1,107 +1,105 @@
 import React, { useState, useEffect } from "react";
-import { Button, Spin, Menu, Modal, message } from "antd"
-import DataTableGrid from "../../controllers/Tables/DataGridPro";
-import { ModalData, EditModal, ConfirmModal } from "../../controllers/Modals/DeliveryModals";
 import { useTheme, Box, Typography } from "@mui/material";
-import { tokens } from "./../../theme";
+import { Button, Spin, Menu, Modal, message } from "antd"
+import axios from "axios";
 import { useParams } from 'react-router-dom';
+import { ModalData, EditModal, ConfirmModal } from "../../controllers/Modals/DeliveryModals";
+import DataTableGrid from "../../controllers/Tables/DataGridPro";
+import { tokens } from "./../../theme";
 
-const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, API_URL, URL_SERVER }) => {
+const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, socket, URL_SERVER, API_URL }) => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true)
     const [reloadData, setReloadData] = useState(true);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    const loadData = () => {
-        let data
-        setLoading(true);
-        fetch(`${URL_SERVER}/delivery/travels`)
-            .then(response => response.json())
-            .then(parsedData => {
-                console.log(parsedData)
-                data = parsedData.map(obj => {
-                    return {
-                        id: obj.id,
-                        code: obj.order.id,
-                        date_generate: obj.date_generate,
-                        coursier: obj.order.shipping_data.coursier.toLowerCase(),
-                        client: obj.order.customer.name,
-                        seller: obj.order.seller.name,
-                        address: obj.order.customer.address,
-                        condition: obj.order.transactions.condition,
-                        method: obj.order.transactions.method,
-                        total: obj.order.transactions.total,
-                        status: obj.order.status,
-                        notation: obj.order.remarks,
-                        complete: obj
-                    }
-                })
+    const loadData = async () => {
+        try {
+            setLoading(true);
 
-                if (id != "all") {
-                    data = data.filter(obj => obj.coursier.includes(id))
-                }
+            const response = await axios.get(`${URL_SERVER}/delivery/travels`);
+            const parsedData = response.data;
 
-                setDeliveryData(data.reverse());
-                setLoading(false);
-                setReloadData(false)
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                setLoading(false);
-            });
+            let data = parsedData.map(obj => ({
+                id: obj.id,
+                code: obj.order.id,
+                date_generate: obj.date_generate,
+                coursier: obj.order.shipping_data.coursier.toLowerCase(),
+                client: obj.order.customer.name,
+                seller: obj.order.seller.name,
+                address: obj.order.customer.address,
+                condition: obj.order.transactions.condition,
+                method: obj.order.transactions.method,
+                total: obj.order.transactions.total,
+                status: obj.order.status,
+                notation: obj.order.remarks,
+                complete: obj
+            }));
+
+            if (id != "all") {
+                data = data.filter(obj => obj.coursier.includes(id))
+            }
+
+            setDeliveryData(data.reverse());
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+            setReloadData(false);
+        }
     };
 
     const deleteRowById = (id) => {
+        const updatedData = deliveryData.filter((item) => item.id !== id);
+        setDeliveryData(updatedData);
+
         Modal.confirm({
             title: '¿Seguro que quieres eliminar este contenido?',
             content: 'Esta acción no se puede deshacer.',
             onOk: () => {
-                message.info('unos momentos')
-                fetch(API_URL + "delivery/travel/delete", {
-                    redirect: "follow",
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8",
-                    },
-                    body: JSON.stringify({ id: id })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        message.success('Contenido borrado exitosamente');
-                        setReloadData(true)
-                    })
-                    .catch(error => {
-                        console.error('Error deleting row:', error);
-                        message.info('no se pudo completar la operación')
-                    });
+                setLoading(true)
+                message.info('Procesando, por favor espera...');
+                socket.emit("deleteDelivery", id)
+                socket.on("message", (response) => {
+                    if (response.success) {
+                        setDeliveryData(updatedData);
+                        message.success(response.message);
+                        setLoading(false)
+                    } else {
+                        message.error(response.message || 'Hubo un error inesperado.');
+                        setLoading(false)
+                    }
+                });
             },
         });
     }
 
-    const canceledOrderById = (id) => {
+    const cancelOrderById = (id) => {
+        const reversedData = [...deliveryData].reverse();
+        const position = reversedData.findIndex((item) => item.id === id) + 1
+        const updatedData = deliveryData.map((item) =>
+            item.id === id ? { ...item, status: 'ANULADO' } : item
+        );
+        setDeliveryData(updatedData);
+
         Modal.confirm({
             title: '¿Seguro que quieres anular este padido?',
             content: 'Esta acción no se puede deshacer.',
             onOk: () => {
-                message.info('unos momentos')
-                fetch(API_URL + "delivery/travel/canceled", {
-                    redirect: "follow",
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8",
-                    },
-                    body: JSON.stringify({ id: id })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        message.success('Pedido cancelado exitosamente');
-                        setReloadData(true)
-                    })
-                    .catch(error => {
-                        console.error('Error cancelling order:', error);
-                        message.info('no se pudo completar la operación')
-                    });
+                setLoading(true)
+                message.info('Procesando, por favor espera...');
+                socket.emit("cancelDelivery", position)
+                socket.on("message", (response) => {
+                    if (response.success) {
+                        setDeliveryData(updatedData);
+                        message.success(response.message);
+                        setLoading(false)
+                    } else {
+                        message.error(response.message || 'Hubo un error inesperado.');
+                        setLoading(false)
+                    }
+                });
             },
         });
     }
@@ -164,7 +162,7 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, API
                                 {hasPermission(user.email, ['logistic', 'boss']) && (
                                     <>
                                         <Menu.Item key="2">
-                                            <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.id)}>Anular</Button>
+                                            <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => cancelOrderById(params.row.id)}>Anular</Button>
                                         </Menu.Item>
                                         <Menu.Item key="3">
                                             <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(params.row.id)}>Borrar</Button>
@@ -210,7 +208,7 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, API
                     <DataTableGrid
                         key={deliveryData.length}
                         columns={columns}
-                        data={"user.email" == "contableducor@gmail.com" ? deliveryData.filter(obj => obj.method != "EFECTIVO") : deliveryData}
+                        data={deliveryData}
                         setReloadData={setReloadData}
                         setLoading={setLoading}
                     />

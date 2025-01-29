@@ -361,8 +361,9 @@ function App() {
                                   hasPermission={hasPermission}
                                   deliveryData={deliveryData}
                                   setDeliveryData={setDeliveryData}
-                                  API_URL={API_DUCOR}
+                                  socket={socket}
                                   URL_SERVER={URL_SERVER}
+                                  API_URL={API_URL}
                                 />} />
                             </>
                           )}

@@ -135,6 +135,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
   };
 
   const onFinish = (e) => {
+    setLoading(true)
     e = {
       coursier: e.coursier,
       zone: e.zone,
@@ -157,7 +158,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
         setItems([])
         setItemName('')
         form.resetFields();
-
+        setLoading(false)
       }).catch(error => {
         message.error("error en el servidor")
       });
