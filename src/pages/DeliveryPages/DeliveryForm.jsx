@@ -120,6 +120,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
         })
         break;
       default:
+        
         const updatedItems = [...items, code];
         setItems(updatedItems);
         localStorage.setItem('items', JSON.stringify(updatedItems));
