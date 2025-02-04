@@ -93,7 +93,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                 title: 'Este pedido ya está registrado',
                 content: '¿Estás seguro de enviar este pedido?',
                 onOk() {
-                  const updatedItems = [...items, `${code}**`];
+                  const updatedItems = [...items, `${number}**`];
                   const updatedRescheduled = [...rescheduled, { code: number, position: Number(data.orders.indexOf(code)) + 1 }];
                   setItems(updatedItems);
                   setRescheduled(updatedRescheduled);
