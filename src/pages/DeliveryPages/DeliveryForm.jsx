@@ -11,6 +11,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
   const [loading, setLoading] = useState(true)
   const [items, setItems] = useState([]);
   const [rescheduled, setRescheduled] = useState([])
+  const [reloadData, setReloadData] = useState(true);
   const [itemName, setItemName] = useState('');
   const [data, setData] = useState({ orders: [], coursiers: [] })
   const theme = useTheme();
@@ -18,36 +19,38 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const storedItems = JSON.parse(localStorage.getItem('items')) || [];
-    const storedRescheduled = JSON.parse(localStorage.getItem('rescheduled')) || [];
+    if (!reloadData) return;
+
+    const storedItems = JSON.parse(localStorage.getItem("items")) || [];
+    const storedRescheduled = JSON.parse(localStorage.getItem("rescheduled")) || [];
     setItems(storedItems);
     setRescheduled(storedRescheduled);
 
-    axios.get(`${URL_SERVER}/delivery/coursiers`)
-      .then(resp => {
-        setData(prevState => ({
-          ...prevState,
-          coursiers: resp.data
-        }));
-        setLoading(false);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [coursiersResp, travelsResp] = await Promise.all([
+          axios.get(`${URL_SERVER}/delivery/coursiers`),
+          axios.get(`${URL_SERVER}/delivery/travels`)
+        ]);
 
-    axios.get(`${URL_SERVER}/delivery/travels`)
-      .then(resp => {
-        let filteredData = resp.data.map(obj => obj.order.id);
-        setData(prevState => ({
-          ...prevState,
-          orders: filteredData
-        }));
+        console.log(travelsResp.data)
+
+        setData({
+          coursiers: coursiersResp.data,
+          orders: travelsResp.data.map((obj) => obj.order.id)
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, [])
+        setReloadData(false);
+      }
+    };
+
+    fetchData();
+  }, [reloadData]);
+
 
   const handleAddItem = async () => {
 
@@ -72,7 +75,14 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
           content: '¿Estás seguro de enviar este pedido?',
           onOk() {
             const updatedItems = [...items, `${code}**`];
-            const updatedRescheduled = [...rescheduled, { code: code, position: Number(data.orders.indexOf(code)) + 1 }];
+            const updatedRescheduled = [...rescheduled, {
+              code: code, position: data.orders.reduce((acc, numberCode, index) => {
+                if (numberCode == code) {
+                  acc.push(index + 1);
+                }
+                return acc;
+              }, [])
+            }];
             setItems(updatedItems);
             setRescheduled(updatedRescheduled);
             localStorage.setItem('items', JSON.stringify(updatedItems));
@@ -86,7 +96,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
 
         socket.emit("autoCompleteDelivery", qr)
 
-        socket.on('numberDelivery', (number) => {
+        socket.once('numberDelivery', (number) => {
           try {
             if (data.orders.includes(number)) {
               Modal.confirm({
@@ -94,7 +104,14 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                 content: '¿Estás seguro de enviar este pedido?',
                 onOk() {
                   const updatedItems = [...items, `${number}**`];
-                  const updatedRescheduled = [...rescheduled, { code: number, position: Number(data.orders.indexOf(code)) + 1 }];
+                  const updatedRescheduled = [...rescheduled, {
+                    code: number, position: data.orders.reduce((acc, numberCode, index) => {
+                      if (numberCode == number) {
+                        acc.push(index + 1);
+                      }
+                      return acc;
+                    }, [])
+                  }];
                   setItems(updatedItems);
                   setRescheduled(updatedRescheduled);
                   localStorage.setItem('items', JSON.stringify(updatedItems));
@@ -136,31 +153,30 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
 
   const onFinish = (e) => {
     setLoading(true)
-    e = {
+
+    const payload = {
       coursier: e.coursier,
       zone: e.zone,
       orders: items,
       rescheduled,
       id: v4()
-    }
+    };
 
-    console.log(e)
-
-    axios.post(`${URL_SERVER}/delivery/travel`, { body: e })
+    axios.post(`${URL_SERVER}/delivery/travel`, { body: payload })
       .then(resp => {
-        message.success(resp.data.message)
-        setData(prevState => ({
-          ...prevState,
-          orders: [...prevState.orders, ...items]
-        }));
+        message.success(resp.data.message);
         localStorage.setItem('items', JSON.stringify([]));
         localStorage.setItem('rescheduled', JSON.stringify([]));
-        setItems([])
-        setItemName('')
+        setItems([]);
+        setItemName('');
         form.resetFields();
-        setLoading(false)
-      }).catch(error => {
-        message.error("error en el servidor")
+      })
+      .catch(error => {
+        message.error("error en el servidor");
+      }).finally(() => {
+        setTimeout(() => {
+          setReloadData(true);
+        }, 5000);
       });
   };
 
