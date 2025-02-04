@@ -363,7 +363,7 @@ function App() {
                                   setDeliveryData={setDeliveryData}
                                   socket={socket}
                                   URL_SERVER={URL_SERVER}
-                                  API_URL={API_URL}
+                                  API_URL={API_DUCOR}
                                 />} />
                             </>
                           )}
