@@ -244,7 +244,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                           />
                           <Button
                             type="primary"
-                            style={{ backgroundColor: colors.primary[100] }}
+                            style={{ backgroundColor: colors.primary[300] }}
                             onClick={handleAddItem}
                           >
                             Agregar
@@ -273,7 +273,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                 </div>
               </div>
               <Form.Item>
-                <input type="submit" className="form-submit-btn" style={{ backgroundColor: colors.primary[100] }} />
+                <input type="submit" className="form-submit-btn" style={{ backgroundColor: colors.primary[300] }} />
               </Form.Item>
             </Form>
           </div>
