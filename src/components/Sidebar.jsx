@@ -46,7 +46,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     );
 };
 
-const Sidebar = ({ isAuthenticated, user, hasPermission}) => {
+const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
     const coursiers = [...getCoursiers(), "servicio externo", "medellín", "dflex"]
     const platforms = ["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "ADDI", "LINIO"]
     const theme = useTheme();
@@ -147,6 +147,20 @@ const Sidebar = ({ isAuthenticated, user, hasPermission}) => {
                             <Item
                                 title="Grabadora"
                                 to="/screenrecord"
+                                icon={<RadioButtonChecked />}
+                                selected={selected}
+                                setSelected={setSelected}
+                            />
+                            <Item
+                                title="Pausar Publicación"
+                                to="/publication/pause"
+                                icon={<RadioButtonChecked />}
+                                selected={selected}
+                                setSelected={setSelected}
+                            />
+                            <Item
+                                title="Publicaciones"
+                                to="/publication/table"
                                 icon={<RadioButtonChecked />}
                                 selected={selected}
                                 setSelected={setSelected}

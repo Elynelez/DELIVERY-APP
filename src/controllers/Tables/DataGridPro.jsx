@@ -8,9 +8,10 @@ import { DatePicker, Button, message } from "antd";
 import GetApp from '@mui/icons-material/GetApp';
 import { MultipleStatusModal } from "../Modals/DeliveryModals";
 import { MultiplePlatformModal } from "../Modals/InventoryModals";
+import { CreateProductModal, UpdateStockModal } from "../Modals/DatabaseModals";
 
 
-const DataTableGrid = ({ data, columns, setReloadData }) => {
+const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER }) => {
   const location = useLocation()
   const { user } = useAuth0();
   const theme = useTheme();
@@ -264,10 +265,9 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
     });
 
     setFilteredData(filtered);
-
   };
 
-  const handleSelectedRowsChange = (ids) => {
+  const handleDeliveryAmount = (ids) => {
     const selectedIDs = new Set(ids);
     const selectedRows = data.filter((row) =>
       selectedIDs.has(row.id.toString()))
@@ -275,7 +275,7 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
     setTotalSum(sum.toLocaleString("es-ES", { style: "currency", currency: "COP" }));
   };
 
-  const handleSelectedRowsStatus = (ids) => {
+  const handleDeliveryChanceStatus = (ids) => {
     const selectedIDs = new Set(ids);
     const selectedRows = data.filter((row) =>
       selectedIDs.has(row.id.toString())
@@ -288,13 +288,151 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
     setDataStatus(ids)
   }
 
+  const handlePublicationActiveMassive = () => {
+    if (!dataStatus || dataStatus.length === 0) {
+      message.warning("Selecciona los productos primero");
+      return;
+    }
+
+    const items = dataStatus.map(i => {
+      return data[i]
+    })
+
+    const publications = items.map(obj => {
+      return obj.publicaciones.map(publication => { return publication.id })
+    }).flat()
+
+    message.info('unos momentos')
+    fetch(`${URL_SERVER}/database/publications/active`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ids: publications })
+    })
+      .then(response => response.json())
+      .then(data => {
+        message.success('Contenido editado exitosamente');
+      })
+      .catch(error => {
+        console.error('Error changing row:', error);
+        message.info('no se pudo completar la operación')
+      });
+  }
+
+  const handlePublicationInactiveMassive = () => {
+    if (!dataStatus || dataStatus.length === 0) {
+      message.warning("Selecciona los productos primero");
+      return;
+    }
+
+    const items = dataStatus.map(i => {
+      return data[i]
+    })
+
+    const publications = items.map(obj => {
+      return obj.publicaciones.map(publication => { return publication.id })
+    }).flat()
+
+    message.info('unos momentos')
+    fetch(`${URL_SERVER}/database/publications/inactive`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ids: publications })
+    })
+      .then(response => response.json())
+      .then(data => {
+        message.success('Contenido editado exitosamente');
+      })
+      .catch(error => {
+        console.error('Error changing row:', error);
+        message.info('no se pudo completar la operación')
+      });
+  }
+
+  const handlePublicationFixMassive = () => {
+    if (!dataStatus || dataStatus.length === 0) {
+      message.warning("Selecciona los productos primero");
+      return;
+    }
+
+    const items = dataStatus.map(i => {
+      return data[i]
+    })
+
+    message.info('unos momentos')
+    fetch(`${URL_SERVER}/database/publications/fix`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(
+        {
+          datos: items.map(obj => {
+            return {
+              id: obj.producto_id,
+              sku: obj.skus[0],
+              cantidad: 2
+            }
+          })
+        }
+      ),
+    })
+      .then(response => response.json())
+      .then(data => {
+        message.success('Contenido editado exitosamente');
+      })
+      .catch(error => {
+        console.error('Error changing row:', error);
+        message.info('no se pudo completar la operación')
+      });
+  }
+
+  const handlePublicationUnfixMassive = () => {
+    if (!dataStatus || dataStatus.length === 0) {
+      message.warning("Selecciona los productos primero");
+      return;
+    }
+
+    const items = dataStatus.map(i => {
+      return data[i]
+    })
+
+    const products = items.map(obj => {
+      return { id: obj.producto_id, sku: obj.skus[0], cantidad: 0 }
+  })
+
+    message.info('unos momentos')
+    fetch(`${URL_SERVER}/database/publications/unfix`, {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ datos: products })
+    })
+      .then(response => response.json())
+      .then(data => {
+        message.success('Contenido editado exitosamente');
+      })
+      .catch(error => {
+        console.error('Error changing row:', error);
+        message.info('no se pudo completar la operación')
+      });
+  }
+
   const selectedRowsDelivery = (ids) => {
-    handleSelectedRowsChange(ids);
-    handleSelectedRowsStatus(ids);
+    handleDeliveryAmount(ids);
+    handleDeliveryChanceStatus(ids);
   };
 
   const selectedRowsInventory = (ids) => {
     handleInventoryUpdateMassive(ids)
+  }
+
+  const selectedRowsPublication = (ids) => {
+    setDataStatus(ids)
   }
 
   return (
@@ -354,10 +492,70 @@ const DataTableGrid = ({ data, columns, setReloadData }) => {
             colors={colors}
           />
         )}
-        <DateRangeFilter onFilter={handleDateFilter} />
+        {location.pathname.includes("publication") && (
+          <CreateProductModal
+            data={data}
+            setReloadData={setReloadData}
+            URL_SERVER={URL_SERVER}
+            colors={colors}
+          />
+        )}
+        {location.pathname.includes("publication") && (
+          <UpdateStockModal
+            data={data}
+            setReloadData={setReloadData}
+            URL_SERVER={URL_SERVER}
+            colors={colors}
+          />
+        )}
+        {location.pathname.includes("publication") && (
+          <Button
+            type='primary'
+            style={{ backgroundColor: colors.blueAccent[1000] }}
+            onClick={handlePublicationActiveMassive}
+          >
+            Activar publicaciones
+          </Button>
+        )}
+        {location.pathname.includes("publication") && (
+          <Button
+            type='primary'
+            style={{ backgroundColor: colors.blueAccent[1000] }}
+            onClick={handlePublicationInactiveMassive}
+          >
+            Desactivar publicaciones
+          </Button>
+        )}
+        {location.pathname.includes("publication") && (
+          <Button
+            type='primary'
+            style={{ backgroundColor: colors.blueAccent[1000] }}
+            onClick={handlePublicationFixMassive}
+          >
+            Fijar publicaciones
+          </Button>
+        )}
+        {location.pathname.includes("publication") && (
+          <Button
+            type='primary'
+            style={{ backgroundColor: colors.blueAccent[1000] }}
+            onClick={handlePublicationUnfixMassive}
+          >
+            Desfijar publicaciones
+          </Button>
+        )}
+        {!location.pathname.includes("publication") && (
+          <DateRangeFilter onFilter={handleDateFilter} />
+        )}
       </div>
       <DataGridPro
-        onRowSelectionModelChange={location.pathname.includes("delivery") ? selectedRowsDelivery : selectedRowsInventory}
+        onRowSelectionModelChange={
+          location.pathname.includes("delivery")
+            ? selectedRowsDelivery
+            : location.pathname.includes("publication")
+              ? selectedRowsPublication
+              : selectedRowsInventory
+        }
         checkboxSelection
         rows={filteredData}
         columns={columns}

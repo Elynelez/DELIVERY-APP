@@ -25,6 +25,7 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
                 id: obj.id,
                 code: obj.order.id,
                 date_generate: obj.date_generate,
+                date_generate_ISO: obj.date_generate_ISO,
                 coursier: obj.order.shipping_data.coursier.toLowerCase(),
                 client: obj.order.customer.name,
                 seller: obj.order.seller.name,

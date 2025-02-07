@@ -24,7 +24,7 @@ import {
   PendingOrders,
   SettingTable,
 } from './pages/PackagePages';
-import { PausePosting } from './pages/PublicationPages';
+import { PausePosting, PublicationTable } from './pages/PublicationPages';
 
 // middlewares
 import { hasPermission } from './middlewares';
@@ -32,9 +32,8 @@ import { hasPermission } from './middlewares';
 // API URL'S
 const API_DUCOR = process.env.REACT_APP_API_DUCOR
 const URL_SERVER = process.env.REACT_APP_URL_SERVER
+const URL_CARLOS = process.env.REACT_APP_URL_CARLOS
 // const URL_SERVER = 'http://localhost:' + 8080
-
-console.log(URL_SERVER)
 
 const socket = io(URL_SERVER);
 
@@ -309,13 +308,19 @@ function App() {
                     />} />
                   <Route exact path="/platforms/:id"
                     element={<PlatformTable
-                      API_URL={URL_SERVER}
+                      URL_SERVER={URL_SERVER}
+                      ordersData={ordersData}
+                      setOrdersData={setOrdersData}
                     />} />
                   <Route exact path="/screenrecord"
                     element={<ScreenRecorder
                     />} />
                   <Route exact path='publication/pause'
                     element={<PausePosting
+                    />} />
+                  <Route exact path='publication/table'
+                    element={<PublicationTable
+                      URL_SERVER={URL_CARLOS}
                     />} />
                   {isAuthenticated && (
                     <>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Spin, message, Form, Input } from "antd"
+import { redirect } from "react-router-dom";
 
 const PausePosting = () => {
     const [form] = Form.useForm();
@@ -9,23 +10,26 @@ const PausePosting = () => {
         console.log(e)
 
         const options = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({sku: e.code}),
+            redirect: 'follow',
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ sku: e.code }),
         };
 
         try {
-          const response = await fetch(
-            "https://apibd-88x1.onrender.com/v2/pausar",
-            options
-          );
-          const data = await response.json(); // Supone que el servidor responde con JSON
-          setResponseMessage(`Servidor: ${JSON.stringify(data)}`);
+            const response = await fetch(
+                "https://apibd-88x1.onrender.com/v2/pausar",
+                options
+            );
+            const data = await response.json();
+
+            console.log(data)// Supone que el servidor responde con JSON
+            setResponseMessage(`Servidor: ${JSON.stringify(data)}`);
         } catch (error) {
-          console.error("Error al hacer la solicitud:", error);
-          setResponseMessage("Error al conectar con el servidor.");
+            console.error("Error al hacer la solicitud:", error);
+            setResponseMessage("Error al conectar con el servidor.");
         }
     };
 

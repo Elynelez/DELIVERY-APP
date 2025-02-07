@@ -1,48 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { useTheme, Box, Typography } from "@mui/material";
 import { Button, Spin, Menu, Modal, message } from "antd"
+import axios from "axios";
 import { useParams } from 'react-router-dom';
 import { tokens } from "../../theme";
 import DataTableGrid from "../../controllers/Tables/DataGridPro";
 
-const PlatformTable = ({ API_URL }) => {
+const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
     const { id } = useParams();
-    const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
     const [reloadData, setReloadData] = useState(false);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    const loadData = () => {
-        let data
-        setLoading(true);
-        fetch(`${API_URL}/platforms/${id}`)
-            .then(response => response.json())
-            .then(parsedData => {
-                data = parsedData.map(obj => {
-                    return {
-                        id: obj.id,
-                        date_generate: obj.date_generate,
-                        coursier: Array.isArray(obj.order.delivery) ? obj.order.delivery.join(", ") : obj.order.delivery,
-                        seller: obj.seller.name,
-                        client: obj.customer.name,
-                        address: obj.customer.shipping_data.address,
-                        state: obj.customer.shipping_data.state,
-                        city: obj.customer.shipping_data.city,
-                        items: obj.order.items,
-                        condition: obj.order.transactions.condition,
-                        method: obj.order.transactions.method,
-                        total: Number(obj.order.transactions.total_payments) + Number(obj.order.transactions.total_shipping),
-                        status: obj.order.status
-                    }
-                })
-                setOrders(data);
-                setLoading(false);
+    const loadData = async () => {
+        try {
+            setLoading(true);
+
+            const response = await axios.get(`${URL_SERVER}/platforms/${id}`);
+            const parsedData = response.data;
+
+            let data = parsedData.map(obj => {
+                return {
+                    id: obj.id,
+                    date_generate: obj.date_generate,
+                    date_generate_ISO: obj.date_generate_ISO,
+                    coursier: Array.isArray(obj.order.delivery) ? obj.order.delivery.join(", ") : obj.order.delivery,
+                    seller: obj.seller.name,
+                    client: obj.customer.name,
+                    address: obj.customer.shipping_data.address,
+                    state: obj.customer.shipping_data.state,
+                    city: obj.customer.shipping_data.city,
+                    items: obj.order.items,
+                    condition: obj.order.transactions.condition,
+                    method: obj.order.transactions.method,
+                    total: Number(obj.order.transactions.total_payments) + Number(obj.order.transactions.total_shipping),
+                    status: obj.order.status
+                }
             })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                setLoading(false);
-            });
+
+            setOrdersData(data)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+            setReloadData(false);
+        }
     }
 
     const canceledOrderById = (id_order) => {
@@ -51,7 +54,7 @@ const PlatformTable = ({ API_URL }) => {
             content: 'Esta acción no se puede deshacer.',
             onOk: () => {
                 message.info('unos momentos')
-                fetch(`${API_URL}/platforms/${id}/cancel`, {
+                fetch(`${URL_SERVER}/platforms/${id}/cancel`, {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json",
@@ -77,8 +80,7 @@ const PlatformTable = ({ API_URL }) => {
 
     useEffect(() => {
         if (reloadData) {
-            loadData()
-            setReloadData(false)
+            loadData();
         }
     }, [reloadData]);
 
@@ -153,10 +155,10 @@ const PlatformTable = ({ API_URL }) => {
                         </Typography>
                     </Box>
                     <DataTableGrid
-                        key={orders.length}
+                        key={ordersData.length}
                         columns={columns}
-                        data={orders}
-                        setReloadData={setOrders}
+                        data={ordersData}
+                        setReloadData={setReloadData}
                         setLoading={setLoading}
                     />
                 </Box>
