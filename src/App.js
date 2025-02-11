@@ -320,7 +320,7 @@ function App() {
                     />} />
                   <Route exact path='publication/table'
                     element={<PublicationTable
-                      URL_SERVER={URL_CARLOS}
+                      URL_SERVER={URL_SERVER}
                     />} />
                   {isAuthenticated && (
                     <>

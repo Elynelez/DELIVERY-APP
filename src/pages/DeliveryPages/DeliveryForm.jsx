@@ -209,6 +209,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                           {data.coursiers.map(coursier => (
                             <Option value={coursier}>{coursier}</Option>
                           ))}
+                          <Option value={"Miguel"}>Miguel</Option>
                           <Option value={"Servicio Externo"}>Servicio Externo</Option>
                           <Option value={"Medellín"}>Medellín</Option>
                           <Option value={"Dflex"}>Dflex</Option>

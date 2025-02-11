@@ -24,7 +24,7 @@ const PublicationTable = ({ URL_SERVER }) => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await fetch(URL_SERVER + '/v2/productos/coleccion/datos', { cache: 'no-store' });
+                const response = await fetch(URL_SERVER + '/database/products', { cache: 'no-store' });
                 const result = await response.json();
                 setData(result.data.map((producto, index) => ({
                     id: index.toString(),
@@ -44,7 +44,7 @@ const PublicationTable = ({ URL_SERVER }) => {
 
         async function fetchPlatforms() {
             try {
-                const response = await fetch(URL_SERVER + '/v2/plataformas');
+                const response = await fetch(URL_SERVER + '/database/platforms');
                 const result = await response.json();
                 setPlatforms(result.data);
             } catch (error) {
