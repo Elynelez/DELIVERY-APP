@@ -3,6 +3,7 @@ import { Button, Spin, Menu } from "antd"
 import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from '../../theme';
 import DataTableGrid from '../../controllers/Tables/DataGridPro';
+import axios from 'axios';
 import {
     ActivePauseModal,
     AddPublicationModal,
@@ -24,9 +25,8 @@ const PublicationTable = ({ URL_SERVER }) => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await fetch(URL_SERVER + '/database/products', { cache: 'no-store' });
-                const result = await response.json();
-                setData(result.data.map((producto, index) => ({
+                const response = await axios.get(`${URL_SERVER}/database/products`, { cache: 'no-store' });
+                setData(response.data.map((producto, index) => ({
                     id: index.toString(),
                     producto_id: producto.producto_id,
                     tipo: producto.tipo,
@@ -36,22 +36,21 @@ const PublicationTable = ({ URL_SERVER }) => {
                     skus: producto.skus,
                     acciones: 'Ver detalles'
                 })));
-                setLoading(false)
+                setLoading(false);
             } catch (error) {
                 console.error('Error al obtener los productos:', error);
             }
         }
-
+    
         async function fetchPlatforms() {
             try {
-                const response = await fetch(URL_SERVER + '/database/platforms');
-                const result = await response.json();
-                setPlatforms(result.data);
+                const response = await axios.get(`${URL_SERVER}/database/platforms`);
+                setPlatforms(response.data);
             } catch (error) {
                 console.error('Error al obtener plataformas:', error);
             }
         }
-
+    
         fetchData();
         fetchPlatforms();
     }, []);
@@ -92,7 +91,7 @@ const PublicationTable = ({ URL_SERVER }) => {
                                 loading={loading}
                                 setLoading={setLoading}
                                 statusColorMap={statusColorMap}
-                                URL_SERVER={"https://server-cloud-mggp.onrender.com"}
+                                URL_SERVER={URL_SERVER}
                             />
                         </Menu.Item>
                         <Menu.Item key="1">
@@ -101,7 +100,7 @@ const PublicationTable = ({ URL_SERVER }) => {
                                 loading={loading}
                                 setLoading={setLoading}
                                 platforms={platforms}
-                                URL_SERVER={"https://server-cloud-mggp.onrender.com"}
+                                URL_SERVER={URL_SERVER}
                             />
                         </Menu.Item>
                         <Menu.Item key="2">
@@ -109,7 +108,7 @@ const PublicationTable = ({ URL_SERVER }) => {
                                 data={params.row}
                                 loading={loading}
                                 setLoading={setLoading}
-                                URL_SERVER={"https://server-cloud-mggp.onrender.com"}
+                                URL_SERVER={URL_SERVER}
                             />
                         </Menu.Item>
                         <Menu.Item key="3">
@@ -118,7 +117,7 @@ const PublicationTable = ({ URL_SERVER }) => {
                                 loading={loading}
                                 setLoading={setLoading}
                                 statusColorMap={statusColorMap}
-                                URL_SERVER={"https://server-cloud-mggp.onrender.com"}
+                                URL_SERVER={URL_SERVER}
                             />
                         </Menu.Item>
                         <Menu.Item key="4">
@@ -126,7 +125,7 @@ const PublicationTable = ({ URL_SERVER }) => {
                                 data={params.row}
                                 loading={loading}
                                 setLoading={setLoading}
-                                URL_SERVER={"https://server-cloud-mggp.onrender.com"}
+                                URL_SERVER={URL_SERVER}
                             />
                         </Menu.Item>
                         <Menu.Item key="5">
@@ -134,7 +133,7 @@ const PublicationTable = ({ URL_SERVER }) => {
                                 data={params.row}
                                 loading={loading}
                                 setLoading={setLoading}
-                                URL_SERVER={"https://server-cloud-mggp.onrender.com"}
+                                URL_SERVER={URL_SERVER}
                             />
                         </Menu.Item>
                         <Menu.Item key="6">
@@ -142,7 +141,7 @@ const PublicationTable = ({ URL_SERVER }) => {
                                 data={params.row}
                                 loading={loading}
                                 setLoading={setLoading}
-                                URL_SERVER={"https://server-cloud-mggp.onrender.com"}
+                                URL_SERVER={URL_SERVER}
                             />
                         </Menu.Item>
                         <Menu.Item key="7">
@@ -150,7 +149,7 @@ const PublicationTable = ({ URL_SERVER }) => {
                                 data={params.row}
                                 loading={loading}
                                 setLoading={setLoading}
-                                URL_SERVER={"https://server-cloud-mggp.onrender.com"}
+                                URL_SERVER={URL_SERVER}
                             />
                         </Menu.Item>
                     </Menu.SubMenu>
@@ -185,7 +184,7 @@ const PublicationTable = ({ URL_SERVER }) => {
                         data={data}
                         columns={columns}
                         setReloadData={setData}
-                        URL_SERVER={"https://server-cloud-mggp.onrender.com"}
+                        URL_SERVER={URL_SERVER}
                     />
                 </Box>
             )}
