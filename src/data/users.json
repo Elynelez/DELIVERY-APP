@@ -40,6 +40,11 @@
       "roles": ["inventory_exit"]
     },
     {
+      "email": "yuberd.ducor@gmail.com",
+      "name": "Yuber",
+      "roles": ["inventory_exit"]
+    },
+    {
       "email": "santi.inducor@gmail.com",
       "name": "Santiago",
       "roles": ["inventory_exit", "logistic"]
