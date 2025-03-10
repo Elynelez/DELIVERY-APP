@@ -30,7 +30,7 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
                 client: obj.order.customer.name,
                 seller: obj.order.seller.name,
                 address: obj.order.customer.address,
-                zone: obj.order.shipping_data,
+                zone: obj.order.shipping_data.zone,
                 condition: obj.order.transactions.condition,
                 method: obj.order.transactions.method,
                 total: obj.order.transactions.total,
