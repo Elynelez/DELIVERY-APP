@@ -30,6 +30,7 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
                 client: obj.order.customer.name,
                 seller: obj.order.seller.name,
                 address: obj.order.customer.address,
+                zone: obj.order.shipping_data,
                 condition: obj.order.transactions.condition,
                 method: obj.order.transactions.method,
                 total: obj.order.transactions.total,
@@ -126,9 +127,11 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
     };
 
     const columns = [
+        { headerName: 'ID', field: "id", flex: 0.5, hide: true },
         { headerName: 'Fecha desp.', field: "date_generate", flex: 1 },
         { headerName: 'Código', field: "code", flex: 1 },
         { headerName: 'Mensajero', field: "coursier", flex: 1 },
+        { headerName: 'Zona', field: "zone", flex: 0.5, hide: true },
         { headerName: 'Cliente', field: "client", flex: 1 },
         { headerName: 'Vendedor', field: "seller", flex: 1 },
         { headerName: 'Dirección', field: "address", flex: 1 },
