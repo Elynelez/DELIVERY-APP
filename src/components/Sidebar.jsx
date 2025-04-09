@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { Link } from 'react-router-dom'
 import { ProSidebar, Menu as SidebarMenu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
@@ -23,7 +23,9 @@ import {
     CalendarToday,
     Inventory,
     Games,
-    RadioButtonChecked
+    RadioButtonChecked,
+    PauseCircleFilledOutlined,
+    DynamicFeedOutlined
 } from "@mui/icons-material/"
 import "react-pro-sidebar/dist/css/styles.css";
 import { getCoursiers } from "../middlewares.js";
@@ -47,12 +49,25 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 };
 
 const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
-    const coursiers = [...getCoursiers(), "servicio externo", "medellín", "dflex"]
+    const [coursiers, setCoursiers] = useState([]);
     const platforms = ["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "ADDI", "LINIO"]
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [isCollapsed, setIsCollapsed] = useState(true);
     const [selected, setSelected] = useState("Dashboard");
+
+    useEffect(() => {
+        const fetchCoursiers = async () => {
+            try {
+                const data = await getCoursiers();
+                setCoursiers([...data, "servicio externo", "medellín", "dflex"]);
+            } catch (error) {
+                console.error("Error al obtener coursiers:", error);
+            }
+        };
+
+        fetchCoursiers();
+    }, []);
 
     return (
         <Box
@@ -151,17 +166,26 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                 selected={selected}
                                 setSelected={setSelected}
                             />
+                        </SubMenu>
+                        <Typography
+                            variant="h6"
+                            color={colors.grey[300]}
+                            sx={{ m: "15px 0 5px 20px" }}
+                        >
+                            Posts
+                        </Typography>
+                        <SubMenu title="Publicaciones" icon={<DynamicFeedOutlined />}>
                             <Item
-                                title="Pausar Publicación"
+                                title="Pausar"
                                 to="/publication/pause"
-                                icon={<RadioButtonChecked />}
+                                icon={<PauseCircleFilledOutlined />}
                                 selected={selected}
                                 setSelected={setSelected}
                             />
                             <Item
                                 title="Publicaciones"
                                 to="/publication/table"
-                                icon={<RadioButtonChecked />}
+                                icon={<CalendarToday />}
                                 selected={selected}
                                 setSelected={setSelected}
                             />
@@ -205,14 +229,14 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                         </Typography>
                                         <SubMenu title="Canales" icon={<CurrencyExchangeOutlinedIcon />}>
                                             <Item
-                                                title="Crear pedido"
-                                                to="/"
+                                                title="Pedidos"
+                                                to="/sales/orders"
                                                 icon={<ReceiptOutlinedIcon />}
                                                 selected={selected}
                                                 setSelected={setSelected}
                                             />
                                             <Item
-                                                title="Pedidos"
+                                                title="Agregar"
                                                 to="/sales/table"
                                                 icon={<TableView />}
                                                 selected={selected}
@@ -221,7 +245,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                         </SubMenu>
                                     </>
                                 )}
-                                {hasPermission(user.email, ['logistic', 'boss']) && (
+                                {hasPermission(user.email, ['logistic', 'boss', 'coursier']) && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -243,6 +267,24 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                                     <Item
                                                         title="Crear ruta"
                                                         to="/delivery/form"
+                                                        icon={<ContactsOutlinedIcon />}
+                                                        selected={selected}
+                                                        setSelected={setSelected}
+                                                    />
+                                                </>
+                                            )}
+                                            {hasPermission(user.email, ['boss', 'coursier']) && (
+                                                <>
+                                                    <Typography
+                                                        variant="h6"
+                                                        color={colors.grey[300]}
+                                                        sx={{ m: "15px 0 5px 20px" }}
+                                                    >
+                                                        Formulario Entrega
+                                                    </Typography>
+                                                    <Item
+                                                        title="Pedidos"
+                                                        to={`/delivery/route`}
                                                         icon={<ContactsOutlinedIcon />}
                                                         selected={selected}
                                                         setSelected={setSelected}

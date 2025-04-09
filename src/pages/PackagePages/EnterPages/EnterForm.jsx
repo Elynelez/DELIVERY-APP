@@ -29,7 +29,7 @@ const EnterForm = ({ user, rangeItems, socket, URL_SERVER }) => {
         setDisabled(true)
         if (!e.projects || e.projects.length === 0) {
             notification.error({
-                message: 'No puedes enviar una salida vacía',
+                message: 'No puedes enviar una wntrada vacía',
                 description: 'Cámbialo antes de continuar.',
                 duration: 5,
             });

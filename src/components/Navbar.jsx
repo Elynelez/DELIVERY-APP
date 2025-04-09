@@ -19,28 +19,38 @@ import {
 } from 'reactstrap';
 import { useAuth0 } from '@auth0/auth0-react';
 
-const NavbarNavigation = (props) => {
+const NavbarNavigation = ({ user, isAuthenticated, allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const [isOpen, setIsOpen] = useState(false);
-  const {logout, loginWithRedirect } = useAuth0()
+  const { logout, loginWithRedirect } = useAuth0()
   const [active, setActive] = useState(false)
 
+  const updateQuantity = (index, newQuantity) => {
+    if (newQuantity === "" || newQuantity < 1) return;
+
+    const updatedProducts = allProducts.map((product, i) =>
+        i === index ? { ...product, carQuantity: newQuantity } : product
+    );
+
+    setAllProducts(updatedProducts); 
+  };
+
   const onDeleteProduct = (product) => {
-    const results = props.allProducts.filter(
+    const results = allProducts.filter(
       item => item.code !== product.code
     );
 
-    props.setTotal(props.total - parseFloat(product.sale_price) * product.carQuantity);
-    props.setCountProducts(props.countProducts - product.carQuantity);
-    props.setAllProducts(results);
+    setTotal(total - parseFloat(product.sale_price) * product.carQuantity);
+    setCountProducts(countProducts - product.carQuantity);
+    setAllProducts(results);
   }
 
   const onCleanCart = () => {
-    props.setAllProducts([]);
-    props.setTotal(0);
-    props.setCountProducts(0);
+    setAllProducts([]);
+    setTotal(0);
+    setCountProducts(0);
   }
 
   return (
@@ -61,7 +71,7 @@ const NavbarNavigation = (props) => {
         borderRadius="3px"
       >
         <NavbarBrand href="/" className="text-primary">
-          <img alt="logo" src="/logo.png" width='200px' style={{filter: colors.black[200]}}/>
+          <img alt="logo" src="/logo.png" width='200px' style={{ filter: colors.black[200] }} />
         </NavbarBrand>
       </Box>
       <Box display="flex">
@@ -78,21 +88,26 @@ const NavbarNavigation = (props) => {
               <div className="container-cart-icon">
                 <ShoppingCart />
                 <div className="count-products">
-                  <span id="contador-productos">{props.countProducts}</span>
+                  <span id="contador-productos">{countProducts}</span>
                 </div>
               </div>
             </DropdownToggle>
             <DropdownMenu end>
               <DropdownItem header>Productos</DropdownItem>
-              {props.allProducts.length ? (
+              {allProducts.length ? (
                 <>
                   <div className='row-product'>
-                    {props.allProducts.map((product, index) => (
+                    {allProducts.map((product, index) => (
                       <DropdownItem key={index}>
                         <div className='info-cart-product'>
-                          <span className='cantidad-producto-carrito'>
-                            {product.carQuantity}
-                          </span>
+                          <input
+                            type='number'
+                            min='1'
+                            value={product.carQuantity}
+                            onChange={(e) => updateQuantity(index, parseInt(e.target.value) || 1)}
+                            className='input-carQuantity'
+                            onClick={(e) => e.stopPropagation()}
+                          />
                           <p className='titulo-producto-carrito'>
                             {product.name}
                           </p>
@@ -121,7 +136,7 @@ const NavbarNavigation = (props) => {
 
                   <DropdownItem className='cart-total'>
                     <h3>Total:</h3>
-                    <span className='total-pagar'>${props.total}</span>
+                    <span className='total-pagar'>${total}</span>
                   </DropdownItem>
                   <a href="/sales/form" className="link-button">
                     <button className='btn-clear-all' >
@@ -152,16 +167,16 @@ const NavbarNavigation = (props) => {
               <PersonOutlinedIcon />
             </DropdownToggle>
             <DropdownMenu end>
-              {props.isAuthenticated ? (
+              {isAuthenticated ? (
                 <>
                   <DropdownItem>
                     <img
                       style={{ borderRadius: '50%', width: '30px', marginRight: '10px' }}
-                      src={props.user.picture}
-                      alt={props.user.name}
+                      src={user.picture}
+                      alt={user.name}
                     />
                     <div style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {props.user.name}
+                      {user.name}
                     </div>
                   </DropdownItem>
                   <DropdownItem divider />

@@ -1,108 +1,96 @@
 import React, { useState, useEffect } from "react";
-import { Button, Menu, Spin } from "antd"
-// import TableData from "../../controllers/DataTable/TableData";
-import { useAuth0 } from '@auth0/auth0-react';
+import { Button, Spin, Form } from "antd"
+import { tokens } from "../../theme";
+import { Box, useTheme, Typography } from "@mui/material";
+import DataTableGrid from "../../controllers/Tables/DataGridPro";
 
-const SellerTable = () => {
-  const { user } = useAuth0();
-  const [data, setData] = useState([]);
+const SellerTable = ({ allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts, rangeItems, setRangeItems }) => {
   const [loading, setLoading] = useState(true)
-  const [reloadData, setReloadData] = useState(false);
-
-  const loadData = () => {
-    setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec?key="+user.email)
-      .then(response => response.json())
-      .then(parsedData => {
-        setData(parsedData);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  };
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
-    if (reloadData) {
-      loadData();
-      setReloadData(false);
+    setRangeItems(rangeItems.map(obj => {
+      return {
+        ...obj,
+        carQuantity: 1
+      }
+    }));
+    setLoading(false)
+  }, [rangeItems])
+
+  const onAddProduct = (product) => {
+
+    if (allProducts.find(item => item.code === product.code)) {
+
+      const products = allProducts.map(item => item.code === product.code
+        ? { ...item, carQuantity: item.carQuantity + 1 }
+        : item
+      )
+      setTotal(total + (parseFloat(product.sale_price)) * product.carQuantity);
+      setCountProducts(countProducts + product.carQuantity)
+      return setAllProducts([...products])
     }
-  }, [reloadData]);
 
-  useEffect(() => {
-    setLoading(true);
-    fetch("https://script.google.com/macros/s/AKfycbybXfVUusQoptK2mafMn2gQymQRDcfbNfy8P7RHRY7q8rE6tNM2gTEurhliFtmXbK3vjA/exec?key="+user.email)
-      .then(response => response.json())
-      .then(parsedData => {
-        setData(parsedData);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  }, []);
-
-  const downloadTable = (tableData, name) => {
-    const uri = 'data:application/vnd.ms-excel;base64,';
-    const template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" /><meta name="ProgId" content="Excel.Sheet"/><meta http-equiv="X-UA-Compatible" content="IE=edge" /><style>table{border-collapse:collapse;}th,td{border:1px solid gray;padding:10px;}th{background-color:lightgray;}</style><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
-    const base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) };
-
-    const tableHtml = tableData
-      .map(row => {
-        return `<tr>${row
-          .map(cell => `<td>${cell}</td>`)
-          .join('')}</tr>`;
-      })
-      .join('');
-
-    const content = template.replace('{table}', tableHtml);
-    const encodedUri = uri + base64(content);
-
-    const link = document.createElement('a');
-    link.href = encodedUri;
-    link.download = `${name}.xls`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  
+    setTotal(total + (parseFloat(product.sale_price)) * product.carQuantity)
+    setCountProducts(countProducts + product.carQuantity)
+    setAllProducts([...allProducts, product])
+  }
 
   const columns = [
-    { name: 'Fecha desp.', selector: "date_generate", sortable: true },
-    { name: 'Código', selector: "order_id", sortable: true},
-    { name: 'Cliente', selector: "client", sortable: true },
-    { name: 'Vendedor', selector: "seller", sortable: true },
-    { name: 'Dirección', selector: "address", sortable: true },
-    { name: 'Condición', selector: "condition", sortable: true },
-    { name: 'Valor', selector: "total_price", sortable: true },
-  ]
+    {
+      headerName: 'Imagen', field: 'image', flex: 1, renderCell: (params) => (
+        <img src={params.row.image} />
+      )
+    },
+    { headerName: 'Sku', field: "sku", flex: 1 },
+    { headerName: 'Nombre', field: "name", flex: 2 },
+    { headerName: 'Cantidad', field: "quantity", flex: 0.5 },
+    { headerName: 'Marca', field: "brand", flex: 1 },
+    { headerName: 'Precio', field: "sale_price", flex: 1 },
+    {
+      headerName: 'Acciones', renderCell: params => (
+        <Button
+          className="bg-green-500 hover:bg-green-600 text-white"
+        onClick={() => onAddProduct(params.row)}
+        >
+          Añadir
+        </Button>
+      )
+    }
+  ];
 
-  const tableData = data.map(row => [row.date_generate, row.order_id, row.client, row.address, row.seller, row.condition, row.method, row.total_price]);
-  tableData.reverse().unshift(["FECHA GENERACIÓN", "CÓDIGO", "CLIENTE", "DIRECCIÓN", "VENDEDOR", "CONDICIÓN", "MEDIO DE PAGO", "VALOR"])
   return (
     <div className="container py-5">
-
       {loading ? (
         <div className="text-center">
           <Spin tip="Cargando datos..." />
         </div>
       ) : (
-        <>
-          <div className="row align-items-center mb-4">
-            <div className="col">
-              <h1 className="display-4">Mis ventas</h1>
-            </div>
-            <div className="col-auto">
-              <Button type="primary" onClick={() => downloadTable(tableData, "complete delivery")}>
-                Descargar
-              </Button>
-            </div>
-          </div>
-          {/* <TableData columns={columns} data={data} setReloadData={setReloadData} setLoading={setLoading}/> */}
-        </>
+        <Box m="20px">
+          <Box mb="30px">
+            <Typography
+              variant="h2"
+              color={colors.grey[100]}
+              fontWeight="bold"
+              sx={{ m: "0 0 5px 0" }}
+            >
+              TABLA DE PRODUCTOS
+            </Typography>
+            <Typography variant="h5" color={colors.greenAccent[400]}>
+              últimos detalles
+            </Typography>
+          </Box>
+          <DataTableGrid
+            key={rangeItems.length}
+            data={rangeItems.map((obj, index) => {
+              obj.id = index
+              return obj
+            })}
+            columns={columns}
+            setReloadData={setRangeItems}
+          />
+        </Box>
       )}
     </div>
   );

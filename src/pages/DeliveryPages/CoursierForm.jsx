@@ -1,149 +1,225 @@
 import { useState, useEffect } from "react";
-import { Form, Select, Input, Upload, Button, Spin } from "antd";
+import { tokens } from "../../theme";
+import { useTheme } from "@mui/material";
+import { Form, Select, Input, Upload, Button, Spin, message } from "antd";
+import axios from "axios";
 
 const { Option } = Select;
 
-const FormDelivery = () => {
-  const [loading, setLoading] = useState(true);
-  const [orders, setOrders] = useState([]);
-  const [isHidden, setIsHidden] = useState(false);
-  const [imageObject, setImageObject] = useState([]);
+const CoursierForm = ({ user, ordersData, setOrdersData, URL_SERVER }) => {
+  const [loading, setLoading] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
+  const [reloadData, setReloadData] = useState(true);
+  const [methods, setMethods] = useState([])
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [form] = Form.useForm();
 
   useEffect(() => {
-    google.script.run
-      .withSuccessHandler((res) => {
-        console.log(res);
-        setOrders(res);
+    const getData = async () => {
+      setLoading(true);
+      try {
+        
+        const [methodsResp, travelsResp, usersResp] = await Promise.all([
+          axios.get(`${URL_SERVER}/delivery/methods`),
+          axios.get(`${URL_SERVER}/delivery/travels`),
+          axios.get(`${URL_SERVER}/database/users`)
+        ]);
+
+        const coursier = usersResp.data.find(obj => obj.email == user.email).name
+
+        const dataWithPos = travelsResp.data.map((obj, index) => ({
+          ...obj,
+          pos: index + 1
+        }));
+
+        const data = dataWithPos.filter(obj => obj.order.shipping_data.coursier == coursier && obj.order.status == "EN RUTA")
+
+        setMethods(methodsResp)
+        setOrdersData(data);
+      } catch (error) {
+        console.error("Error fetching data:", error, user.email);
+      } finally {
         setLoading(false);
-      })
-      .getPending();
-  }, []);
-
-  const getBase64 = (file) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file.file.originFileObj);
-    reader.onload = () => {
-      file.file.status = "done";
-      setImageObject((img) => [{ name: file.file.name, img: reader.result }, ...(img || [])]);
+        setReloadData(false);
+      }
     };
-    reader.onerror = (error) => console.error("Error:", error);
-  };
 
-  const changeStatus = (id) => {
-    const req = orders.find((obj) => obj.id == id);
-    setIsHidden(req?.order?.transactions?.condition.includes("PAGO"));
-  };
+    getData();
+  }, [reloadData]);
 
-  const handleSubmit = (status) => {
-    setLoading(true);
-    form
-      .validateFields()
-      .then((values) => {
-        values.image = imageObject;
-        values.status = status;
+  const onFinish = async (e) => {
+    setLoading(true)
 
-        google.script.run
-          .withSuccessHandler(() => {
-            setOrders(orders.filter((obj) => obj.id != values.order));
-            console.log("Upload successful:", values);
-            form.resetFields();
-            setLoading(false);
-          })
-          .withFailureHandler((error) => console.error("Upload failed:", error))
-          .postDelivery(values);
+    const formData = new FormData();
+
+    formData.append("user", user.email);
+    formData.append("pos", JSON.parse(e.order).pos)
+
+    Object.keys(e).forEach((key) => {
+      if (key === "image" && e.image && e.image.length > 0) {
+        formData.append("image", e.image[0].originFileObj);
+      } else if (key == "order") {
+        formData.append("id", JSON.parse(e.order).id)
+      } else {
+        formData.append(key, e[key]);
+      }
+    });
+
+    axios.post(`${URL_SERVER}/delivery/route/${e.id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    })
+      .then(resp => {
+        message.success(resp.data.message);
+        form.resetFields();
       })
-      .catch((error) => console.log("Error en la validación", error));
+      .catch(error => {
+        message.error("error en el servidor");
+      }).finally(() => {
+        setTimeout(() => {
+          setReloadData(true);
+        }, 5000);
+      });
+  };
+
+  const changeStatus = (obj) => {
+    let id = JSON.parse(obj).id
+    let data = ordersData.find(obj => obj.id == id);
+
+    if (data && (data.order.transactions.condition.includes("PAGO") || data.order.transactions.condition.includes("CRÉDITO"))) {
+      setIsPaid(true);
+      form.setFieldsValue({ method: "YA PAGO" });
+    } else {
+      setIsPaid(false);
+      form.setFieldsValue({ method: null });
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
-      <div className="w-full max-w-md mx-auto py-5">
-        {loading ? (
-          <div className="text-center">
-            <Spin tip="Cargando datos..." />
-          </div>
-        ) : (
-          <div className="bg-white shadow-md rounded-md p-4">
-            <h1 className="text-xl font-bold text-center mb-4">
-              INDUSTRIAS <span className="text-blue-600">DUCOR</span>
-            </h1>
-            <Form form={form} layout="vertical">
+    <div className="flex justify-center items-center py-5">
+      {loading ? (
+        <div className="text-center">
+          <Spin tip="Cargando datos..." />
+        </div>
+      ) : (
+        <div className="w-full max-w-lg shadow-md rounded-lg p-6" style={{ backgroundColor: colors.primary[400] }}>
+          <h1 className="text-xl font-bold text-center mb-4 text-blue-600" style={{ color: colors.primary[100] }}>
+            <span> FORMULARIO ENTREGA </span>
+          </h1>
+          <div className="flex flex-col gap-4">
+            <Form layout="vertical" form={form} onFinish={onFinish}>
               <Form.Item
-                label="Pedido"
+                label={<label className="block mb-1" style={{ color: colors.primary[100] }}>Pedido</label>}
                 name="order"
+                labelAlign="left"
                 rules={[{ required: true }]}
               >
-                <Select onChange={changeStatus} className="w-full">
+                <Select
+                  onChange={changeStatus}
+                  className="input-info-form"
+                  style={{ borderBottom: "1px solid gray", color: "red" }}
+                  showSearch={true}
+                  placeholder="Select an order"
+                >
                   <Option value="" disabled selected hidden>
                     Seleccionar
                   </Option>
-                  {orders.map((obj, index) => (
-                    <Option value={obj.id} key={index}>
+                  {ordersData.map((obj) => (
+                    <Option value={JSON.stringify(obj)} key={obj.id}>
                       {obj.order.customer.name}
                     </Option>
                   ))}
                 </Select>
               </Form.Item>
-
-              {!isHidden && (
-                <Form.Item
-                  label="Medio de pago"
-                  name="method"
-                  rules={[{ required: true }]}
-                >
-                  <Select className="w-full">
-                    <Option value="" disabled selected hidden>
-                      Seleccionar
-                    </Option>
-                    <Option value="TRANSFERENCIA ANDREA">TRANSFERENCIA ANDREA</Option>
-                    <Option value="TRANSFERENCIA NICOLAS">TRANSFERENCIA NICOLAS</Option>
-                    <Option value="TRANSFERENCIA MENSAJERO">TRANSFERENCIA MENSAJERO</Option>
-                    <Option value="MERCADOPAGO">MERCADOPAGO</Option>
-                    <Option value="EFECTIVO">EFECTIVO</Option>
+              <Form.Item
+                label={<label className="block mb-1" style={{ color: colors.primary[100] }}>Método</label>}
+                name="method"
+                rules={[{ required: true }]}
+              >
+                {isPaid ? (
+                  <Input
+                    value="YA PAGO"
+                    disabled
+                    className="input-info-form"
+                    style={{ borderBottom: "1px solid gray", marginLeft: "10px", color: "red" }}
+                  />
+                ) : (
+                  <Select
+                    placeholder="selecciona un método"
+                    className="input-info-form"
+                    style={{ borderBottom: "1px solid gray", marginLeft: "10px" }}
+                  >
+                    {methods.map(method => (
+                      <Option
+                        value={method.type}
+                        key={method.id}
+                      >
+                        {method.type}
+                      </Option>
+                    ))}
                   </Select>
-                </Form.Item>
-              )}
-
-              <Form.Item label="Observaciones" name="notation">
-                <Input className="w-full" placeholder="Escriba aquí..." />
+                )}
               </Form.Item>
-
-              <Form.Item label="Imagen" name="image">
-                <Upload className="w-full" onChange={getBase64} fileList={imageObject}>
-                  <Button>Click to Upload</Button>
+              <Form.Item
+                label={<label className="block mb-1" style={{ color: colors.primary[100] }}>Observaciones</label>}
+                name="notation"
+                labelAlign="left"
+              >
+                <Input
+                  className="input-info-form"
+                  style={{ borderBottom: "1px solid gray", marginLeft: "10px" }}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<label className="block mb-1" style={{ color: colors.primary[100] }}>Imagen</label>}
+                name="image"
+                valuePropName="fileList"
+                getValueFromEvent={(e) => e?.fileList}
+              >
+                <Upload beforeUpload={() => false} listType="picture-card" accept="image/*">
+                  <Button >Subir</Button>
                 </Upload>
               </Form.Item>
-
-              <div className="flex justify-between space-x-2">
+              <Form.Item name="status" hidden>
+                <Input />
+              </Form.Item>
+              <div className="flex flex-wrap gap-2">
                 <Button
-                  className="w-full bg-blue-600 text-white"
-                  type="button"
-                  onClick={() => handleSubmit("ENTREGADO")}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-md"
+                  onClick={() => {
+                    form.setFieldsValue({ status: "ENTREGADO" });
+                    form.submit();
+                  }}
                 >
                   ENTREGADO
                 </Button>
                 <Button
-                  className="w-full bg-yellow-500 text-white"
-                  type="button"
-                  onClick={() => handleSubmit("PENDIENTE")}
+                  className="flex-1 bg-yellow-500 text-white py-2 rounded-md"
+                  onClick={() => {
+                    form.setFieldsValue({ status: "PENDIENTE" });
+                    form.submit();
+                  }}
                 >
                   REPROGRAMADO
                 </Button>
                 <Button
-                  className="w-full bg-red-500 text-white"
-                  type="button"
-                  onClick={() => handleSubmit("ANULADO")}
+                  className="flex-1 bg-red-500 text-white py-2 rounded-md"
+                  onClick={() => {
+                    form.setFieldsValue({ status: "ANULADO" });
+                    form.submit();
+                  }}
                 >
                   CANCELADO
                 </Button>
               </div>
             </Form>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default FormDelivery;
+export default CoursierForm;

@@ -26,7 +26,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
     setItems(storedItems);
     setRescheduled(storedRescheduled);
 
-    const fetchData = async () => {
+    const getData = async () => {
       setLoading(true);
       try {
         const [coursiersResp, travelsResp] = await Promise.all([
@@ -48,7 +48,7 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
       }
     };
 
-    fetchData();
+    getData();
   }, [reloadData]);
 
 
@@ -189,7 +189,9 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
       ) : (
         <div className="body-group-form">
           <div className="container-group-form" style={{ backgroundColor: colors.primary[400] }}>
-            <h1 className="form-title-group" style={{ color: colors.primary[100] }}><span>FORMULARIO MENSAJERÍA</span></h1>
+            <h1 className="form-title-group" style={{ color: colors.primary[100] }}>
+              <span>FORMULARIO MENSAJERÍA</span>
+            </h1>
             <Form layout="vertical" form={form} onFinish={onFinish}>
               <div className="main-user-info-group">
                 <div className="user-input-box-group">
@@ -209,7 +211,6 @@ const DeliveryForm = ({ socket, URL_SERVER }) => {
                           {data.coursiers.map(coursier => (
                             <Option value={coursier}>{coursier}</Option>
                           ))}
-                          <Option value={"Miguel"}>Miguel</Option>
                           <Option value={"Servicio Externo"}>Servicio Externo</Option>
                           <Option value={"Medellín"}>Medellín</Option>
                           <Option value={"Dflex"}>Dflex</Option>

@@ -11,7 +11,7 @@ import { MultiplePlatformModal } from "../Modals/InventoryModals";
 import { CreateProductModal, UpdateStockModal } from "../Modals/DatabaseModals";
 
 
-const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER }) => {
+const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER, methods, states }) => {
   const location = useLocation()
   const { user } = useAuth0();
   const theme = useTheme();
@@ -275,12 +275,12 @@ const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER }) => {
     setTotalSum(sum.toLocaleString("es-ES", { style: "currency", currency: "COP" }));
   };
 
-  const handleDeliveryChanceStatus = (ids) => {
+  const handleDeliveryChangeStatus = (ids) => {
     const selectedIDs = new Set(ids);
     const selectedRows = data.filter((row) =>
       selectedIDs.has(row.id.toString())
     )
-    let filteredData = selectedRows.filter(obj => obj.status.includes("EN RUTA") || obj.status.includes("ENTREGADO") || obj.status.includes("COMPLETO (FR)")).map(obj => { return { ...obj.complete, user: user ? user.email : "test" } })
+    let filteredData = selectedRows.filter(obj => obj.status != "COMPLETO").map(obj => { return { ...obj, user: user.email } })
     setDataStatus(filteredData)
   };
 
@@ -424,7 +424,7 @@ const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER }) => {
 
   const selectedRowsDelivery = (ids) => {
     handleDeliveryAmount(ids);
-    handleDeliveryChanceStatus(ids);
+    handleDeliveryChangeStatus(ids);
   };
 
   const selectedRowsInventory = (ids) => {
@@ -484,6 +484,8 @@ const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER }) => {
             setReloadData={setReloadData}
             colors={colors}
             data={dataStatus}
+            URL_SERVER={URL_SERVER}
+            states={states}
           />
         )}
         {location.pathname.includes("pending") && (

@@ -25,7 +25,7 @@ const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
                     id: obj.id,
                     date_generate: obj.date_generate,
                     date_generate_ISO: obj.date_generate_ISO,
-                    coursier: Array.isArray(obj.order.delivery) ? obj.order.delivery.join(", ") : obj.order.delivery,
+                    coursier: obj.order.delivery.join(", "),
                     seller: obj.seller.name,
                     client: obj.customer.name,
                     address: obj.customer.shipping_data.address,
@@ -95,7 +95,7 @@ const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
     };
 
     const columns = [
-        { headerName: 'Fecha desp.', field: "date_generate", flex: 1 },
+        { headerName: 'Fecha', field: "date_generate", flex: 1 },
         { headerName: 'Código', field: "id", flex: 1 },
         { headerName: 'Mensajeros', field: "coursier", flex: 1 },
         { headerName: 'Cliente', field: "client", flex: 1 },

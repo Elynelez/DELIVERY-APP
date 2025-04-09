@@ -1,4 +1,5 @@
-import users from './data/users.json'
+import axios from "axios";
+const URL_SERVER = 'http://localhost:' + 8080
 
 const checkDuplicates = (e, setLoading, setDisabled, notification) => {
     if (e.projects) {
@@ -186,8 +187,9 @@ const processExitData = (e, items, emitType, socket, receiveOrders, message, set
     }
 }
 
-const hasPermission = (email, roles) => {
-    const user = users.find(user => user.email === email);
+const hasPermission = async (email, roles) => {
+    const users = await axios.get(`${URL_SERVER}/database/users`)
+    const user = users.data.find(user => user.email === email);
 
     if (user) {
         // Si el usuario tiene el rol de "boss", tiene acceso a todo
@@ -208,13 +210,15 @@ const hasPermission = (email, roles) => {
     return false;
 }
 
-const getUserName = (email) => {
-    const user = users.find(user => user.email === email);
+const getUserName = async (email) => {
+    const users = await axios.get(`${URL_SERVER}/database/users`)
+    const user = users.data.find(user => user.email === email);
     return user ? user.name : null;
 }
 
-const getCoursiers = () => {
-    const namesList = users.filter(user => user.roles.includes("coursier"))
+const getCoursiers = async () => {
+    const users = await axios.get(`${URL_SERVER}/database/users`)
+    const namesList = users.data.filter(user => user.roles.includes("coursier"))
 
     return namesList.map(obj => { return obj.name })
 }

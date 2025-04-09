@@ -1,56 +1,76 @@
 import React, { useState } from "react";
-import { Spin, message, Form, Input } from "antd"
-import { redirect } from "react-router-dom";
+import { tokens } from "../../theme";
+import { useTheme } from "@mui/material";
+import { Spin, message, Form, Select } from "antd"
+import axios from "axios";
 
-const PausePosting = () => {
+const PausePosting = ({ URL_SERVER, rangeItems }) => {
+    const [loading, setLoading] = useState(false)
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
     const [form] = Form.useForm();
-    const [responseMessage, setResponseMessage] = useState("");
 
-    const onFinish = async (e) => {
-        console.log(e)
+    const onFinish = (e) => {
 
-        const options = {
-            redirect: 'follow',
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ sku: e.code }),
-        };
+        setLoading(true)
 
-        try {
-            const response = await fetch(
-                "https://apibd-88x1.onrender.com/v2/pausar",
-                options
-            );
-            const data = await response.json();
-
-            console.log(data)// Supone que el servidor responde con JSON
-            setResponseMessage(`Servidor: ${JSON.stringify(data)}`);
-        } catch (error) {
-            console.error("Error al hacer la solicitud:", error);
-            setResponseMessage("Error al conectar con el servidor.");
-        }
+        axios.post(`${URL_SERVER}/database/publication/pause`, e)
+            .then(resp => {
+              message.success(resp.data.message);
+              form.resetFields();
+            })
+            .catch(error => {
+              message.error("error en el servidor");
+            }).finally(() => {
+              setLoading(false)
+            });
     };
 
     return (
-        <div>
-            <Form form={form} onFinish={onFinish} layout="vertical">
-                <Form.Item
-                    label={<label style={{ color: "#055160" }}>MCO number</label>}
-                    name="code"
-                    labelAlign="left"
-                    rules={[{ required: true }]}
-                >
-                    <Input className="input-info-form" style={{ borderBottom: "1px solid #055160" }} />
-                </Form.Item>
-                <Form.Item>
-                    <input type="submit" style={{ backgroundColor: "#055160" }} />
-                </Form.Item>
-            </Form>
-            {responseMessage && <p>{responseMessage}</p>}
+        <div className="container py-5">
+            {loading ? (
+                <div className="text-center">
+                    <Spin tip="Cargando datos..." />
+                </div>
+            ) : (
+                <div className="body-group-form">
+                    <div className="container-group-form" style={{ backgroundColor: colors.primary[400] }}>
+                        <h1 className="form-title-group" style={{ color: "#055160" }}><span>PAUSAR PRODUCTO</span></h1>
+                        <Form form={form} onFinish={onFinish} layout="vertical">
+                            <div className="main-user-info-group">
+                                <div className="user-input-box-group">
+                                    <div className="end-input-group-form">
+                                        <div className="input-group-form">
+                                            <Form.Item
+                                                label={<label style={{ color: "#055160" }}>Sku</label>}
+                                                name={"sku"}
+                                                rules={[{ required: true }]}
+                                            >
+                                                <Select
+                                                    className="input-info-form"
+                                                    style={{ borderBottom: "1px solid #055160" }}
+                                                    showSearch={true}
+                                                    placeholder="Select a product"
+                                                >
+                                                    {rangeItems.map(obj => (
+                                                        <Select.Option value={obj.sku} code={obj.code}>{obj.name}</Select.Option>
+                                                    ))}
+                                                </Select>
+                                            </Form.Item>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <Form.Item>
+                                <input type="submit" className="form-submit-btn" style={{ backgroundColor: "#055160" }} />
+                            </Form.Item>
+                        </Form>
+                    </div>
+                </div>
+            )}
         </div>
-    );
+
+    )
 };
 
 export default PausePosting;

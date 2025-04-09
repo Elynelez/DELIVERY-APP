@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
 import { useTheme, Box, Typography } from "@mui/material";
 import { Button, Spin, Menu, Modal, message } from "antd"
-import axios from "axios";
-import { useParams } from 'react-router-dom';
 import { ModalData, EditModal, ConfirmModal } from "../../controllers/Modals/DeliveryModals";
 import DataTableGrid from "../../controllers/Tables/DataGridPro";
 import { tokens } from "./../../theme";
+import axios from "axios";
 
-const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, socket, URL_SERVER, API_URL }) => {
+const DeliveryTable = ({ user, hasPermission, ordersData, setOrdersData, reloadData, setReloadData, socket, URL_SERVER }) => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true)
-    const [reloadData, setReloadData] = useState(true);
+    const [methods, setMethods] = useState([])
+    const [states, setStates] = useState([])
+    const [users, setUsers] = useState([])
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
@@ -18,32 +20,43 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
         try {
             setLoading(true);
 
-            const response = await axios.get(`${URL_SERVER}/delivery/travels`);
-            const parsedData = response.data;
+            const [methodsResp, travelsResp, statesResp, usersResp] = await Promise.all([
+                axios.get(`${URL_SERVER}/delivery/methods`),
+                axios.get(`${URL_SERVER}/delivery/travels`),
+                axios.get(`${URL_SERVER}/delivery/states`),
+                axios.get(`${URL_SERVER}/database/users`)
+            ]);
 
-            let data = parsedData.map(obj => ({
+            const parsedData = travelsResp.data;
+
+            let data = parsedData.map((obj, index) => ({
                 id: obj.id,
                 code: obj.order.id,
-                date_generate: obj.date_generate,
                 date_generate_ISO: obj.date_generate_ISO,
+                date_generate: obj.date_generate,
+                date_delivery: obj.date_delivery,
                 coursier: obj.order.shipping_data.coursier.toLowerCase(),
-                client: obj.order.customer.name,
-                seller: obj.order.seller.name,
-                address: obj.order.customer.address,
                 zone: obj.order.shipping_data.zone,
+                customer: obj.order.customer.name,
+                address: obj.order.customer.address,
+                seller: obj.order.seller.name,
                 condition: obj.order.transactions.condition,
                 method: obj.order.transactions.method,
                 total: obj.order.transactions.total,
                 status: obj.order.status,
                 notation: obj.order.remarks,
-                complete: obj
+                money_delivered: obj.order.money_delivered,
+                pos: index + 1
             }));
 
             if (id != "all") {
                 data = data.filter(obj => obj.coursier.includes(id))
             }
 
-            setDeliveryData(data.reverse());
+            setMethods(methodsResp.data)
+            setOrdersData(data.reverse());
+            setStates(statesResp.data)
+            setUsers(usersResp.data)
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -53,8 +66,8 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
     };
 
     const deleteRowById = (id) => {
-        const updatedData = deliveryData.filter((item) => item.id !== id);
-        setDeliveryData(updatedData);
+        const updatedData = ordersData.filter((item) => item.id !== id);
+        setOrdersData(updatedData);
 
         Modal.confirm({
             title: '¿Seguro que quieres eliminar este contenido?',
@@ -65,7 +78,7 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
                 socket.emit("deleteDelivery", id)
                 socket.on("message", (response) => {
                     if (response.success) {
-                        setDeliveryData(updatedData);
+                        setOrdersData(updatedData);
                         message.success(response.message);
                         setLoading(false)
                     } else {
@@ -78,12 +91,12 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
     }
 
     const cancelOrderById = (id) => {
-        const reversedData = [...deliveryData].reverse();
+        const reversedData = [...ordersData].reverse();
         const position = reversedData.findIndex((item) => item.id === id) + 1
-        const updatedData = deliveryData.map((item) =>
+        const updatedData = ordersData.map((item) =>
             item.id === id ? { ...item, status: 'ANULADO' } : item
         );
-        setDeliveryData(updatedData);
+        setOrdersData(updatedData);
 
         Modal.confirm({
             title: '¿Seguro que quieres anular este padido?',
@@ -94,7 +107,7 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
                 socket.emit("cancelDelivery", position)
                 socket.on("message", (response) => {
                     if (response.success) {
-                        setDeliveryData(updatedData);
+                        setOrdersData(updatedData);
                         message.success(response.message);
                         setLoading(false)
                     } else {
@@ -127,12 +140,12 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
     };
 
     const columns = [
-        { headerName: 'ID', field: "id", flex: 0.5, hide: true },
+        { headerName: 'ID', field: "id", flex: 0.5, hidden: true },
         { headerName: 'Fecha desp.', field: "date_generate", flex: 1 },
         { headerName: 'Código', field: "code", flex: 1 },
         { headerName: 'Mensajero', field: "coursier", flex: 1 },
-        { headerName: 'Zona', field: "zone", flex: 0.5, hide: true },
-        { headerName: 'Cliente', field: "client", flex: 1 },
+        { headerName: 'Zona', field: "zone", flex: 0.5, hidden: true },
+        { headerName: 'Cliente', field: "customer", flex: 1 },
         { headerName: 'Vendedor', field: "seller", flex: 1 },
         { headerName: 'Dirección', field: "address", flex: 1 },
         { headerName: 'Condición', field: "condition", flex: 1 },
@@ -159,23 +172,50 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
                     <Menu.SubMenu title="Acciones">
                         <Menu.Item key="0">
-                            <ModalData data={params.row.complete} />
+                            <ModalData data={params.row} />
                         </Menu.Item>
                         {user && (
                             <>
                                 {hasPermission(user.email, ['logistic', 'boss']) && (
                                     <>
                                         <Menu.Item key="2">
-                                            <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => cancelOrderById(params.row.id)}>Anular</Button>
+                                            <Button
+                                                type="primary"
+                                                style={{ backgroundColor: "#5e2129" }}
+                                                onClick={() => cancelOrderById(params.row.id)}
+                                            >
+                                                Anular
+                                            </Button>
                                         </Menu.Item>
                                         <Menu.Item key="3">
-                                            <Button type="primary" style={{ backgroundColor: "red" }} onClick={() => deleteRowById(params.row.id)}>Borrar</Button>
+                                            <Button
+                                                type="primary"
+                                                style={{ backgroundColor: "red" }}
+                                                onClick={() => deleteRowById(params.row.id)}
+                                            >
+                                                Borrar
+                                            </Button>
                                         </Menu.Item>
-                                        <Menu.Item key="4">
-                                            <EditModal setReloadData={setReloadData} data={params.row.complete} API_URL={API_URL} />
-                                        </Menu.Item>
+                                        {params.row.status !== "REPROGRAMADO" && (
+                                            <Menu.Item key="4">
+                                                <EditModal
+                                                    setReloadData={setReloadData}
+                                                    data={params.row}
+                                                    URL_SERVER={URL_SERVER}
+                                                    user={user}
+                                                    coursiers={users.filter(obj => obj.roles.includes("coursier"))}
+                                                    methods={methods}
+                                                />
+                                            </Menu.Item>
+                                        )}
                                         <Menu.Item key="5">
-                                            <ConfirmModal setReloadData={setReloadData} data={params.row.complete} API_URL={API_URL} user={user} />
+                                            <ConfirmModal
+                                                setReloadData={setReloadData}
+                                                data={params.row}
+                                                URL_SERVER={URL_SERVER}
+                                                user={user}
+                                                states={states}
+                                            />
                                         </Menu.Item>
                                     </>
                                 )}
@@ -210,11 +250,13 @@ const DeliveryTable = ({ user, hasPermission, deliveryData, setDeliveryData, soc
                         </Typography>
                     </Box>
                     <DataTableGrid
-                        key={deliveryData.length}
+                        key={ordersData.length}
                         columns={columns}
-                        data={deliveryData}
+                        data={ordersData}
                         setReloadData={setReloadData}
-                        setLoading={setLoading}
+                        URL_SERVER={URL_SERVER}
+                        methods={methods}
+                        states={states}
                     />
                 </Box>
             )}
