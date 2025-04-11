@@ -17,7 +17,6 @@ import {
     HomeOutlined as HomeOutlinedIcon,
     PeopleOutlined as PeopleOutlinedIcon,
     ContactsOutlined as ContactsOutlinedIcon,
-    ReceiptOutlined as ReceiptOutlinedIcon,
     PersonOutlined as PersonOutlinedIcon,
     MenuOutlined as MenuOutlinedIcon,
     CalendarToday,
@@ -231,7 +230,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                             <Item
                                                 title="Pedidos"
                                                 to="/sales/orders"
-                                                icon={<ReceiptOutlinedIcon />}
+                                                icon={<CalendarToday />}
                                                 selected={selected}
                                                 setSelected={setSelected}
                                             />

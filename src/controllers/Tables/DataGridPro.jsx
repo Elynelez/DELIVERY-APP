@@ -11,7 +11,7 @@ import { MultiplePlatformModal } from "../Modals/InventoryModals";
 import { CreateProductModal, UpdateStockModal } from "../Modals/DatabaseModals";
 
 
-const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER, methods, states }) => {
+const DataTableGrid = ({ data, columns, setReloadData, user, URL_SERVER, states, customised }) => {
   const location = useLocation()
   const { user } = useAuth0();
   const theme = useTheme();
@@ -484,6 +484,7 @@ const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER, methods, stat
             setReloadData={setReloadData}
             colors={colors}
             data={dataStatus}
+            user={user}
             URL_SERVER={URL_SERVER}
             states={states}
           />
@@ -562,6 +563,7 @@ const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER, methods, stat
         rows={filteredData}
         columns={columns}
         slots={{ toolbar: CustomToolbar }}
+        initialState={customised}
         pagination={{ paginationModel: { pageSize: 25 } }}
       />
     </Box>

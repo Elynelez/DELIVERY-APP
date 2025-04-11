@@ -281,7 +281,11 @@ const ConfirmModal = ({ setReloadData, data, URL_SERVER, user, states }) => {
 
   return (
     <div>
-      <Button type='primary' style={{ backgroundColor: "orange" }} onClick={showModal}>
+      <Button
+        type='primary'
+        style={{ backgroundColor: "orange" }}
+        onClick={showModal}
+      >
         Actualizar
       </Button>
       <Modal
@@ -322,14 +326,15 @@ const ConfirmModal = ({ setReloadData, data, URL_SERVER, user, states }) => {
 
 }
 
-const MultipleStatusModal = ({ setReloadData, colors, data, URL_SERVER, states }) => {
+const MultipleStatusModal = ({ setReloadData, colors, user, data, URL_SERVER, states }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
 
   const onFinish = (e) => {
     const obj = {
       status: e.status,
-      orders: data
+      orders: data,
+      user: user
     }
 
     Modal.confirm({
@@ -404,9 +409,7 @@ const MultipleStatusModal = ({ setReloadData, colors, data, URL_SERVER, states }
         </Form>
       </Modal>
     </div>
-
   );
-
 }
 
 export { ModalData, EditModal, ConfirmModal, MultipleStatusModal };

@@ -253,9 +253,9 @@ const DeliveryTable = ({ user, hasPermission, ordersData, setOrdersData, reloadD
                         key={ordersData.length}
                         columns={columns}
                         data={ordersData}
+                        user={user}
                         setReloadData={setReloadData}
                         URL_SERVER={URL_SERVER}
-                        methods={methods}
                         states={states}
                     />
                 </Box>
