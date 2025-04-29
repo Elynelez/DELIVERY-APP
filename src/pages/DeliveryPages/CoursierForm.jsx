@@ -7,7 +7,7 @@ import axios from "axios";
 const { Option } = Select;
 
 const CoursierForm = ({ user, ordersData, setOrdersData, URL_SERVER }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isPaid, setIsPaid] = useState(false);
   const [reloadData, setReloadData] = useState(true);
   const [methods, setMethods] = useState([])
@@ -35,7 +35,7 @@ const CoursierForm = ({ user, ordersData, setOrdersData, URL_SERVER }) => {
 
         const data = dataWithPos.filter(obj => obj.order.shipping_data.coursier == coursier && obj.order.status == "EN RUTA")
 
-        setMethods(methodsResp)
+        setMethods(methodsResp.data)
         setOrdersData(data);
       } catch (error) {
         console.error("Error fetching data:", error, user.email);
