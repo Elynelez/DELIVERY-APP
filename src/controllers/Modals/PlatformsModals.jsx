@@ -9,7 +9,7 @@ export const EditOrderPlatform = ({ rangeItems, data, user, users, conditions, m
     const onFinish = (e) => {
         e.pos = data.pos
         e.user = user.email
-        
+
         const notExistentSkus = []
 
         e.projects = e.projects.map(obj => {
@@ -17,13 +17,13 @@ export const EditOrderPlatform = ({ rangeItems, data, user, users, conditions, m
 
             if (matchingRangeItem) {
 
-              return { ...matchingRangeItem, quantity_currently: obj.quantity_currently };
+                return { ...matchingRangeItem, quantity_currently: obj.quantity_currently };
             } else {
-              notExistentSkus.push(obj.sku)
+                notExistentSkus.push(obj.sku)
             }
 
             return null;
-          }).filter(obj => obj !== null);
+        }).filter(obj => obj !== null);
 
         if (notExistentSkus.length > 0) {
             notification.error({
@@ -114,24 +114,26 @@ export const EditOrderPlatform = ({ rangeItems, data, user, users, conditions, m
                                             <Select.Option key={1} value={"Rappi"}>
                                                 Rappi
                                             </Select.Option>
-                                            {users
-                                                .filter(obj => obj.email === user.email)
-                                                .map((user, index) =>
-                                                    user.email === "inducorsas@gmail.com" ? (
-                                                        <>
-                                                            <Select.Option key="andrea" value="Andrea">
-                                                                Andrea
+                                            {Array.isArray(users) && user?.email &&
+                                                users
+                                                    .filter(obj => obj?.email === user.email)
+                                                    .map((user, index) =>
+                                                        user.email === "inducorsas@gmail.com" ? (
+                                                            <React.Fragment key={`admin-${index}`}>
+                                                                <Select.Option key="andrea" value="Andrea">
+                                                                    Andrea
+                                                                </Select.Option>
+                                                                <Select.Option key="nicolas" value="Nicolás">
+                                                                    Nicolás
+                                                                </Select.Option>
+                                                            </React.Fragment>
+                                                        ) : (
+                                                            <Select.Option key={`user-${index}`} value={user.name}>
+                                                                {user.name}
                                                             </Select.Option>
-                                                            <Select.Option key="nicolas" value="Nicolás">
-                                                                Nicolás
-                                                            </Select.Option>
-                                                        </>
-                                                    ) : (
-                                                        <Select.Option key={`user-${index}`} value={user.name}>
-                                                            {user.name}
-                                                        </Select.Option>
+                                                        )
                                                     )
-                                                )}
+                                            }
                                         </Select>
                                     </Form.Item>
                                 </div>
@@ -361,6 +363,83 @@ export const EditOrderPlatform = ({ rangeItems, data, user, users, conditions, m
                                             </>
                                         )}
                                     </Form.List>
+                                </div>
+                            </div>
+                        </div>
+                        <Form.Item>
+                            <input type="submit" className="form-submit-btn" style={{ backgroundColor: "gray" }} />
+                        </Form.Item>
+                    </div>
+                </Form>
+            </Modal>
+        </div>
+    );
+}
+
+export const AuthOrderPlatform = ({ data, user, setReloadData, URL_SERVER }) => {
+    const [form] = Form.useForm();
+    const [visible, setVisible] = useState(false);
+
+    const onFinish = (e) => {
+        data.notation = e.notation
+        data.user = user ? user.email : "test"
+
+        Modal.confirm({
+            title: '¿Seguro que quieres actualizar masivamente este contenido?',
+            content: 'Esta acción no se puede deshacer.',
+            onOk: async () => {
+                try {
+                    message.info("unos momentos");
+                    setVisible(false);
+
+                    await axios.post(`${URL_SERVER}/platforms/auth/${data.id}`, data, {
+                        headers: { "Content-Type": "application/json" }
+                    });
+
+                    message.success("Notificación enviada exitosamente");
+                    setReloadData(true);
+                } catch (error) {
+                    console.error("Error al subir:", error);
+                    message.info("No se pudo completar la operación");
+                }
+            },
+        });
+    }
+
+    const showModal = () => {
+        setVisible(true);
+    };
+
+    const handleCancel = () => {
+        setVisible(false);
+    };
+
+    return (
+        <div>
+            <Button
+                type="primary"
+                style={{ backgroundColor: "green" }}
+                onClick={showModal}
+            >
+                Autorizar
+            </Button>
+            <Modal
+                visible={visible}
+                title="Autorización"
+                onCancel={handleCancel}
+                footer={null}
+            >
+                <Form form={form} onFinish={onFinish} layout="vertical">
+                    <div className="main-user-info-group">
+                        <div className="user-input-box-group">
+                            <div className="end-input-group-form">
+                                <div className="input-group-form">
+                                    <Form.Item
+                                        name="notation"
+                                        label="Observaciones"
+                                    >
+                                        <Input />
+                                    </Form.Item>
                                 </div>
                             </div>
                         </div>

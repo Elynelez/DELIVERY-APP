@@ -1,26 +1,47 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
 import { useTheme, Box, Typography } from "@mui/material";
 import { Button, Spin, Menu, Modal, message } from "antd"
-import axios from "axios";
-import { useParams } from 'react-router-dom';
-import { tokens } from "../../theme";
+import { EditOrderPlatform, AuthOrderPlatform } from "../../controllers/Modals/PlatformsModals";
 import DataTableGrid from "../../controllers/Tables/DataGridPro";
+import { tokens } from "../../theme";
+import axios from "axios";
 
-const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
+const PlatformTable = ({ user, ordersData, setOrdersData, rangeItems, reloadData, setReloadData, socket, URL_SERVER }) => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true)
-    const [reloadData, setReloadData] = useState(false);
+    const [conditions, setCondiions] = useState([])
+    const [methods, setMethods] = useState([])
+    const [places, setPlaces] = useState([])
+    const [users, setUsers] = useState([])
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
     const loadData = async () => {
+        socket.on('getNotifications', (data) => {
+            try {
+                // setOrdersData(data.reverse());
+                // setLoading(false);
+                console.log(data)
+            } catch (error) {
+                console.error('Error handling loadOrders event:', error);
+            }
+        });
+
+        setLoading(true);
+
         try {
-            setLoading(true);
+            const [platformsResp, conditionsResp, methodsResp, placesResp, usersResp] = await Promise.all([
+                axios.get(`${URL_SERVER}/platforms/${id}`),
+                axios.get(`${URL_SERVER}/sales/conditions`),
+                axios.get(`${URL_SERVER}/sales/methods`),
+                axios.get(`${URL_SERVER}/sales/places`),
+                axios.get(`${URL_SERVER}/database/users`)
+            ]);
 
-            const response = await axios.get(`${URL_SERVER}/platforms/${id}`);
-            const parsedData = response.data;
+            const parsedData = platformsResp.data;
 
-            let data = parsedData.map(obj => {
+            let data = parsedData.map((obj, index) => {
                 return {
                     id: obj.id,
                     date_generate: obj.date_generate,
@@ -35,10 +56,17 @@ const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
                     condition: obj.order.transactions.condition,
                     method: obj.order.transactions.method,
                     total: Number(obj.order.transactions.total_payments) + Number(obj.order.transactions.total_shipping),
-                    status: obj.order.status
+                    status: obj.order.status,
+                    url_coursier_sheet: obj.order.formats.url_coursier_sheet,
+                    url_external_service_sheet: obj.order.formats.url_external_service_sheet,
+                    pos: index + 1
                 }
             })
 
+            setCondiions(conditionsResp.data)
+            setMethods(methodsResp.data)
+            setPlaces(placesResp.data)
+            setUsers(usersResp.data)
             setOrdersData(data)
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -48,28 +76,21 @@ const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
         }
     }
 
-    const canceledOrderById = (id_order) => {
+    const canceledOrderById = (data) => {
         Modal.confirm({
             title: '¿Seguro que quieres anular este padido?',
             content: 'Esta acción no se puede deshacer.',
             onOk: () => {
-                message.info('unos momentos')
-                fetch(`${URL_SERVER}/platforms/${id}/cancel`, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ id: id_order })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        message.success('Pedido cancelado exitosamente');
-                        setReloadData(true)
-                    })
-                    .catch(error => {
-                        console.error('Error cancelling order:', error);
-                        message.info('no se pudo completar la operación')
-                    });
+                message.info('Procesando, por favor espera...');
+                socket.emit("cancelPlatform", data.pos)
+                socket.on("message", (response) => {
+                    if (response.success) {
+                        message.success(response.message);
+                        setReloadData(true);
+                    } else {
+                        message.error(response.message || 'Hubo un error inesperado.');
+                    }
+                });
             },
         });
     }
@@ -96,13 +117,13 @@ const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
 
     const columns = [
         { headerName: 'Fecha', field: "date_generate", flex: 1 },
-        { headerName: 'Código', field: "id", flex: 1 },
+        { headerName: 'Código', field: "id", flex: 0.5 },
         { headerName: 'Mensajeros', field: "coursier", flex: 1 },
         { headerName: 'Cliente', field: "client", flex: 1 },
         { headerName: 'Vendedor', field: "seller", flex: 1 },
         { headerName: 'Dirección', field: "address", flex: 1 },
         { headerName: 'Departamento', field: "state", flex: 1 },
-        { headerName: 'Ciudad', field: "city", flex: 1 },
+        { headerName: 'Ciudad', field: "city", flex: 0.6 },
         {
             headerName: 'Artículos', field: "items", valueFormatter: (params) => {
                 return params.value.map(obj => `${obj.item.sku} - ${obj.item.name} - ${obj.item.quantity}`).join(', ');
@@ -110,9 +131,47 @@ const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
         },
         { headerName: 'Condición', field: "condition", flex: 1 },
         { headerName: 'Método', field: "method", flex: 1 },
-        { headerName: 'Valor', field: "total", flex: 1 },
+        { headerName: 'Valor', field: "total", flex: 0.5 },
         {
-            headerName: 'Estado', field: 'status', flex: 1, renderCell: (params) => (
+            headerName: 'Hoja', field: "url_coursier_sheet", flex: 0.5, renderCell: (params) => (
+                <a
+                    href={params.value}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        backgroundColor: "rgba(100, 181, 246, 0.2)",
+                        color: "white",
+                        padding: "6px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        fontWeight: "bold",
+                    }}
+                >
+                    Ver Hoja
+                </a>
+            )
+        },
+        {
+            headerName: 'Etiqueta', field: "url_external_service_sheet", flex: 0.6, renderCell: (params) => (
+                <a
+                    href={params.value}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        backgroundColor: "rgba(165, 214, 167, 0.2)",
+                        color: "white",
+                        padding: "6px 12px",
+                        borderRadius: "10px",
+                        textDecoration: "none",
+                        fontWeight: "bold",
+                    }}
+                >
+                    Ver Etiqueta
+                </a>
+            )
+        },
+        {
+            headerName: 'Estado', field: 'status', flex: 0.6, renderCell: (params) => (
                 <div style={{ display: "flex", alignItems: "center", textAlign: "center", backgroundColor: colors.black[100], width: "200px", height: "40px", borderRadius: "5px", color: statusColorMap[params.row.status] || 'white' }}>
                     <p style={{ display: "inline-block", margin: "auto", overflow: "hidden", padding: "1px 2px 1px" }}>{params.row.status}</p>
                 </div>
@@ -127,6 +186,27 @@ const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
                                 Anular
                             </Button>
                         </Menu.Item>
+                        <Menu.Item key="1">
+                            <EditOrderPlatform
+                                rangeItems={rangeItems}
+                                data={params.row}
+                                user={user}
+                                users={users}
+                                conditions={conditions}
+                                methods={methods}
+                                places={places}
+                                setReloadData={setReloadData}
+                                URL_SERVER={URL_SERVER}
+                            />
+                        </Menu.Item>
+                        {/* <Menu.Item key="2">
+                            <AuthOrderPlatform
+                                data={params.row}
+                                user={user}
+                                setReloadData={setReloadData}
+                                URL_SERVER={URL_SERVER}
+                            />
+                        </Menu.Item> */}
                     </Menu.SubMenu>
                 </Menu>
             )
@@ -159,7 +239,18 @@ const PlatformTable = ({ URL_SERVER, ordersData, setOrdersData }) => {
                         columns={columns}
                         data={ordersData}
                         setReloadData={setReloadData}
-                        setLoading={setLoading}
+                        customised={{
+                            columns: {
+                                columnVisibilityModel: {
+                                    coursier: false,
+                                    seller: false,
+                                    address: false,
+                                    state: false,
+                                    condition: false,
+                                    method: false
+                                }
+                            }
+                        }}
                     />
                 </Box>
             )}
