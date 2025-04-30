@@ -89,8 +89,8 @@ const SellerOrders = ({ user, ordersData, setOrdersData, rangeItems, reloadData,
         socket.emit("cancelPlatform", data.pos)
         socket.on("message", (response) => {
           if (response.success) {
-            setReloadData(true);
             message.success(response.message);
+            setReloadData(true);
           } else {
             message.error(response.message || 'Hubo un error inesperado.');
           }
