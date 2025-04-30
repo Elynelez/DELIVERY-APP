@@ -17,24 +17,23 @@ import {
   DropdownItem,
   Dropdown
 } from 'reactstrap';
-import { useAuth0 } from '@auth0/auth0-react';
 
-const NavbarNavigation = ({ user, isAuthenticated, allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts }) => {
+const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts, notifications }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const [isOpen, setIsOpen] = useState(false);
-  const { logout, loginWithRedirect } = useAuth0()
-  const [active, setActive] = useState(false)
+  const [activeCar, setActiveCar] = useState(false)
+  const [activeNotification, setActiveNotification] = useState(false)
 
   const updateQuantity = (index, newQuantity) => {
     if (newQuantity === "" || newQuantity < 1) return;
 
     const updatedProducts = allProducts.map((product, i) =>
-        i === index ? { ...product, carQuantity: newQuantity } : product
+      i === index ? { ...product, carQuantity: newQuantity } : product
     );
 
-    setAllProducts(updatedProducts); 
+    setAllProducts(updatedProducts);
   };
 
   const onDeleteProduct = (product) => {
@@ -53,9 +52,22 @@ const NavbarNavigation = ({ user, isAuthenticated, allProducts, setAllProducts, 
     setCountProducts(0);
   }
 
+  const getNotificationTitle = (type) => {
+    switch (type) {
+      case "inventory_exit": return "Salida de Inventario";
+      case "inventory_entry": return "Entrada de Inventario";
+      // Agrega más tipos según tu sistema
+      default: return "Notificación";
+    }
+  };
+  
+  const handleNotificationClick = (notification) => {
+    // Por ejemplo, redirigir o abrir modal
+    console.log("Notificación clickeada:", notification);
+  };
+
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
-      {/* SEARCH BAR */}
       <Box
         display="flex"
         backgroundColor={colors.primary[400]}
@@ -83,12 +95,12 @@ const NavbarNavigation = ({ user, isAuthenticated, allProducts, setAllProducts, 
           )}
         </IconButton>
         <IconButton>
-          <Dropdown isOpen={active} toggle={() => { setActive(!active) }}>
+          <Dropdown isOpen={activeCar} toggle={() => { setActiveCar(!activeCar) }}>
             <DropdownToggle nav caret>
               <div className="container-cart-icon">
                 <ShoppingCart />
-                <div className="count-products">
-                  <span id="contador-productos">{countProducts}</span>
+                <div className="count">
+                  <span id="contador">{countProducts}</span>
                 </div>
               </div>
             </DropdownToggle>
@@ -156,7 +168,37 @@ const NavbarNavigation = ({ user, isAuthenticated, allProducts, setAllProducts, 
           </Dropdown>
         </IconButton>
         <IconButton>
-          <NotificationsOutlinedIcon />
+          <Dropdown isOpen={activeNotification} toggle={() => setActiveNotification(!activeNotification)}>
+            <DropdownToggle nav caret>
+              <div className="container-cart-icon">
+                <NotificationsOutlinedIcon />
+                {notifications.length > 0 && (
+                  <div className="count">
+                    <span id="contador">{notifications.length}</span>
+                  </div>
+                )}
+              </div>
+            </DropdownToggle>
+
+            <DropdownMenu right className="notification-dropdown">
+              {notifications.length === 0 ? (
+                <DropdownItem disabled>No tienes notificaciones</DropdownItem>
+              ) : (
+                notifications.map((notification, index) => (
+                  <DropdownItem key={index} className="notification-item" onClick={() => handleNotificationClick(notification)}>
+                    <div className="notification-header">
+                      <strong>{getNotificationTitle(notification.to_receive)}</strong>
+                      <span className="notification-date">{notification.date}</span>
+                    </div>
+                    <div className="notification-body">
+                      Factura: <strong>{notification.data.facture_number}</strong><br />
+                      Productos: <strong>{notification.data.projects.length}</strong>
+                    </div>
+                  </DropdownItem>
+                ))
+              )}
+            </DropdownMenu>
+          </Dropdown>
         </IconButton>
         <IconButton>
           <SettingsOutlinedIcon />

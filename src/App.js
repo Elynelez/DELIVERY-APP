@@ -9,7 +9,7 @@ import './App.css';
 
 // pages
 import { Dashboard, ScreenRecorder } from './pages/DefaultPages';
-import { Seller, SellerTable, SellerForm, SellerOrders } from './pages/SellerPages';
+import { SellerTable, SellerForm, SellerOrders } from './pages/SellerPages';
 import { DeliveryTable, DeliveryForm, CoursierForm } from './pages/DeliveryPages';
 import { PlatformTable, CSVReader } from './pages/AccountingPages';
 import {
@@ -38,7 +38,7 @@ const URL_CARLOS = process.env.REACT_APP_URL_CARLOS
 const socket = io(URL_SERVER);
 
 function App() {
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user, logout, loginWithRedirect } = useAuth0();
   const [theme, colorMode] = useMode();
 
   const [allProducts, setAllProducts] = useState(() => {
@@ -56,13 +56,15 @@ function App() {
     return savedCount ? Number(savedCount) : 0;
   })
 
+  const [reloadData, setReloadData] = useState(true)
+
   const [blocked, setBlocked] = useState(false)
 
   const [rangeItems, setRangeItems] = useState([])
 
   const [ordersData, setOrdersData] = useState([])
 
-  const [reloadData, setReloadData] = useState(true)
+  const [notifications, setNotifications] = useState([])
 
   useEffect(() => {
 
@@ -111,6 +113,16 @@ function App() {
   }, [socket, rangeItems])
 
   useEffect(() => {
+    socket.on("getNotifications", (data) => {
+      try {
+        setNotifications(data);
+      } catch (error) {
+        console.error('Error handling event:', error);
+      }
+    });
+  }, [])
+
+  useEffect(() => {
     localStorage.setItem("allProducts", JSON.stringify(allProducts));
     localStorage.setItem("total", total)
     localStorage.setItem("countProducts", countProducts)
@@ -139,12 +151,15 @@ function App() {
                 <NavbarNavigation
                   user={user}
                   isAuthenticated={isAuthenticated}
+                  logout={logout}
+                  loginWithRedirect={loginWithRedirect}
                   allProducts={allProducts}
                   setAllProducts={setAllProducts}
                   total={total}
                   setTotal={setTotal}
                   countProducts={countProducts}
                   setCountProducts={setCountProducts}
+                  notifications={notifications}
                 />
                 <Routes>
                   <Route exact path="/"
@@ -156,9 +171,15 @@ function App() {
                     />} />
                   <Route exact path="/platforms/:id"
                     element={<PlatformTable
-                      URL_SERVER={URL_SERVER}
+                      user={user}
+                      hasPermission={hasPermission}
                       ordersData={ordersData}
                       setOrdersData={setOrdersData}
+                      rangeItems={rangeItems}
+                      reloadData={reloadData}
+                      setReloadData={setReloadData}
+                      socket={socket}
+                      URL_SERVER={URL_SERVER}
                     />} />
                   <Route exact path="/screenrecord"
                     element={<ScreenRecorder

@@ -7,7 +7,7 @@ import DataTableGrid from "../../controllers/Tables/DataGridPro";
 import { tokens } from "../../theme";
 import axios from "axios";
 
-const PlatformTable = ({ user, ordersData, setOrdersData, rangeItems, reloadData, setReloadData, socket, URL_SERVER }) => {
+const PlatformTable = ({ user, hasPermission, ordersData, setOrdersData, rangeItems, reloadData, setReloadData, socket, URL_SERVER }) => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true)
     const [conditions, setCondiions] = useState([])
@@ -18,16 +18,6 @@ const PlatformTable = ({ user, ordersData, setOrdersData, rangeItems, reloadData
     const colors = tokens(theme.palette.mode);
 
     const loadData = async () => {
-        socket.on('getNotifications', (data) => {
-            try {
-                // setOrdersData(data.reverse());
-                // setLoading(false);
-                console.log(data)
-            } catch (error) {
-                console.error('Error handling loadOrders event:', error);
-            }
-        });
-
         setLoading(true);
 
         try {
@@ -181,32 +171,38 @@ const PlatformTable = ({ user, ordersData, setOrdersData, rangeItems, reloadData
             headerName: 'Acciones', renderCell: params => (
                 <Menu defaultSelectedKeys={['1']} style={{ background: "rgba(255,255,255,0.5)", width: "80px", height: "40px", borderRadius: "5px" }}>
                     <Menu.SubMenu title="Acciones" key="sub-menu">
-                        <Menu.Item key="0">
-                            <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.id)}>
-                                Anular
-                            </Button>
-                        </Menu.Item>
-                        <Menu.Item key="1">
-                            <EditOrderPlatform
-                                rangeItems={rangeItems}
-                                data={params.row}
-                                user={user}
-                                users={users}
-                                conditions={conditions}
-                                methods={methods}
-                                places={places}
-                                setReloadData={setReloadData}
-                                URL_SERVER={URL_SERVER}
-                            />
-                        </Menu.Item>
-                        {/* <Menu.Item key="2">
-                            <AuthOrderPlatform
-                                data={params.row}
-                                user={user}
-                                setReloadData={setReloadData}
-                                URL_SERVER={URL_SERVER}
-                            />
-                        </Menu.Item> */}
+                        {user && (
+                            <>
+                                <Menu.Item key="0">
+                                    <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.id)}>
+                                        Anular
+                                    </Button>
+                                </Menu.Item>
+                                <Menu.Item key="1">
+                                    <EditOrderPlatform
+                                        rangeItems={rangeItems}
+                                        data={params.row}
+                                        user={user}
+                                        users={users}
+                                        conditions={conditions}
+                                        methods={methods}
+                                        places={places}
+                                        setReloadData={setReloadData}
+                                        URL_SERVER={URL_SERVER}
+                                    />
+                                </Menu.Item>
+                                {hasPermission(user.email, 'boss') && (
+                                    <Menu.Item key="2">
+                                        <AuthOrderPlatform
+                                            data={params.row}
+                                            user={user}
+                                            setReloadData={setReloadData}
+                                            URL_SERVER={URL_SERVER}
+                                        />
+                                    </Menu.Item>
+                                )}
+                            </>
+                        )}
                     </Menu.SubMenu>
                 </Menu>
             )

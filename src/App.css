@@ -151,7 +151,7 @@ body {
 	position: relative;
 }
 
-.count-products {
+.count {
 	position: absolute;
 	top: 5%;
 	left: 30%;
@@ -167,7 +167,7 @@ body {
 	border-radius: 50%;
 }
 
-#contador-productos {
+#contador {
 	font-size: 12px;
 }
 
@@ -444,6 +444,29 @@ body {
 	border-radius: 3px;
 	color: white;
 }
+
+.notification-dropdown {
+	max-height: 400px;
+	overflow-y: auto;
+	width: 300px;
+  }
+  
+  .notification-item {
+	white-space: normal;
+	padding: 10px;
+	border-bottom: 1px solid #eee;
+  }
+  
+  .notification-header {
+	display: flex;
+	justify-content: space-between;
+	font-size: 14px;
+  }
+  
+  .notification-date {
+	color: gray;
+	font-size: 12px;
+  }
 
 /* end packing forms */
 @media screen and (max-width: 600px) {
