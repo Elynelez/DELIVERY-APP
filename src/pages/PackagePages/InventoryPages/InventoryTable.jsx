@@ -11,6 +11,16 @@ const InventoryTable = ({ hasPermission, rangeItems, setRangeItems, user, socket
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
+    const deleteSku = (data) => {
+        socket.emit("deleteSku", data)
+        window.location.reload()
+    }
+
+    const deleteProduct = (data) => {
+        socket.emit("deleteProduct", data)
+        window.location.reload()
+    }
+
     const columns = [
         { headerName: 'Sku', field: "sku", flex: 1 },
         { headerName: 'Nombre', field: "name", flex: 2 },
@@ -63,6 +73,16 @@ const InventoryTable = ({ hasPermission, rangeItems, setRangeItems, user, socket
                                                 loading={loading}
                                                 setLoading={setLoading}
                                             />
+                                        </Menu.Item>
+                                        <Menu.Item key="4">
+                                            <Button onClick={() => deleteSku(params.row)}>
+                                                Eliminar sku
+                                            </Button>
+                                        </Menu.Item>
+                                        <Menu.Item key="5">
+                                            <Button onClick={() => deleteProduct(params.row)}>
+                                                Eliminar item
+                                            </Button>
                                         </Menu.Item>
                                     </>
                                 )}
