@@ -47,7 +47,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     );
 };
 
-const Sidebar = ({ isAuthenticated, user, permissions }) => {
+const Sidebar = ({ isAuthenticated, user, permissions, URL_SERVER }) => {
     const [coursiers, setCoursiers] = useState([]);
     const platforms = ["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "ADDI", "LINIO"]
     const theme = useTheme();
@@ -58,7 +58,7 @@ const Sidebar = ({ isAuthenticated, user, permissions }) => {
     useEffect(() => {
         const fetchCoursiers = async () => {
             try {
-                const data = await getCoursiers();
+                const data = await getCoursiers(URL_SERVER);
                 setCoursiers([...data, "servicio externo", "medellín", "dflex"]);
             } catch (error) {
                 console.error("Error al obtener coursiers:", error);

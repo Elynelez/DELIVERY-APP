@@ -140,7 +140,7 @@ function App() {
         const updatedPermissions = {};
 
         for (const role of roles) {
-          updatedPermissions[role] = await hasPermission(user.email, role);
+          updatedPermissions[role] = await hasPermission(user.email, role, URL_SERVER);
         }
 
         setPermissions(updatedPermissions);
@@ -174,6 +174,7 @@ function App() {
                 isAuthenticated={isAuthenticated}
                 user={user}
                 permissions={permissions}
+                URL_SERVER={URL_SERVER}
               />
               <div className='content'>
                 <NavbarNavigation

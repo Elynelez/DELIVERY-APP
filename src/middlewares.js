@@ -1,5 +1,4 @@
 import axios from "axios";
-const URL_SERVER = 'http://localhost:' + 8080
 
 const checkDuplicates = (e, setLoading, setDisabled, notification) => {
     if (e.projects) {
@@ -187,7 +186,7 @@ const processExitData = (e, items, emitType, socket, receiveOrders, message, set
     }
 }
 
-const hasPermission = async (email, roles) => {
+const hasPermission = async (email, roles, URL_SERVER) => {
     const users = await axios.get(`${URL_SERVER}/database/users`)
     const user = users.data.find(user => user.email === email);
 
@@ -206,13 +205,13 @@ const hasPermission = async (email, roles) => {
     return false;
 }
 
-const getUserName = async (email) => {
+const getUserName = async (email, URL_SERVER) => {
     const users = await axios.get(`${URL_SERVER}/database/users`)
     const user = users.data.find(user => user.email === email);
     return user ? user.name : null;
 }
 
-const getCoursiers = async () => {
+const getCoursiers = async (URL_SERVER) => {
     const users = await axios.get(`${URL_SERVER}/database/users`)
     const namesList = users.data.filter(user => user.roles.includes("coursier"))
 
