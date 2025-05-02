@@ -47,7 +47,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     );
 };
 
-const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
+const Sidebar = ({ isAuthenticated, user, permissions }) => {
     const [coursiers, setCoursiers] = useState([]);
     const platforms = ["SHOPIFY", "FALABELLA", "MERCADOLIBRE", "RAPPI", "DCBOGOTA", "ADDI", "LINIO"]
     const theme = useTheme();
@@ -171,29 +171,6 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                             color={colors.grey[300]}
                             sx={{ m: "15px 0 5px 20px" }}
                         >
-                            Posts
-                        </Typography>
-                        <SubMenu title="Publicaciones" icon={<DynamicFeedOutlined />}>
-                            <Item
-                                title="Pausar"
-                                to="/publication/pause"
-                                icon={<PauseCircleFilledOutlined />}
-                                selected={selected}
-                                setSelected={setSelected}
-                            />
-                            <Item
-                                title="Publicaciones"
-                                to="/publication/table"
-                                icon={<CalendarToday />}
-                                selected={selected}
-                                setSelected={setSelected}
-                            />
-                        </SubMenu>
-                        <Typography
-                            variant="h6"
-                            color={colors.grey[300]}
-                            sx={{ m: "15px 0 5px 20px" }}
-                        >
                             Platforms
                         </Typography>
                         <SubMenu title="Plataformas" icon={<AddBusiness />}>
@@ -217,7 +194,34 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                         </SubMenu>
                         {isAuthenticated && (
                             <>
-                                {hasPermission(user.email, ['boss', 'seller']) && (
+                                {permissions.publications && (
+                                    <>
+                                        <Typography
+                                            variant="h6"
+                                            color={colors.grey[300]}
+                                            sx={{ m: "15px 0 5px 20px" }}
+                                        >
+                                            Posts
+                                        </Typography>
+                                        <SubMenu title="Publicaciones" icon={<DynamicFeedOutlined />}>
+                                            <Item
+                                                title="Pausar"
+                                                to="/publication/pause"
+                                                icon={<PauseCircleFilledOutlined />}
+                                                selected={selected}
+                                                setSelected={setSelected}
+                                            />
+                                            <Item
+                                                title="Publicaciones"
+                                                to="/publication/table"
+                                                icon={<CalendarToday />}
+                                                selected={selected}
+                                                setSelected={setSelected}
+                                            />
+                                        </SubMenu>
+                                    </>
+                                )}
+                                {permissions.seller && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -244,7 +248,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                         </SubMenu>
                                     </>
                                 )}
-                                {hasPermission(user.email, ['logistic', 'boss', 'coursier']) && (
+                                {(permissions.logistic || permissions.coursier) && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -254,7 +258,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                             Delivery
                                         </Typography>
                                         <SubMenu title="Mensajería" icon={<LocalShipping />}>
-                                            {hasPermission(user.email, ['logistic', 'boss']) && (
+                                            {permissions.logistic && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -272,7 +276,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                                     />
                                                 </>
                                             )}
-                                            {hasPermission(user.email, ['boss', 'coursier']) && (
+                                            {permissions.coursier && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -290,7 +294,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                                     />
                                                 </>
                                             )}
-                                            {hasPermission(user.email, ['logistic', 'boss']) && (
+                                            {permissions.logistic && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -321,7 +325,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                         </SubMenu>
                                     </>
                                 )}
-                                {hasPermission(user.email, ['boss', 'inventory_entry', 'inventory_exit', 'inventory_setting']) && (
+                                {(permissions.inventory_entry || permissions.inventory_exit || permissions.inventory_setting) && (
                                     <>
                                         <Typography
                                             variant="h6"
@@ -338,7 +342,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                             >
                                                 Productos
                                             </Typography>
-                                            {hasPermission(user.email, 'inventory_setting') && (
+                                            {permissions.inventory_setting && (
                                                 <Item
                                                     title="Crear"
                                                     to="/inventory/create/form"
@@ -354,7 +358,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                                 selected={selected}
                                                 setSelected={setSelected}
                                             />
-                                            {hasPermission(user.email, 'inventory_entry') && (
+                                            {permissions.inventory_entry && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -379,7 +383,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                                     />
                                                 </>
                                             )}
-                                            {hasPermission(user.email, 'inventory_exit') && (
+                                            {permissions.inventory_exit && (
                                                 <>
                                                     <Typography
                                                         variant="h6"
@@ -418,7 +422,7 @@ const Sidebar = ({ isAuthenticated, user, hasPermission }) => {
                                                     />
                                                 </>
                                             )}
-                                            {hasPermission(user.email, 'inventory_setting') && (
+                                            {permissions.inventory_setting && (
                                                 <>
                                                     <Typography
                                                         variant="h6"

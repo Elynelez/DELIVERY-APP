@@ -192,21 +192,17 @@ const hasPermission = async (email, roles) => {
     const user = users.data.find(user => user.email === email);
 
     if (user) {
-        // Si el usuario tiene el rol de "boss", tiene acceso a todo
         if (user.roles.includes('boss')) {
             return true;
         }
 
-        // Si roles es un array, verificamos si el usuario tiene alguno de los roles
         if (Array.isArray(roles)) {
             return roles.some(role => user.roles.includes(role));
         }
 
-        // Si no, verificamos si tiene el rol específico
         return user.roles.includes(roles);
     }
 
-    // Si el usuario no se encuentra en la lista
     return false;
 }
 

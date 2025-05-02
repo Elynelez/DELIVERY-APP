@@ -7,7 +7,7 @@ import DataTableGrid from "../../controllers/Tables/DataGridPro";
 import { tokens } from "./../../theme";
 import axios from "axios";
 
-const DeliveryTable = ({ user, hasPermission, ordersData, setOrdersData, reloadData, setReloadData, socket, URL_SERVER }) => {
+const DeliveryTable = ({ user, permissions, ordersData, setOrdersData, reloadData, setReloadData, socket, URL_SERVER }) => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true)
     const [methods, setMethods] = useState([])
@@ -176,7 +176,7 @@ const DeliveryTable = ({ user, hasPermission, ordersData, setOrdersData, reloadD
                         </Menu.Item>
                         {user && (
                             <>
-                                {hasPermission(user.email, ['logistic', 'boss']) && (
+                                {permissions.logistic && (
                                     <>
                                         <Menu.Item key="2">
                                             <Button

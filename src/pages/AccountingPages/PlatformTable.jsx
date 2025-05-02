@@ -7,7 +7,7 @@ import DataTableGrid from "../../controllers/Tables/DataGridPro";
 import { tokens } from "../../theme";
 import axios from "axios";
 
-const PlatformTable = ({ user, hasPermission, ordersData, setOrdersData, rangeItems, reloadData, setReloadData, socket, URL_SERVER }) => {
+const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItems, reloadData, setReloadData, socket, URL_SERVER }) => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true)
     const [conditions, setCondiions] = useState([])
@@ -191,7 +191,7 @@ const PlatformTable = ({ user, hasPermission, ordersData, setOrdersData, rangeIt
                                         URL_SERVER={URL_SERVER}
                                     />
                                 </Menu.Item>
-                                {hasPermission(user.email, 'boss') && (
+                                {permissions.boss && (
                                     <Menu.Item key="2">
                                         <AuthOrderPlatform
                                             data={params.row}
@@ -201,6 +201,7 @@ const PlatformTable = ({ user, hasPermission, ordersData, setOrdersData, rangeIt
                                         />
                                     </Menu.Item>
                                 )}
+
                             </>
                         )}
                     </Menu.SubMenu>

@@ -22,7 +22,7 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
-  const [isOpen, setIsOpen] = useState(false);
+  const [activeSession, setActiveSession] = useState(false);
   const [activeCar, setActiveCar] = useState(false)
   const [activeNotification, setActiveNotification] = useState(false)
 
@@ -204,7 +204,7 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
           <SettingsOutlinedIcon />
         </IconButton>
         <IconButton>
-          <Dropdown isOpen={isOpen} toggle={() => { setIsOpen(!isOpen) }}>
+          <Dropdown isOpen={activeSession} toggle={() => { setActiveSession(!activeSession) }}>
             <DropdownToggle nav caret>
               <PersonOutlinedIcon />
             </DropdownToggle>

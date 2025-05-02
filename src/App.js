@@ -66,6 +66,17 @@ function App() {
 
   const [notifications, setNotifications] = useState([])
 
+  const [permissions, setPermissions] = useState({
+    boss: false,
+    seller: false,
+    logistic: false,
+    coursier: false,
+    publications: false,
+    inventory_entry: false,
+    inventory_exit: false,
+    inventory_setting: false,
+  });
+
   useEffect(() => {
 
     socket.on('connect', () => {
@@ -123,6 +134,23 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const fetchPermissions = async () => {
+      if (user?.email) {
+        const roles = Object.keys(permissions);
+        const updatedPermissions = {};
+
+        for (const role of roles) {
+          updatedPermissions[role] = await hasPermission(user.email, role);
+        }
+
+        setPermissions(updatedPermissions);
+      }
+    };
+
+    fetchPermissions();
+  }, [user]);
+
+  useEffect(() => {
     localStorage.setItem("allProducts", JSON.stringify(allProducts));
     localStorage.setItem("total", total)
     localStorage.setItem("countProducts", countProducts)
@@ -145,7 +173,7 @@ function App() {
               <Sidebar
                 isAuthenticated={isAuthenticated}
                 user={user}
-                hasPermission={hasPermission}
+                permissions={permissions}
               />
               <div className='content'>
                 <NavbarNavigation
@@ -172,7 +200,7 @@ function App() {
                   <Route exact path="/platforms/:id"
                     element={<PlatformTable
                       user={user}
-                      hasPermission={hasPermission}
+                      permissions={permissions}
                       ordersData={ordersData}
                       setOrdersData={setOrdersData}
                       rangeItems={rangeItems}
@@ -184,25 +212,29 @@ function App() {
                   <Route exact path="/screenrecord"
                     element={<ScreenRecorder
                     />} />
-                  <Route exact path='publication/pause'
-                    element={<PausePosting
-                      URL_SERVER={URL_SERVER}
-                      rangeItems={rangeItems}
-                      setRangeItems={setRangeItems}
-                    />} />
-                  <Route exact path='publication/table'
-                    element={<PublicationTable
-                      URL_SERVER={URL_SERVER}
-                    />} />
                   {isAuthenticated && (
                     <>
-                      {hasPermission(user.email, 'boss') && (
+                      {permissions.boss && (
                         <Route exact path='/platforms/rappi/form'
                           element={<CSVReader
                             API_URL={API_DUCOR}
                           />} />
                       )}
-                      {hasPermission(user.email, ['boss', 'seller']) && (
+                      {permissions.publications && (
+                        <>
+                          <Route exact path='publication/pause'
+                            element={<PausePosting
+                              URL_SERVER={URL_SERVER}
+                              rangeItems={rangeItems}
+                              setRangeItems={setRangeItems}
+                            />} />
+                          <Route exact path='publication/table'
+                            element={<PublicationTable
+                              URL_SERVER={URL_SERVER}
+                            />} />
+                        </>
+                      )}
+                      {permissions.seller && (
                         <>
                           <Route exact path="/sales/orders"
                             element={<SellerOrders
@@ -238,31 +270,27 @@ function App() {
                             />} />
                         </>
                       )}
-                      {hasPermission(user.email, ['boss', 'logistic']) && (
+                      {permissions.logistic && (
                         <>
-                          {hasPermission(user.email, ['boss', 'logistic']) && (
-                            <>
-                              <Route exact path="/delivery/form"
-                                element={<DeliveryForm
-                                  socket={socket}
-                                  URL_SERVER={URL_SERVER}
-                                />} />
-                              <Route exact path="/delivery/:id"
-                                element={<DeliveryTable
-                                  user={user}
-                                  hasPermission={hasPermission}
-                                  ordersData={ordersData}
-                                  setOrdersData={setOrdersData}
-                                  reloadData={reloadData}
-                                  setReloadData={setReloadData}
-                                  socket={socket}
-                                  URL_SERVER={URL_SERVER}
-                                />} />
-                            </>
-                          )}
+                          <Route exact path="/delivery/form"
+                            element={<DeliveryForm
+                              socket={socket}
+                              URL_SERVER={URL_SERVER}
+                            />} />
+                          <Route exact path="/delivery/:id"
+                            element={<DeliveryTable
+                              user={user}
+                              permissions={permissions}
+                              ordersData={ordersData}
+                              setOrdersData={setOrdersData}
+                              reloadData={reloadData}
+                              setReloadData={setReloadData}
+                              socket={socket}
+                              URL_SERVER={URL_SERVER}
+                            />} />
                         </>
                       )}
-                      {hasPermission(user.email, ['boss', 'coursier']) && (
+                      {permissions.coursier && (
                         <>
                           <Route exact path='/delivery/route'
                             element={<CoursierForm
@@ -273,18 +301,18 @@ function App() {
                             />} />
                         </>
                       )}
-                      {hasPermission(user.email, ['boss', 'inventory_entry', 'inventory_exit', 'inventory_setting']) && (
+                      {(permissions.inventory_entry || permissions.inventory_exit || permissions.inventory_setting) && (
                         <>
                           <Route exact path="/inventory/table"
                             element={<InventoryTable
-                              hasPermission={hasPermission}
+                              permissions={permissions}
                               rangeItems={rangeItems}
                               setRangeItems={setRangeItems}
                               user={user}
                               socket={socket}
                               URL_SERVER={URL_SERVER}
                             />} />
-                          {hasPermission(user.email, ['boss', 'inventory_entry']) && (
+                          {permissions.inventory_entry && (
                             <>
                               <Route exact path="/inventory/enter/form"
                                 element={<EnterForm
@@ -302,7 +330,7 @@ function App() {
                                 />} />
                             </>
                           )}
-                          {hasPermission(user.email, ['boss', 'inventory_exit']) && (
+                          {permissions.inventory_exit && (
                             <>
                               <Route exact path="/inventory/exit/form"
                                 element={<ExitForm
@@ -343,7 +371,7 @@ function App() {
                                 />} />
                             </>
                           )}
-                          {hasPermission(user.email, ['boss', 'inventory_setting']) && (
+                          {permissions.inventory_setting && (
                             <>
                               <Route exact path="/inventory/create/form"
                                 element={<CreateProduct

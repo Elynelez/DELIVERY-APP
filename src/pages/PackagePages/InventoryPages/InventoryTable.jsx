@@ -6,7 +6,7 @@ import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
 import { Link } from 'react-router-dom';
 
-const InventoryTable = ({ hasPermission, rangeItems, setRangeItems, user, socket, URL_SERVER }) => {
+const InventoryTable = ({ permissions, rangeItems, setRangeItems, user, socket, URL_SERVER }) => {
     const [loading, setLoading] = useState(false)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
@@ -37,7 +37,7 @@ const InventoryTable = ({ hasPermission, rangeItems, setRangeItems, user, socket
                     <Menu.SubMenu title="Acciones" key="sub-menu">
                         {user && (
                             <>
-                                {hasPermission(user.email, ['boss', 'inventory_setting']) && (
+                                {permissions.inventory_setting && (
                                     <>
                                         <Menu.Item key="0">
                                             <AddSkuModalServer
@@ -64,7 +64,7 @@ const InventoryTable = ({ hasPermission, rangeItems, setRangeItems, user, socket
                                         </Menu.Item>
                                     </>
                                 )}
-                                {hasPermission(user.email, 'boss') && (
+                                {permissions.boss && (
                                     <>
                                         <Menu.Item key="3">
                                             <EditCodeProduct
