@@ -9,7 +9,7 @@ import './App.css';
 
 // pages
 import { Dashboard, ScreenRecorder } from './pages/DefaultPages';
-import { SellerTable, SellerForm, SellerOrders } from './pages/SellerPages';
+import { SellerTable, SellerForm, SellerOrders, ProductDetail } from './pages/SellerPages';
 import { DeliveryTable, DeliveryForm, CoursierForm } from './pages/DeliveryPages';
 import { PlatformTable, CSVReader } from './pages/AccountingPages';
 import {
@@ -32,7 +32,6 @@ import { hasPermission } from './middlewares';
 // API URL'S
 const API_DUCOR = process.env.REACT_APP_API_DUCOR
 const URL_SERVER = process.env.REACT_APP_URL_SERVER
-const URL_CARLOS = process.env.REACT_APP_URL_CARLOS
 // const URL_SERVER = 'http://localhost:' + 8080
 
 const socket = io(URL_SERVER);
@@ -268,6 +267,17 @@ function App() {
                               setCountProducts={setCountProducts}
                               rangeItems={rangeItems}
                               setRangeItems={setRangeItems}
+                            />} />
+                          <Route exact path="/sales"
+                            element={<ProductDetail
+                              ordersData={ordersData}
+                              setOrdersData={setOrdersData}
+                              allProducts={allProducts}
+                              setAllProducts={setAllProducts}
+                              total={total} setTotal={setTotal}
+                              countProducts={countProducts}
+                              setCountProducts={setCountProducts}
+                              rangeItems={rangeItems}
                             />} />
                         </>
                       )}

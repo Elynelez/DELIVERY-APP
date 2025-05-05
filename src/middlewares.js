@@ -205,12 +205,6 @@ const hasPermission = async (email, roles, URL_SERVER) => {
     return false;
 }
 
-const getUserName = async (email, URL_SERVER) => {
-    const users = await axios.get(`${URL_SERVER}/database/users`)
-    const user = users.data.find(user => user.email === email);
-    return user ? user.name : null;
-}
-
 const getCoursiers = async (URL_SERVER) => {
     const users = await axios.get(`${URL_SERVER}/database/users`)
     const namesList = users.data.filter(user => user.roles.includes("coursier"))
@@ -218,4 +212,4 @@ const getCoursiers = async (URL_SERVER) => {
     return namesList.map(obj => { return obj.name })
 }
 
-export { checkDuplicates, checkEmpty, checkFormat, checkOrderNumber, checkQuantity, checkExist, processExitData, hasPermission, getUserName, getCoursiers }
+export { checkDuplicates, checkEmpty, checkFormat, checkOrderNumber, checkQuantity, checkExist, processExitData, hasPermission, getCoursiers }

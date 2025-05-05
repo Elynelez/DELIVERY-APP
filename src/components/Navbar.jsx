@@ -1,4 +1,5 @@
 import { Box, IconButton, useTheme, InputBase } from "@mui/material";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useContext, useState } from "react";
 import { ColorModeContext, tokens } from "../theme";
 import {
@@ -20,11 +21,18 @@ import {
 
 const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts, notifications }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const [activeSession, setActiveSession] = useState(false);
   const [activeCar, setActiveCar] = useState(false)
   const [activeNotification, setActiveNotification] = useState(false)
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+
+  const handleSearch = () => {
+    navigate(`/sales?search=${encodeURIComponent(search)}`);
+  };
 
   const updateQuantity = (index, newQuantity) => {
     if (newQuantity === "" || newQuantity < 1) return;
@@ -68,13 +76,19 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
 
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
-      <Box
-        display="flex"
-        backgroundColor={colors.primary[400]}
-        borderRadius="3px"
-      >
-        <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
-        <IconButton type="button" sx={{ p: 1 }}>
+      <Box display="flex" backgroundColor={colors.primary[400]} borderRadius="3px">
+        <InputBase
+          sx={{ ml: 2, flex: 1 }}
+          placeholder="Buscar producto"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch()
+            }
+          }}
+        />
+        <IconButton type="button" sx={{ p: 1 }} onClick={handleSearch}>
           <SearchIcon />
         </IconButton>
       </Box>

@@ -252,7 +252,7 @@ body {
 /* start car */
 .container-items {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
+	grid-template-columns: repeat(3, 1fr);
 	gap: 20px;
 }
 
@@ -278,11 +278,7 @@ body {
 }
 
 .item:hover img {
-	/* transition: 10s; */
 	transform: scale(1.2);
-	/* height: 400px;
-  position: absolute;
-  width: 50px; */
 
 }
 
@@ -294,7 +290,6 @@ body {
 	justify-content: space-between;
 	gap: 10px;
 	height: 160px;
-	/* text-align: center; */
 }
 
 .info-product h2 {
@@ -333,8 +328,8 @@ body {
 .link-button {
 	text-decoration: none;
 }
-
 /* end car */
+
 .buttonRepeat {
 	background-color: #fff;
 }
