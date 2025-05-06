@@ -34,6 +34,19 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
     navigate(`/sales?search=${encodeURIComponent(search)}`);
   };
 
+  const handleSettingsClick = async () => {
+    if (isAuthenticated) {
+      navigate("/user/settings");
+    } else {
+      try {
+        await loginWithRedirect();
+      } catch (err) {
+        console.error("Error redirigiendo al login:", err);
+      }
+    }
+  };
+  
+
   const updateQuantity = (index, newQuantity) => {
     if (newQuantity === "" || newQuantity < 1) return;
 
@@ -68,7 +81,7 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
       default: return "Notificación";
     }
   };
-  
+
   const handleNotificationClick = (notification) => {
     // Por ejemplo, redirigir o abrir modal
     console.log("Notificación clickeada:", notification);
@@ -193,7 +206,6 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
                 )}
               </div>
             </DropdownToggle>
-
             <DropdownMenu right className="notification-dropdown">
               {notifications.length === 0 ? (
                 <DropdownItem disabled>No tienes notificaciones</DropdownItem>
@@ -214,7 +226,7 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
             </DropdownMenu>
           </Dropdown>
         </IconButton>
-        <IconButton>
+        <IconButton onClick={handleSettingsClick}>
           <SettingsOutlinedIcon />
         </IconButton>
         <IconButton>

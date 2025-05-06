@@ -8,7 +8,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 
 // pages
-import { Dashboard, ScreenRecorder } from './pages/DefaultPages';
+import { Dashboard, ScreenRecorder, UserSettings } from './pages/DefaultPages';
 import { SellerTable, SellerForm, SellerOrders, ProductDetail } from './pages/SellerPages';
 import { DeliveryTable, DeliveryForm, CoursierForm } from './pages/DeliveryPages';
 import { PlatformTable, CSVReader } from './pages/AccountingPages';
@@ -214,6 +214,13 @@ function App() {
                     />} />
                   {isAuthenticated && (
                     <>
+                      <Route exact path='/user/settings'
+                        element={<UserSettings
+                          user={user}
+                          isAuthenticated={isAuthenticated}
+                          logout={logout}
+                          loginWithRedirect={loginWithRedirect}
+                        />} />
                       {permissions.boss && (
                         <Route exact path='/platforms/rappi/form'
                           element={<CSVReader
