@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { mockTransactions } from "../../data/mockData";
-import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
+import {
+    DownloadOutlined as DownloadOutlinedIcon,
+    PointOfSale as PointOfSaleIcon,
+    PersonAdd as PersonAddIcon,
+    ShoppingCart,
+    CalendarToday
+} from "@mui/icons-material";
 import Header from "../../components/Header";
 import LineChart from "../../components/LineChart";
 import GeographyChart from "../../components/GeographyChart";
@@ -14,17 +16,14 @@ import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
 
-
-
 const Dashboard = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
     return (
         <Box m="20px">
-            {/* HEADER */}
             <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />
+                <Header title="DASHBOARD" subtitle="Resumen" />
 
                 <Box>
                     <Button
@@ -37,7 +36,7 @@ const Dashboard = () => {
                         }}
                     >
                         <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-                        Download Reports
+                        Descargar Ventas Semanales
                     </Button>
                 </Box>
             </Box>
@@ -59,11 +58,11 @@ const Dashboard = () => {
                 >
                     <StatBox
                         title="12,361"
-                        subtitle="Emails Sent"
+                        subtitle="Mejor Producto"
                         progress="0.75"
                         increase="+14%"
                         icon={
-                            <EmailIcon
+                            <ShoppingCart
                                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
                             />
                         }
@@ -78,7 +77,7 @@ const Dashboard = () => {
                 >
                     <StatBox
                         title="431,225"
-                        subtitle="Sales Obtained"
+                        subtitle="Ingreso Semanal"
                         progress="0.50"
                         increase="+21%"
                         icon={
@@ -97,7 +96,7 @@ const Dashboard = () => {
                 >
                     <StatBox
                         title="32,441"
-                        subtitle="New Clients"
+                        subtitle="Clientes Nuevos"
                         progress="0.30"
                         increase="+5%"
                         icon={
@@ -116,11 +115,11 @@ const Dashboard = () => {
                 >
                     <StatBox
                         title="1,325,134"
-                        subtitle="Traffic Received"
+                        subtitle="Gastos Semanales"
                         progress="0.80"
                         increase="+43%"
                         icon={
-                            <TrafficIcon
+                            <CalendarToday
                                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
                             />
                         }
@@ -146,14 +145,19 @@ const Dashboard = () => {
                                 fontWeight="600"
                                 color={colors.grey[100]}
                             >
-                                Revenue Generated
+                                Previsto
                             </Typography>
                             <Typography
                                 variant="h3"
                                 fontWeight="bold"
                                 color={colors.greenAccent[500]}
                             >
-                                $59,342.32
+                                ${(
+                                    Math.floor(Math.random() * (20000000 - 5000000 + 1)) + 5000000
+                                ).toLocaleString("es-ES", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}
                             </Typography>
                         </Box>
                         <Box>
@@ -183,7 +187,7 @@ const Dashboard = () => {
                         p="15px"
                     >
                         <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-                            Recent Transactions
+                            Últimas Ventas
                         </Typography>
                     </Box>
                     {mockTransactions.map((transaction, i) => (
@@ -227,7 +231,7 @@ const Dashboard = () => {
                     p="30px"
                 >
                     <Typography variant="h5" fontWeight="600">
-                        Campaign
+                        Empacados vs Entregados
                     </Typography>
                     <Box
                         display="flex"
@@ -241,9 +245,9 @@ const Dashboard = () => {
                             color={colors.greenAccent[500]}
                             sx={{ mt: "15px" }}
                         >
-                            $48,352 revenue generated
+                            158 empacados
                         </Typography>
-                        <Typography>Includes extra misc expenditures and costs</Typography>
+                        <Typography>20 entregados</Typography>
                     </Box>
                 </Box>
                 <Box
@@ -256,7 +260,7 @@ const Dashboard = () => {
                         fontWeight="600"
                         sx={{ padding: "30px 30px 0 30px" }}
                     >
-                        Sales Quantity
+                        Comparativa
                     </Typography>
                     <Box height="250px" mt="-20px">
                         <BarChart isDashboard={true} />
@@ -273,7 +277,7 @@ const Dashboard = () => {
                         fontWeight="600"
                         sx={{ marginBottom: "15px" }}
                     >
-                        Geography Based Traffic
+                        Puntos de venta
                     </Typography>
                     <Box height="200px">
                         <GeographyChart isDashboard={true} />

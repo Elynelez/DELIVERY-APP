@@ -45,7 +45,7 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
       }
     }
   };
-  
+
 
   const updateQuantity = (index, newQuantity) => {
     if (newQuantity === "" || newQuantity < 1) return;
@@ -54,7 +54,12 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
       i === index ? { ...product, carQuantity: newQuantity } : product
     );
 
+    const newCount = updatedProducts.reduce((sum, item) => sum + item.carQuantity, 0);
+    const newTotal = updatedProducts.reduce((sum, item) => sum + item.sale_price * item.carQuantity, 0);
+
     setAllProducts(updatedProducts);
+    setCountProducts(newCount > 100 ? "+99" : newCount);
+    setTotal(newTotal);
   };
 
   const onDeleteProduct = (product) => {
@@ -175,7 +180,7 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
 
                   <DropdownItem className='cart-total'>
                     <h3>Total:</h3>
-                    <span className='total-pagar'>${total}</span>
+                    <span className='total-pagar'>${total.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </DropdownItem>
                   <a href="/sales/form" className="link-button">
                     <button className='btn-clear-all' >
