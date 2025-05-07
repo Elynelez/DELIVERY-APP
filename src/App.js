@@ -8,7 +8,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 
 // pages
-import { Dashboard, ScreenRecorder, UserSettings } from './pages/DefaultPages';
+import { Dashboard, ScreenRecorder, UserSettings, GamePhaser } from './pages/DefaultPages';
 import { SellerTable, SellerForm, SellerOrders, ProductDetail } from './pages/SellerPages';
 import { DeliveryTable, DeliveryForm, CoursierForm } from './pages/DeliveryPages';
 import { PlatformTable, CSVReader } from './pages/AccountingPages';
@@ -190,6 +190,9 @@ function App() {
                   notifications={notifications}
                 />
                 <Routes>
+                  <Route path="/game"
+                    element={<GamePhaser
+                    />} />
                   <Route exact path="/"
                     element={<Dashboard
                       ordersData={ordersData}

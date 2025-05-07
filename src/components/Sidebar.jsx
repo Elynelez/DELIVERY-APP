@@ -24,7 +24,8 @@ import {
     Games,
     RadioButtonChecked,
     PauseCircleFilledOutlined,
-    DynamicFeedOutlined
+    DynamicFeedOutlined,
+    VideogameAssetOffOutlined
 } from "@mui/icons-material/"
 import "react-pro-sidebar/dist/css/styles.css";
 import { getCoursiers } from "../middlewares.js";
@@ -162,6 +163,13 @@ const Sidebar = ({ isAuthenticated, user, permissions, URL_SERVER }) => {
                                 title="Grabadora"
                                 to="/screenrecord"
                                 icon={<RadioButtonChecked />}
+                                selected={selected}
+                                setSelected={setSelected}
+                            />
+                            <Item
+                                title="Videojuego"
+                                to="/game"
+                                icon={<VideogameAssetOffOutlined />}
                                 selected={selected}
                                 setSelected={setSelected}
                             />
