@@ -123,14 +123,15 @@ function App() {
   }, [socket, rangeItems])
 
   useEffect(() => {
-    socket.on("getNotifications", (data) => {
-      try {
-        setNotifications(data);
-      } catch (error) {
-        console.error('Error handling event:', error);
-      }
-    });
-  }, [])
+      socket.on("getNotifications", (data) => {
+        try {
+          setNotifications(data);
+        } catch (error) {
+          console.error("Error handling event:", error);
+        }
+      });
+  }, []);
+
 
   useEffect(() => {
     const fetchPermissions = async () => {
@@ -147,6 +148,7 @@ function App() {
     };
 
     fetchPermissions();
+
   }, [user]);
 
   useEffect(() => {
@@ -188,6 +190,7 @@ function App() {
                   countProducts={countProducts}
                   setCountProducts={setCountProducts}
                   notifications={notifications}
+                  setNotifications={setNotifications}
                 />
                 <Routes>
                   <Route path="/game"

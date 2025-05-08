@@ -1,6 +1,6 @@
-import { Box, IconButton, useTheme, InputBase } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useContext, useState } from "react";
+import { Box, IconButton, useTheme, InputBase } from "@mui/material";
 import { ColorModeContext, tokens } from "../theme";
 import {
   LightModeOutlined as LightModeOutlinedIcon,
@@ -19,7 +19,7 @@ import {
   Dropdown
 } from 'reactstrap';
 
-const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts, notifications }) => {
+const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts, notifications}) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -78,11 +78,16 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
     setCountProducts(0);
   }
 
+  const filterNotifications = () => {
+    return notifications.filter(notification =>
+      notification.to_users.some(userObj => userObj.email === user?.email)
+    );
+  }
+
   const getNotificationTitle = (type) => {
     switch (type) {
       case "inventory_exit": return "Salida de Inventario";
       case "inventory_entry": return "Entrada de Inventario";
-      // Agrega más tipos según tu sistema
       default: return "Notificación";
     }
   };
@@ -204,18 +209,24 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
             <DropdownToggle nav caret>
               <div className="container-cart-icon">
                 <NotificationsOutlinedIcon />
-                {notifications.length > 0 && (
+                {filterNotifications().length > 0 && (
                   <div className="count">
-                    <span id="contador">{notifications.length}</span>
+                    <span id="contador">
+                      {
+                        filterNotifications().length == 0
+                          ? 0 :
+                          filterNotifications().length
+                      }
+                    </span>
                   </div>
                 )}
               </div>
             </DropdownToggle>
             <DropdownMenu right className="notification-dropdown">
-              {notifications.length === 0 ? (
+              {filterNotifications().length === 0 ? (
                 <DropdownItem disabled>No tienes notificaciones</DropdownItem>
               ) : (
-                notifications.map((notification, index) => (
+                filterNotifications().map((notification, index) => (
                   <DropdownItem key={index} className="notification-item" onClick={() => handleNotificationClick(notification)}>
                     <div className="notification-header">
                       <strong>{getNotificationTitle(notification.to_receive)}</strong>

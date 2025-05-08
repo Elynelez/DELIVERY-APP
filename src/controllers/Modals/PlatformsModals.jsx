@@ -383,6 +383,7 @@ export const AuthOrderPlatform = ({ data, user, setReloadData, URL_SERVER }) => 
     const onFinish = (e) => {
         data.notation = e.notation
         data.user = user ? user.email : "test"
+        data.to_receive = "inventory_exit"
 
         Modal.confirm({
             title: '¿Seguro que quieres actualizar masivamente este contenido?',

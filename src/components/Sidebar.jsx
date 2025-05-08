@@ -28,7 +28,7 @@ import {
     VideogameAssetOffOutlined
 } from "@mui/icons-material/"
 import "react-pro-sidebar/dist/css/styles.css";
-import { getCoursiers } from "../middlewares.js";
+import { getUsers } from "../middlewares.js";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
     const theme = useTheme();
@@ -59,8 +59,8 @@ const Sidebar = ({ isAuthenticated, user, permissions, URL_SERVER }) => {
     useEffect(() => {
         const fetchCoursiers = async () => {
             try {
-                const data = await getCoursiers(URL_SERVER);
-                setCoursiers([...data, "servicio externo", "medellín", "dflex"]);
+                const data = await getUsers(URL_SERVER, null, "coursier");
+                setCoursiers([...data.map(obj => { return obj.name }), "servicio externo", "medellín", "dflex"]);
             } catch (error) {
                 console.error("Error al obtener coursiers:", error);
             }

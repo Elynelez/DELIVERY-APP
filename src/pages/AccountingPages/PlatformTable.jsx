@@ -49,6 +49,7 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
                     status: obj.order.status,
                     url_coursier_sheet: obj.order.formats.url_coursier_sheet,
                     url_external_service_sheet: obj.order.formats.url_external_service_sheet,
+                    platform: id,
                     pos: index + 1
                 }
             })
@@ -57,7 +58,7 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
             setMethods(methodsResp.data)
             setPlaces(placesResp.data)
             setUsers(usersResp.data)
-            setOrdersData(data)
+            setOrdersData(data.reverse())
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
