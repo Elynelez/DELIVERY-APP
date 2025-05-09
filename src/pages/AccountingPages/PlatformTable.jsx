@@ -45,6 +45,7 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
                     items: obj.order.items,
                     condition: obj.order.transactions.condition,
                     method: obj.order.transactions.method,
+                    remarks: obj.remarks,
                     total: Number(obj.order.transactions.total_payments) + Number(obj.order.transactions.total_shipping),
                     status: obj.order.status,
                     url_coursier_sheet: obj.order.formats.url_coursier_sheet,
@@ -124,42 +125,52 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
         { headerName: 'Método', field: "method", flex: 1 },
         { headerName: 'Valor', field: "total", flex: 0.5 },
         {
-            headerName: 'Hoja', field: "url_coursier_sheet", flex: 0.5, renderCell: (params) => (
-                <a
-                    href={params.value}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                        backgroundColor: "rgba(100, 181, 246, 0.2)",
-                        color: "white",
-                        padding: "6px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        fontWeight: "bold",
-                    }}
-                >
-                    Ver Hoja
-                </a>
-            )
+            headerName: 'Hoja', field: "url_coursier_sheet", flex: 0.5, renderCell: (params) => {
+                const hasAuthRemark = Array.isArray(params.row.remarks) &&
+                    params.row.remarks.some(remark => remark.type === "auth");
+
+                return hasAuthRemark ? (
+                    <a
+                        href={params.value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            backgroundColor: "rgba(100, 181, 246, 0.2)",
+                            color: "white",
+                            padding: "6px 12px",
+                            borderRadius: "10px",
+                            textDecoration: "none",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        Ver Hoja
+                    </a>
+                ) : null;
+            }
         },
         {
-            headerName: 'Etiqueta', field: "url_external_service_sheet", flex: 0.6, renderCell: (params) => (
-                <a
-                    href={params.value}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                        backgroundColor: "rgba(165, 214, 167, 0.2)",
-                        color: "white",
-                        padding: "6px 12px",
-                        borderRadius: "10px",
-                        textDecoration: "none",
-                        fontWeight: "bold",
-                    }}
-                >
-                    Ver Etiqueta
-                </a>
-            )
+            headerName: 'Etiqueta', field: "url_external_service_sheet", flex: 0.6, renderCell: (params) => {
+                const hasAuthRemark = Array.isArray(params.row.remarks) &&
+                    params.row.remarks.some(remark => remark.type === "auth");
+
+                return hasAuthRemark ? (
+                    <a
+                        href={params.value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            backgroundColor: "rgba(165, 214, 167, 0.2)",
+                            color: "white",
+                            padding: "6px 12px",
+                            borderRadius: "10px",
+                            textDecoration: "none",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        Ver Etiqueta
+                    </a>
+                ) : null;
+            }
         },
         {
             headerName: 'Estado', field: 'status', flex: 0.6, renderCell: (params) => (

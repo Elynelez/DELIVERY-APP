@@ -61,7 +61,7 @@ const SellerOrders = ({ user, ordersData, setOrdersData, rangeItems, reloadData,
       setMethods(methodsResp.data)
       setPlaces(placesResp.data)
       setUsers(usersResp.data)
-      setOrdersData(data)
+      setOrdersData(data.reverse())
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
