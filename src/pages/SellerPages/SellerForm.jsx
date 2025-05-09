@@ -60,7 +60,7 @@ const SellerForm = ({ user, allProducts, setAllProducts, total, setTotal, setCou
         loadData()
     }, [allProducts])
 
-    const onFinish = (e) => {
+    const onFinish = (e, resetForm) => {
         e.items = allProducts
         e.user = user.email
 
@@ -79,13 +79,11 @@ const SellerForm = ({ user, allProducts, setAllProducts, total, setTotal, setCou
         const invalidItems = e.items.filter(item => item.carQuantity > item.quantity);
 
         if (invalidItems.length > 0) {
-            notification.error({
+            notification.info({
                 message: 'Stock insuficiente',
-                description: `No puedes enviar más cantidad de la disponible en: ${invalidItems.map(i => i.name).join(', ')}`,
+                description: `Estás enviando más cantidad de la disponible en: ${invalidItems.map(i => i.name).join(', ')}`,
                 duration: 5,
             });
-            setLoading(false)
-            return;
         }
 
         axios.post(`${URL_SERVER}/sales/order`, { data: e })
@@ -101,9 +99,8 @@ const SellerForm = ({ user, allProducts, setAllProducts, total, setTotal, setCou
             .catch(error => {
                 message.error("error en el servidor");
             }).finally(() => {
-                setTimeout(() => {
-                    setLoading(false);
-                }, 5000);
+                resetForm()
+                setLoading(false);
             });
     };
 
@@ -167,8 +164,7 @@ const SellerForm = ({ user, allProducts, setAllProducts, total, setTotal, setCou
                                 notation: '',
                             }}
                             onSubmit={(values, { resetForm }) => {
-                                onFinish(values);
-                                resetForm();
+                                onFinish(values, resetForm);
                             }}
                             validationSchema={checkoutSchema}
                         >
