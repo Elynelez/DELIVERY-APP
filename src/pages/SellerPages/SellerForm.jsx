@@ -233,24 +233,23 @@ const SellerForm = ({ user, allProducts, setAllProducts, total, setTotal, setCou
                                             <MenuItem key={5} value={"Rappi"}>
                                                 Rappi
                                             </MenuItem>
+                                            {user.email === "inducorsas@gmail.com" && (
+                                                <MenuItem key="andrea" value="Andrea">
+                                                    Andrea
+                                                </MenuItem>
+                                            )}
+                                            {user.email === "inducorsas@gmail.com" && (
+                                                <MenuItem key="nicolas" value="Nicolás">
+                                                    Nicolás
+                                                </MenuItem>
+                                            )}
                                             {users
-                                                .filter(obj => obj.email === user.email)
-                                                .map((user, index) =>
-                                                    user.email === "inducorsas@gmail.com" ? (
-                                                        <>
-                                                            <MenuItem key="andrea" value="Andrea">
-                                                                Andrea
-                                                            </MenuItem>
-                                                            <MenuItem key="nicolas" value="Nicolás">
-                                                                Nicolás
-                                                            </MenuItem>
-                                                        </>
-                                                    ) : (
-                                                        <MenuItem key={`user-${index}`} value={user.name}>
-                                                            {user.name}
-                                                        </MenuItem>
-                                                    )
-                                                )}
+                                                .filter(obj => obj.email === user.email && obj.email !== "inducorsas@gmail.com")
+                                                .map((user, index) => (
+                                                    <MenuItem key={`user-${index}`} value={user.name}>
+                                                        {user.name}
+                                                    </MenuItem>
+                                                ))}
                                         </TextField>
                                         <TextField
                                             fullWidth
