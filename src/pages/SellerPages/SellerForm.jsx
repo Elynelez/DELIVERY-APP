@@ -36,6 +36,7 @@ const SellerForm = ({ user, allProducts, setAllProducts, total, setTotal, setCou
     const colors = tokens(theme.palette.mode);
 
     useEffect(() => {
+        console.log("allProducts", allProducts)
         const loadData = async () => {
             try {
                 const [conditionsResp, methodsResp, placesResp, usersResp] = await Promise.all([
@@ -138,7 +139,7 @@ const SellerForm = ({ user, allProducts, setAllProducts, total, setTotal, setCou
                                                         <br />
                                                         x{product.carQuantity}
                                                         <br />
-                                                        ${Number(product.sale_price.replace("$", "")) * product.carQuantity}
+                                                        ${product.sale_price * product.carQuantity}
                                                     </React.Fragment>
                                                 }
                                             />
