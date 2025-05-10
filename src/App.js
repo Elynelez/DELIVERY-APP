@@ -8,7 +8,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 
 // pages
-import { Dashboard, ScreenRecorder, UserSettings, GamePhaser } from './pages/DefaultPages';
+import { Dashboard, ScreenRecorder, UserSettings, GamePhaser, ChatBot } from './pages/DefaultPages';
 import { SellerTable, SellerForm, SellerOrders, ProductDetail } from './pages/SellerPages';
 import { DeliveryTable, DeliveryForm, CoursierForm } from './pages/DeliveryPages';
 import { PlatformTable, CSVReader } from './pages/AccountingPages';
@@ -31,8 +31,8 @@ import { hasPermission } from './middlewares';
 
 // API URL'S
 const API_DUCOR = process.env.REACT_APP_API_DUCOR
-const URL_SERVER = process.env.REACT_APP_URL_SERVER
-// const URL_SERVER = 'http://localhost:' + 8080
+// const URL_SERVER = process.env.REACT_APP_URL_SERVER
+const URL_SERVER = 'http://localhost:' + 8080
 
 const socket = io(URL_SERVER);
 
@@ -170,6 +170,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Router>
+            <ChatBot />
             <div className='flex'>
               <Sidebar
                 isAuthenticated={isAuthenticated}
