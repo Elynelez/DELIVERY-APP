@@ -31,8 +31,8 @@ import { hasPermission } from './middlewares';
 
 // API URL'S
 const API_DUCOR = process.env.REACT_APP_API_DUCOR
-// const URL_SERVER = process.env.REACT_APP_URL_SERVER
-const URL_SERVER = 'http://localhost:' + 8080
+const URL_SERVER = process.env.REACT_APP_URL_SERVER
+// const URL_SERVER = 'http://localhost:' + 8080
 
 const socket = io(URL_SERVER);
 
