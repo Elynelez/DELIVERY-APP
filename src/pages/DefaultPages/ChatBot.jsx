@@ -3,8 +3,9 @@ import { MessageOutlined } from '@ant-design/icons';
 import { useTheme } from "@mui/material";
 import { Modal, Button } from 'antd';
 import { tokens } from "../../theme";
+import axios from "axios";
 
-export default function ChatBot() {
+export default function ChatBot({ URL_SERVER }) {
     const [input, setInput] = useState("");
     const [visible, setVisible] = useState(false);
     const [messages, setMessages] = useState([]);
@@ -31,14 +32,24 @@ export default function ChatBot() {
 
         const userMessage = { role: "user", content: input };
         setMessages([...messages, userMessage]);
-
-        // Simulación de respuesta (puedes cambiar por fetch a tu API después)
-        setTimeout(() => {
-            const botMessage = { role: "bot", content: `Entiendo: "${input}"` };
-            setMessages((prev) => [...prev, botMessage]);
-        }, 500);
-
         setInput("");
+
+        try {
+            const response = await axios.post(`${URL_SERVER}/ia/chat`, {
+                message: input
+            });
+
+            console.log(response.data);
+
+            const botResponse = response.data?.result || "No entendí tu mensaje.";
+            const botMessage = { role: "bot", content: botResponse };
+            setMessages((prev) => [...prev, botMessage]);
+
+        } catch (error) {
+            console.error("Error al obtener respuesta del chatbot:", error);
+            const errorMessage = { role: "bot", content: "Ocurrió un error al procesar tu mensaje." };
+            setMessages((prev) => [...prev, errorMessage]);
+        }
     };
 
     return (
@@ -66,9 +77,9 @@ export default function ChatBot() {
                 bodyStyle={{ padding: 0, backgroundColor: colors.primary[600] }}
             >
                 <div className="flex flex-col h-[400px] p-3">
-                    <div 
-                    className="flex-1 overflow-y-auto p-2 rounded space-y-2"
-                    style={{ backgroundColor: colors.primary[400] }}
+                    <div
+                        className="flex-1 overflow-y-auto p-2 rounded space-y-2"
+                        style={{ backgroundColor: colors.primary[400], color: colors.grey[100] }}
                     >
                         {messages.map((msg, idx) => (
                             <div
@@ -87,7 +98,7 @@ export default function ChatBot() {
                     <div className="flex mt-2 gap-2">
                         <input
                             className="flex-1 px-3 py-1 rounded outline-none text-sm"
-                            style={{ backgroundColor: colors.primary[400] }}
+                            style={{ backgroundColor: colors.primary[400], color: colors.grey[100] }}
                             type="text"
                             placeholder="Escribe algo..."
                             value={input}

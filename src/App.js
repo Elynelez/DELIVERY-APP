@@ -123,13 +123,13 @@ function App() {
   }, [socket, rangeItems])
 
   useEffect(() => {
-      socket.on("getNotifications", (data) => {
-        try {
-          setNotifications(data);
-        } catch (error) {
-          console.error("Error handling event:", error);
-        }
-      });
+    socket.on("getNotifications", (data) => {
+      try {
+        setNotifications(data);
+      } catch (error) {
+        console.error("Error handling event:", error);
+      }
+    });
   }, []);
 
 
@@ -170,7 +170,9 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Router>
-            <ChatBot />
+            <ChatBot
+              URL_SERVER={URL_SERVER}
+            />
             <div className='flex'>
               <Sidebar
                 isAuthenticated={isAuthenticated}
