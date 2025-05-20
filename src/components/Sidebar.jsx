@@ -376,7 +376,7 @@ const Sidebar = ({ isAuthenticated, user, permissions, URL_SERVER }) => {
                                                         Entradas
                                                     </Typography>
                                                     <Item
-                                                        title="Generar"
+                                                        title="Generar ingreso"
                                                         to="/inventory/enter/form"
                                                         icon={<Poll />}
                                                         selected={selected}
@@ -401,7 +401,7 @@ const Sidebar = ({ isAuthenticated, user, permissions, URL_SERVER }) => {
                                                         Salidas
                                                     </Typography>
                                                     <Item
-                                                        title="Generar"
+                                                        title="Generar salida"
                                                         to="/inventory/exit/form"
                                                         icon={<Poll />}
                                                         selected={selected}
