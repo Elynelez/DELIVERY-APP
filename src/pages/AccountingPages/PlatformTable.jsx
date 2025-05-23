@@ -68,13 +68,13 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
         }
     }
 
-    const canceledOrderById = (data) => {
+    const canceledOrderById = (platform, pos) => {
         Modal.confirm({
             title: '¿Seguro que quieres anular este padido?',
             content: 'Esta acción no se puede deshacer.',
             onOk: () => {
                 message.info('Procesando, por favor espera...');
-                socket.emit("cancelPlatform", data.pos)
+                socket.emit("cancelPlatform", {platform: platform, position: pos})
                 socket.on("message", (response) => {
                     if (response.success) {
                         message.success(response.message);
@@ -186,7 +186,7 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
                         {user && (
                             <>
                                 <Menu.Item key="0">
-                                    <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(params.row.id)}>
+                                    <Button type="primary" style={{ backgroundColor: "#5e2129" }} onClick={() => canceledOrderById(id, params.row.pos)}>
                                         Anular
                                     </Button>
                                 </Menu.Item>
