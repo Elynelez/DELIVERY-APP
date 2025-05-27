@@ -19,7 +19,7 @@ import {
   Dropdown
 } from 'reactstrap';
 
-const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts, notifications}) => {
+const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, allProducts, setAllProducts, total, setTotal, countProducts, setCountProducts, notifications }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -210,7 +210,10 @@ const NavbarNavigation = ({ user, isAuthenticated, logout, loginWithRedirect, al
               <div className="container-cart-icon">
                 <NotificationsOutlinedIcon />
                 {filterNotifications().length > 0 && (
-                  <div className="count">
+                  <div
+                    className="count"
+                    style={{ backgroundColor: 'red' }}
+                  >
                     <span id="contador">
                       {
                         filterNotifications().length == 0
