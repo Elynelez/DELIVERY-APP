@@ -3,7 +3,7 @@ import { Modal, Button, Form, Input, message, Select, Typography, List, notifica
 import axios from 'axios';
 
 
-const ModalData = ({ data }) => {
+export const ModalData = ({ data }) => {
   const [visible, setVisible] = useState(false);
 
   const showModal = () => {
@@ -79,7 +79,7 @@ const ModalData = ({ data }) => {
   );
 };
 
-const EditModal = ({ setReloadData, data, URL_SERVER, user, coursiers, methods }) => {
+export const EditModal = ({ setReloadData, data, URL_SERVER, user, coursiers, methods }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
 
@@ -240,7 +240,7 @@ const EditModal = ({ setReloadData, data, URL_SERVER, user, coursiers, methods }
   );
 };
 
-const ConfirmModal = ({ setReloadData, data, URL_SERVER, user, states }) => {
+export const ConfirmModal = ({ setReloadData, data, URL_SERVER, user, states }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
 
@@ -326,7 +326,7 @@ const ConfirmModal = ({ setReloadData, data, URL_SERVER, user, states }) => {
 
 }
 
-const MultipleStatusModal = ({ setReloadData, colors, user, data, URL_SERVER, states }) => {
+export const MultipleStatusModal = ({ setReloadData, colors, user, data, URL_SERVER, states }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
 
@@ -411,5 +411,3 @@ const MultipleStatusModal = ({ setReloadData, colors, user, data, URL_SERVER, st
     </div>
   );
 }
-
-export { ModalData, EditModal, ConfirmModal, MultipleStatusModal };

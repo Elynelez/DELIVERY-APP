@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from "axios";
 
-const AddSkuModalServer = ({ rangeItems, socket, data, loading, setLoading, URL_SERVER }) => {
+export const AddSkuModalServer = ({ rangeItems, socket, data, loading, setLoading, URL_SERVER }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(true)
@@ -82,7 +82,7 @@ const AddSkuModalServer = ({ rangeItems, socket, data, loading, setLoading, URL_
   )
 }
 
-const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
+export const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const { user } = useAuth0()
@@ -159,7 +159,7 @@ const ModifyQuantityServer = ({ socket, data, loading, setLoading }) => {
   )
 }
 
-const ConfirmInventoryModalServer = ({ pendingData, setPendingData, data, setLoading, socket, user, rangeItems, receiveOrders, URL_SERVER }) => {
+export const ConfirmInventoryModalServer = ({ pendingData, setPendingData, data, setLoading, socket, user, rangeItems, receiveOrders, URL_SERVER }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(true)
@@ -311,7 +311,7 @@ const ConfirmInventoryModalServer = ({ pendingData, setPendingData, data, setLoa
   );
 }
 
-const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nameButton, platformStatus, dataOrder, cash, socket, receiveOrders, URL_SERVER }) => {
+export const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nameButton, platformStatus, dataOrder, cash, socket, receiveOrders, URL_SERVER }) => {
   const { user } = useAuth0();
   const [allValues, setAllValues] = useState(prev);
   const [visible, setVisible] = useState(false);
@@ -655,7 +655,7 @@ const ExitElementsServer = ({ pendingData, id, rangeItems, setLoading, prev, nam
   )
 }
 
-const PlatformAutoComplete = ({ socket, mainForm, colors }) => {
+export const PlatformAutoComplete = ({ socket, mainForm, colors }) => {
   const [form] = Form.useForm();
   const [visibleSH, setVisibleSH] = useState(false);
   const [visibleML, setVisibleML] = useState(false);
@@ -773,7 +773,7 @@ const PlatformAutoComplete = ({ socket, mainForm, colors }) => {
   )
 }
 
-const EditCodeProduct = ({ socket, code, loading, setLoading }) => {
+export const EditCodeProduct = ({ socket, code, loading, setLoading }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
 
@@ -839,7 +839,7 @@ const EditCodeProduct = ({ socket, code, loading, setLoading }) => {
   )
 }
 
-const MultiplePlatformModal = ({ ids, colors }) => {
+export const MultiplePlatformModal = ({ ids, colors }) => {
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
 
@@ -910,5 +910,3 @@ const MultiplePlatformModal = ({ ids, colors }) => {
 
   );
 }
-
-export { AddSkuModalServer, ModifyQuantityServer, ConfirmInventoryModalServer, ExitElementsServer, PlatformAutoComplete, EditCodeProduct, MultiplePlatformModal };

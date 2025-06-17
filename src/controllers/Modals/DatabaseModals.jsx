@@ -3,7 +3,7 @@ import { Modal, Button, Form, Input, Spin, message, Select, Checkbox, InputNumbe
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
-const ActivePauseModal = ({ data, loading, setLoading, statusColorMap, URL_SERVER }) => {
+export const ActivePauseModal = ({ data, loading, setLoading, statusColorMap, URL_SERVER }) => {
     const [visible, setVisible] = useState(false);
 
     const showModal = () => {
@@ -83,7 +83,7 @@ const ActivePauseModal = ({ data, loading, setLoading, statusColorMap, URL_SERVE
     );
 };
 
-const AddPublicationModal = ({ data, loading, setLoading, platforms, URL_SERVER }) => {
+export const AddPublicationModal = ({ data, loading, setLoading, platforms, URL_SERVER }) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
     const [options, setOptions] = useState([]);
@@ -197,7 +197,7 @@ const AddPublicationModal = ({ data, loading, setLoading, platforms, URL_SERVER 
     );
 };
 
-const AddSkuModal = ({ data, loading, setLoading, URL_SERVER }) => {
+export const AddSkuModal = ({ data, loading, setLoading, URL_SERVER }) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
     const [disabled, setDisabled] = useState(true);
@@ -266,7 +266,7 @@ const AddSkuModal = ({ data, loading, setLoading, URL_SERVER }) => {
     );
 };
 
-const DeletePublicationModal = ({ data, loading, setLoading, statusColorMap, URL_SERVER }) => {
+export const DeletePublicationModal = ({ data, loading, setLoading, statusColorMap, URL_SERVER }) => {
     const [visible, setVisible] = useState(false);
 
     const showModal = () => {
@@ -347,7 +347,7 @@ const DeletePublicationModal = ({ data, loading, setLoading, statusColorMap, URL
     );
 };
 
-const DeleteSkuModal = ({ data, loading, setLoading, URL_SERVER }) => {
+export const DeleteSkuModal = ({ data, loading, setLoading, URL_SERVER }) => {
     const [visible, setVisible] = useState(false);
 
     const showModal = () => {
@@ -424,7 +424,7 @@ const DeleteSkuModal = ({ data, loading, setLoading, URL_SERVER }) => {
     );
 };
 
-const EditProductModal = ({ data, loading, setLoading, URL_SERVER }) => {
+export const EditProductModal = ({ data, loading, setLoading, URL_SERVER }) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
 
@@ -518,7 +518,7 @@ const EditProductModal = ({ data, loading, setLoading, URL_SERVER }) => {
     );
 };
 
-const FixProductModal = ({ data, loading, setLoading, URL_SERVER }) => {
+export const FixProductModal = ({ data, loading, setLoading, URL_SERVER }) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
 
@@ -605,7 +605,7 @@ const FixProductModal = ({ data, loading, setLoading, URL_SERVER }) => {
     );
 };
 
-const UnfixProductModal = ({ data, loading, setLoading, URL_SERVER }) => {
+export const UnfixProductModal = ({ data, loading, setLoading, URL_SERVER }) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
 
@@ -675,7 +675,7 @@ const UnfixProductModal = ({ data, loading, setLoading, URL_SERVER }) => {
     );
 };
 
-const CreateProductModal = ({ data, setReloadData, URL_SERVER, colors }) => {
+export const CreateProductModal = ({ data, setReloadData, URL_SERVER, colors }) => {
     const [form] = Form.useForm();
     const [formKit, setFormKit] = useState(false);
     const [visible, setVisible] = useState(false);
@@ -826,7 +826,7 @@ const CreateProductModal = ({ data, setReloadData, URL_SERVER, colors }) => {
     );
 };
 
-const UpdateStockModal = ({ data, setReloadData, URL_SERVER, colors }) => {
+export const UpdateStockModal = ({ data, setReloadData, URL_SERVER, colors }) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
 
@@ -946,5 +946,3 @@ const UpdateStockModal = ({ data, setReloadData, URL_SERVER, colors }) => {
         </div>
     );
 };
-
-export { ActivePauseModal, AddPublicationModal, AddSkuModal, CreateProductModal, DeletePublicationModal, DeleteSkuModal, EditProductModal, FixProductModal, UnfixProductModal, UpdateStockModal };
