@@ -24,7 +24,7 @@ import {
   PendingOrders,
   SettingTable,
 } from './pages/PackagePages';
-import { PausePosting, PublicationTable } from './pages/PublicationPages';
+import { PostingsForm, ProductsForm, PublicationTable } from './pages/PublicationPages';
 
 // middlewares
 import { hasPermission } from './middlewares';
@@ -238,8 +238,8 @@ function App() {
                       )}
                       {permissions.publications && (
                         <>
-                          <Route exact path='publication/pause'
-                            element={<PausePosting
+                          <Route exact path='publication/form'
+                            element={<ProductsForm
                               URL_SERVER={URL_SERVER}
                               rangeItems={rangeItems}
                               setRangeItems={setRangeItems}

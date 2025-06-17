@@ -213,8 +213,8 @@ const Sidebar = ({ isAuthenticated, user, permissions, URL_SERVER }) => {
                                         </Typography>
                                         <SubMenu title="Publicaciones" icon={<DynamicFeedOutlined />}>
                                             <Item
-                                                title="Pausar"
-                                                to="/publication/pause"
+                                                title="Formulario Masivo"
+                                                to="/publication/form"
                                                 icon={<PauseCircleFilledOutlined />}
                                                 selected={selected}
                                                 setSelected={setSelected}

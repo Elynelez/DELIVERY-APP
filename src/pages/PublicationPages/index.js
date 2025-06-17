@@ -1,2 +1,2 @@
-export { default as PausePosting } from './PausePosting';
+export { default as ProductsForm } from './ProductsForm';
 export { default as PublicationTable } from './PublicationTable'

@@ -11,7 +11,7 @@ import { MultiplePlatformModal } from "../Modals/InventoryModals";
 import { CreateProductModal, UpdateStockModal } from "../Modals/DatabaseModals";
 
 
-export const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER, states, customised }) => {
+const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER, states, customised }) => {
   const location = useLocation()
   const { user } = useAuth0();
   const theme = useTheme();
@@ -569,3 +569,5 @@ export const DataTableGrid = ({ data, columns, setReloadData, URL_SERVER, states
     </Box>
   );
 };
+
+export default DataTableGrid;
