@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 import { useTheme, Box, Typography } from "@mui/material";
 import { Button, Spin, Menu, Modal, message } from "antd"
-import { EditOrderPlatform, AuthOrderPlatform } from "../../controllers/Modals/PlatformsModals";
+import { EditOrderPlatform, AuthOrderPlatform, FactureOrderPlatform } from "../../controllers/Modals/PlatformsModals";
 import DataTableGrid from "../../controllers/Tables/DataGridPro";
 import { tokens } from "../../theme";
 import axios from "axios";
@@ -38,7 +38,10 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
                     date_generate_ISO: obj.date_generate_ISO,
                     coursier: obj.order.delivery.join(", "),
                     seller: obj.seller.name,
+                    identification: obj.customer.id,
                     client: obj.customer.name,
+                    email: obj.customer.email,
+                    phone: obj.customer.phone,
                     address: obj.customer.shipping_data.address,
                     state: obj.customer.shipping_data.state,
                     city: obj.customer.shipping_data.city,
@@ -47,6 +50,8 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
                     method: obj.order.transactions.method,
                     remarks: obj.remarks,
                     total: Number(obj.order.transactions.total_payments) + Number(obj.order.transactions.total_shipping),
+                    total_payments: obj.order.transactions.total_payments,
+                    total_shipping: obj.order.transactions.total_shipping,
                     status: obj.order.status,
                     url_coursier_sheet: obj.order.formats.url_coursier_sheet,
                     url_external_service_sheet: obj.order.formats.url_external_service_sheet,
@@ -74,7 +79,7 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
             content: 'Esta acción no se puede deshacer.',
             onOk: () => {
                 message.info('Procesando, por favor espera...');
-                socket.emit("cancelPlatform", {platform: platform, position: pos})
+                socket.emit("cancelPlatform", { platform: platform, position: pos })
                 socket.on("message", (response) => {
                     if (response.success) {
                         message.success(response.message);
@@ -204,14 +209,29 @@ const PlatformTable = ({ user, permissions, ordersData, setOrdersData, rangeItem
                                     />
                                 </Menu.Item>
                                 {permissions.boss && (
-                                    <Menu.Item key="2">
-                                        <AuthOrderPlatform
-                                            data={params.row}
-                                            user={user}
-                                            setReloadData={setReloadData}
-                                            URL_SERVER={URL_SERVER}
-                                        />
-                                    </Menu.Item>
+                                    <>
+                                        <Menu.Item key="2">
+                                            <AuthOrderPlatform
+                                                data={params.row}
+                                                user={user}
+                                                setReloadData={setReloadData}
+                                                URL_SERVER={URL_SERVER}
+                                            />
+                                        </Menu.Item>
+                                        <Menu.Item key="4">
+                                            <FactureOrderPlatform
+                                                rangeItems={rangeItems}
+                                                data={params.row}
+                                                user={user}
+                                                users={users}
+                                                conditions={conditions}
+                                                methods={methods}
+                                                places={places}
+                                                setReloadData={setReloadData}
+                                                URL_SERVER={URL_SERVER}
+                                            />
+                                        </Menu.Item>
+                                    </>
                                 )}
 
                             </>
