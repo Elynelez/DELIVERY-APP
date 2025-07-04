@@ -472,7 +472,8 @@ export const FactureOrderPlatform = ({ rangeItems, data, user, users, conditions
                 address: e.address,
                 state: e.department.toString(),
                 city: e.city.toString(),
-                phone: e.phone
+                phone: e.phone,
+                id_type: e.id_type
             },
             products: data.items,
             transaction: {
@@ -560,19 +561,19 @@ export const FactureOrderPlatform = ({ rangeItems, data, user, users, conditions
                                             <Select.Option key={1} value={"Vendedor Saca Producto"}>
                                                 Vendedor Saca Producto
                                             </Select.Option>
-                                            <Select.Option key={1} value={"Estilista"}>
+                                            <Select.Option key={2} value={"Estilista"}>
                                                 Estilista
                                             </Select.Option>
-                                            <Select.Option key={1} value={"Mercadolibre"}>
+                                            <Select.Option key={3} value={"Mercadolibre"}>
                                                 Mercadolibre
                                             </Select.Option>
-                                            <Select.Option key={1} value={"Magic Mechas"}>
+                                            <Select.Option key={4} value={"Magic Mechas"}>
                                                 Magic Mechas
                                             </Select.Option>
-                                            <Select.Option key={1} value={"Falabella"}>
+                                            <Select.Option key={5} value={"Falabella"}>
                                                 Falabella
                                             </Select.Option>
-                                            <Select.Option key={1} value={"Rappi"}>
+                                            <Select.Option key={6} value={"Rappi"}>
                                                 Rappi
                                             </Select.Option>
                                             {Array.isArray(users) && user?.email &&
@@ -617,6 +618,49 @@ export const FactureOrderPlatform = ({ rangeItems, data, user, users, conditions
                                         initialValue={data.identification}
                                     >
                                         <Input />
+                                    </Form.Item>
+                                </div>
+                            </div>
+                            <div className="end-input-group-form">
+                                <div className="input-group-form">
+                                    <Form.Item
+                                        name="phone"
+                                        label="Telefóno"
+                                        initialValue={data.phone}
+                                        rules={[
+                                            {
+                                                pattern: /^[0-9]*$/,
+                                                message: 'Por favor ingresa solo números.',
+                                            }
+                                        ]}
+                                    >
+                                        <Input type="number" min="0" />
+                                    </Form.Item>
+                                </div>
+                                <div className="input-group-form">
+                                    <Form.Item
+                                        name="id_type"
+                                        label="Tipo de Persona"
+                                        rules={[{ required: true, message: 'Por favor selecciona el tipo de cliente' }]}
+                                    >
+                                        <Select
+                                            showSearch
+                                            placeholder="Selecciona tipo de identificación"
+                                            optionFilterProp="children"
+                                        >
+                                            <Select.Option value="11">Registro civil</Select.Option>
+                                            <Select.Option value="12">Tarjeta de identidad</Select.Option>
+                                            <Select.Option value="13">Cédula de ciudadanía</Select.Option>
+                                            <Select.Option value="21">Tarjeta de extranjería</Select.Option>
+                                            <Select.Option value="22">Cédula de extranjería</Select.Option>
+                                            <Select.Option value="31">NIT</Select.Option>
+                                            <Select.Option value="41">Pasaporte</Select.Option>
+                                            <Select.Option value="42">Documento de identificación extranjero</Select.Option>
+                                            <Select.Option value="50">NIT de otro país</Select.Option>
+                                            <Select.Option value="91">NUIP</Select.Option>
+                                            <Select.Option value="94">Otro documento de identificación</Select.Option>
+                                        </Select>
+
                                     </Form.Item>
                                 </div>
                             </div>
@@ -673,23 +717,6 @@ export const FactureOrderPlatform = ({ rangeItems, data, user, users, conditions
                                         rules={[{ required: true, message: 'Por favor ingresa la ciudad' }]}
                                     >
                                         <Input />
-                                    </Form.Item>
-                                </div>
-                            </div>
-                            <div className="end-input-group-form">
-                                <div className="input-group-form">
-                                    <Form.Item
-                                        name="phone"
-                                        label="Telefóno"
-                                        initialValue={data.phone}
-                                        rules={[
-                                            {
-                                                pattern: /^[0-9]*$/,
-                                                message: 'Por favor ingresa solo números.',
-                                            }
-                                        ]}
-                                    >
-                                        <Input type="number" min="0" />
                                     </Form.Item>
                                 </div>
                             </div>
