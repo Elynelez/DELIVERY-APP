@@ -1,10 +1,9 @@
 import { React, useState, useEffect } from "react";
 import { Link } from 'react-router-dom'
 import { ProSidebar, Menu as SidebarMenu, MenuItem, SubMenu } from "react-pro-sidebar";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Avatar, Box, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../theme.js";
 import {
-    Work,
     AddBusiness,
     AddchartSharp,
     Dashboard,
@@ -29,6 +28,16 @@ import {
 } from "@mui/icons-material/"
 import "react-pro-sidebar/dist/css/styles.css";
 import { getUsers } from "../middlewares.js";
+
+const platformIcons = {
+    mercadolibre: "M",
+    shopify: "S",
+    falabella: "F",
+    dcbogota: "B",
+    rappi: "R",
+    linio: "L",
+    addi: "A",
+};
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
     const theme = useTheme();
@@ -187,7 +196,18 @@ const Sidebar = ({ isAuthenticated, user, permissions, URL_SERVER }) => {
                                     key={platform.toLowerCase()}
                                     title={platform.toLowerCase()}
                                     to={`/platforms/${platform.toLowerCase()}`}
-                                    icon={<Work />}
+                                    icon={
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: colors.greenAccent[500],
+                                                width: 24,
+                                                height: 24,
+                                                fontSize: 14,
+                                            }}
+                                        >
+                                            {platformIcons[platform.toLowerCase()] || "?"}
+                                        </Avatar>
+                                    }
                                     selected={selected}
                                     setSelected={setSelected}
                                 />
