@@ -290,7 +290,7 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
         if (hasDuplicates) {
             notification.error({
                 message: 'No puedes enviar elementos con SKU repetidos en una misma salida',
-                description: 'Verifica y elimina los elementos duplicados antes de continuar.'+JSON.stringify(Array.from(skuSet)),
+                description: 'Verifica y elimina los elementos duplicados antes de continuar.' + JSON.stringify(Array.from(skuSet)),
                 duration: 5,
             });
             setDisabled(false);
@@ -463,14 +463,27 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
                                         </div>
                                         <div className="input-group-form">
                                             <Form.Item
-                                                hidden="true"
                                                 label="Plataforma"
                                                 name="platform"
                                                 labelAlign="left"
                                                 rules={[{ required: true }]}
                                                 initialValue={"POR CONFIRMAR"}
                                             >
-                                                <Input onInput={e => e.target.value = e.target.value.toUpperCase()} />
+                                                <Select
+                                                    className="input-info-form"
+                                                    style={{ borderBottom: "1px solid #6870fa" }}
+                                                    placeholder="selecciona la plataforma"
+                                                    onChange={() => { setDisabled(false) }}
+                                                >
+                                                    <Select.Option value="Mercadolibre" key={0}>POR CONFIRMAR</Select.Option>
+                                                    <Select.Option value="Mercadolibre" key={1}>Mercadolibre</Select.Option>
+                                                    <Select.Option value="Shopify" key={2}>Magic Mechas</Select.Option>
+                                                    <Select.Option value="DC Bogotá" key={3}>DC Bogotá</Select.Option>
+                                                    <Select.Option value="Linio" key={4}>Linio</Select.Option>
+                                                    <Select.Option value="Falabella" key={5}>Falabella</Select.Option>
+                                                    <Select.Option value="Rappi" key={6}>Rappi</Select.Option>
+                                                    <Select.Option value="Otro" key={7}>Otro</Select.Option>
+                                                </Select>
                                             </Form.Item>
                                         </div>
                                     </div>
