@@ -272,7 +272,7 @@ const ExitForm = ({ user, ordersData, setOrdersData, rangeItems, socket, receive
     }, [socket])
 
     const onFinish = (e) => {
-        e.platform = "POR CONFIRMAR"
+        // e.platform = "POR CONFIRMAR"
         setLoading(true)
         setDisabled(true)
 
