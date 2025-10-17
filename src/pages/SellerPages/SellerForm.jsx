@@ -58,6 +58,13 @@ const SellerForm = ({ user, allProducts, setAllProducts, total, setTotal, setCou
         }
 
         loadData()
+
+        const timeout = setTimeout(() => {
+            setLoading(false);
+        }, 10000);
+
+        return () => clearTimeout(timeout);
+
     }, [allProducts])
 
     const onFinish = (e, resetForm) => {
